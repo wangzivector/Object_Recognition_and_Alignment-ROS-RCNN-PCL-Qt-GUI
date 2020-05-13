@@ -1,3 +1,10 @@
+/*
+ * gui_node.cpp
+ *
+ *  Created on: May 8, 2020
+ *      Author: wangzivector
+ * This cppfile handle the gui setting
+ */
 #include "mainwindow.h"
 #include <QApplication>
 #include <gui_node.h>
