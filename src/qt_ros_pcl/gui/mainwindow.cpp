@@ -11,24 +11,23 @@ MainWindow::MainWindow(QWidget* parent)
   //
   qvtkWidgetPointer = new qvtk(this);
   ui->verticalLayout->addWidget(qvtkWidgetPointer);
-  qvtkWidgetPointer->SetRenderWindow(
-      qvtkWidgetPointer->viewer->getRenderWindow());
-  qvtkWidgetPointer->viewer->setupInteractor(
-      qvtkWidgetPointer->GetInteractor(), qvtkWidgetPointer->GetRenderWindow());
-  qvtkWidgetPointer->update();
+  qvtkWidgetPointer->addPointCloudExample();
+//  qvtkWidgetPointer->update();
 }
 
 MainWindow::~MainWindow() { delete ui; }
 
 //===================================================
 //  on_pushButton_pc_clicked
-// an example for testing pcl and qt vision
+//  an example for testing pcl and qt vision
+//  update the test process of adding pc.
 //===================================================
 void MainWindow::on_pushButton_pc_clicked()
 {
-
-  //
-  // update the test process of adding pc.
-  //
   qvtkWidgetPointer->addPointCloudExample();
 }
+
+//===================================================
+//  on_pushButton_quit_clicked
+//===================================================
+void MainWindow::on_pushButton_quit_clicked() { this->~MainWindow(); }

@@ -29,12 +29,14 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  message_generation
 )
 # 找到qt5中的widgets组件的关键步骤，使程序编译时能够找到qt5-widgets相关头文件和库函数。
 find_package(Qt5  REQUIRED COMPONENTS  Widgets)
 
 find_package(VTK REQUIRED)
 find_package(PCL 1.7.1 REQUIRED)
+
 
 # Fix a compilation bug under ubuntu 16.04 (Xenial)
 list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
@@ -56,6 +58,9 @@ set(SOURCES
 set(FORMS
   gui/mainwindow.ui
 )
+
+add_message_files(FILES	info.msg)
+generate_messages(DEPENDENCIES	std_msgs)
 
 catkin_package()
 

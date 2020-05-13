@@ -17,6 +17,9 @@ public:
   ~MainWindow();
 
 private slots:
+  void on_pushButton_quit_clicked();
+
+private slots:
   void on_pushButton_pc_clicked();
 
 private:

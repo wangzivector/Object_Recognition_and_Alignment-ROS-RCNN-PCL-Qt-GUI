@@ -19,15 +19,16 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 /// Visualization Toolkit (VTK)
-#include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
 #include <vtkRenderWindow.h>
 
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
-class vtkRenderer;
-class vtkRenderWindowInteractor;
+
+namespace Ui
+{
+  class qvtk;
+}
 
 // class of pointcloud visualize with QVTKWidget
 class qvtk : public QVTKWidget
@@ -35,19 +36,23 @@ class qvtk : public QVTKWidget
   Q_OBJECT
 public:
   explicit qvtk(QWidget* parent = nullptr);
+  ~qvtk();
 
   // an example for show QVTKWidget works with pcl and qt.
   void addPointCloudExample();
 
-  //update the pointcloud in Qvtk widget
-  bool vtkUpdatePointCloud(PointCloudT::Ptr new_pointcloud);
-
-  vtkRenderer* ren1; // pointer of vtk visualizers render
-  vtkRenderWindowInteractor* iren;
-  pcl::visualization::PCLVisualizer::Ptr viewer;
-  PointCloudT::Ptr cloud;
+  // basic pointcloud process in Qvtk widget
+  bool vtkUpdatePointCloud(PointCloudT::Ptr pointcloud, QString cloud_name);
+  bool vtkAddPointCloud(PointCloudT::Ptr new_pointcloud, QString cloud_name);
+  bool vtkRemovePointCloud(QString cloud_name);
+  bool showPointCloud(const PointCloudT::Ptr pointcloud, QString cloud_name);
+  bool
+  setPointCloudProperties(pcl::visualization::RenderingProperties property_name,
+                          int property_value, QString pc_name);
 
 protected:
+  pcl::visualization::PCLVisualizer::Ptr viewer;
+  PointCloudT::Ptr cloud;
 signals:
 
 public slots:
