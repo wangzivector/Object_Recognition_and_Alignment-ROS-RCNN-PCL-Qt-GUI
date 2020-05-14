@@ -33,27 +33,27 @@
 * Exception handling
 
 5. cpp discription
-* qvtk
+* gui
    ├─ pointcloud vtkwidget
    ├─ infoprint widget
    ├─ param widget(multipage)
    ├─ subview widget
 
-* qrealsense
+* qrealsense<done>
    ├─ rs receive/config
    ├─ return frame
+   ├─ pcd file read/store
 
-* basic<ros>
+* basic<done>
    ├─ publish final info in qt
    ├─ receive and printout in receive node
 
-* qvtk
+* qvtk<done>
    ├─ update pointcloud display
    ├─ add pointcloud display
    ├─ display config - colour visable size
 
-* qpcl
-   ├─ pcd file read/store
+* qpcl<doing>
    ├─ pointcloud preprocess
    ├─ keeypoint extract
    ├─ segmentation

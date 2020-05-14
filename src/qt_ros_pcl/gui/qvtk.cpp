@@ -24,6 +24,12 @@ qvtk::qvtk(QWidget* parent) : QVTKWidget(parent)
   this->viewer->setupInteractor(this->GetInteractor(), this->GetRenderWindow());
   this->viewer->setBackgroundColor(0, 0, 0);
   this->viewer->addCoordinateSystem();
+  //  this->viewer->setCameraPosition(-0.825088, 0.568006, -0.633452, 0.322216,
+  //                                  -0.780572, -0.535616);
+  std::string camera_filename =
+      "/home/wang/catkin_qtws/src/qt_ros_pcl/include/camera.config";
+  //  viewer->saveCameraParameters(camera_filename);
+  viewer->loadCameraParameters(camera_filename);
 }
 
 //===================================================
@@ -49,10 +55,10 @@ void qvtk::addPointCloudExample()
     cloud->points[i].y = 1024 * (rand() / (RAND_MAX + 1.0f));
     cloud->points[i].z = 1024 * (rand() / (RAND_MAX + 1.0f));
 
-//    cloud->points[i].r = red + uint8_t(255 * i / (cloud->points.size()));
-//    cloud->points[i].g = green + uint8_t(255 * i / (cloud->points.size()));
-//    cloud->points[i].b = blue + uint8_t(255 * i / (cloud->points.size()));
-//    cloud->points[i].a = 255;
+    //    cloud->points[i].r = red + uint8_t(255 * i / (cloud->points.size()));
+    //    cloud->points[i].g = green + uint8_t(255 * i /
+    //    (cloud->points.size())); cloud->points[i].b = blue + uint8_t(255 * i /
+    //    (cloud->points.size())); cloud->points[i].a = 255;
     cloud->points[i].r = red + uint8_t(255 * (rand() / (RAND_MAX + 1.0f)));
     cloud->points[i].g = green + uint8_t(255 * (rand() / (RAND_MAX + 1.0f)));
     cloud->points[i].b = blue + uint8_t(255 * (rand() / (RAND_MAX + 1.0f)));
@@ -105,9 +111,13 @@ inline bool qvtk::vtkRemovePointCloud(QString cloud_name)
 //===================================================
 bool qvtk::showPointCloud(const PointCloudT::Ptr pointcloud, QString cloud_name)
 {
-  if (!vtkUpdatePointCloud(pointcloud,
-                           cloud_name)) /// if return false, dont exist yet
-    return vtkAddPointCloud(pointcloud, cloud_name);
+  if (pointcloud->size() == 0)
+    return false;
+  if (vtkUpdatePointCloud(pointcloud,
+                          cloud_name)) /// if return false, dont exist yet
+    this->update();
+  else if (vtkAddPointCloud(pointcloud, cloud_name))
+    this->update();
   return true;
 }
 
