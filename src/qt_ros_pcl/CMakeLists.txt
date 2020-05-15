@@ -57,6 +57,9 @@ set(SOURCES
   src/qros.cpp
   src/pcd_io.cpp
 )
+file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
+file(GLOB QT_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} resources/*.qrc)
+QT5_ADD_RESOURCES(QT_RESOURCES_CPP ${QT_RESOURCES})
 
 set(FORMS
   gui/mainwindow.ui
@@ -69,7 +72,7 @@ catkin_package()
 
 include_directories( include  ${catkin_INCLUDE_DIRS} )
 # 这是生成可执行文件，此时用到了SOURCES和FORMS所指明的cpp和ui文件。
- add_executable(gui_node ${SOURCES} ${FORMS} )
+ add_executable(gui_node ${SOURCES} ${FORMS} ${QT_RESOURCES_CPP})
  add_executable(${PROJECT_NAME}_node  src/basic.cpp)
 #在链接环节，告诉目标文件需要qt5的widgets组件作为动态链接库。
  target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES} )

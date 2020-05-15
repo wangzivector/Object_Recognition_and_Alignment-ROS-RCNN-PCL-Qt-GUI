@@ -38,10 +38,10 @@ public:
   explicit qvtk(QWidget* parent = nullptr);
   ~qvtk();
 
-  // an example for show QVTKWidget works with pcl and qt.
+  /// an example for show QVTKWidget works with pcl and qt.
   void addPointCloudExample();
 
-  // basic pointcloud process in Qvtk widget
+  /// basic pointcloud process in Qvtk widget
   bool vtkUpdatePointCloud(PointCloudT::Ptr pointcloud, QString cloud_name);
   bool vtkAddPointCloud(PointCloudT::Ptr new_pointcloud, QString cloud_name);
   bool vtkRemovePointCloud(QString cloud_name);

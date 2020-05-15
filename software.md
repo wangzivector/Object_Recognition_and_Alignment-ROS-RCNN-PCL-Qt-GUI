@@ -33,7 +33,7 @@
 * Exception handling
 
 5. cpp discription
-* gui
+* gui<done>
    ├─ pointcloud vtkwidget
    ├─ infoprint widget
    ├─ param widget(multipage)
@@ -55,7 +55,7 @@
 
 * qpcl<doing>
    ├─ pointcloud preprocess
-   ├─ keeypoint extract
+   ├─ keypoint extract
    ├─ segmentation
    ├─ normal estimation
    ├─ feature compute

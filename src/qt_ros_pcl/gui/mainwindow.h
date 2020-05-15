@@ -30,12 +30,13 @@ public:
   pcd_io* pcd_ioObj;
 
 private slots:
+  void on_pushButton_ex_clicked();
+  void on_tabWidget_tabBarClicked(int index);
   void on_pushButton_quit_clicked();
-
-private slots:
   void on_pushButton_pc_clicked();
 
 private:
+  void addTextBrowser(QString text);
   qvtk* qvtkWidgetObj;
   Ui::MainWindow *ui;
 };

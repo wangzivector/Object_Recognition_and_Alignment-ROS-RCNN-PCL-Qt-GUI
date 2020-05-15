@@ -17,12 +17,29 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Pointcloud ROS+PCL</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../resources/icon.ico</normaloff>../resources/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_left">
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout"/>
       </item>
@@ -31,10 +48,16 @@
         <item>
          <widget class="QTextBrowser" name="textBrowser">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
             <horstretch>0</horstretch>
             <verstretch>50</verstretch>
            </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>120</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -45,16 +68,65 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_right">
       <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>300</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QTabWidget" name="tabWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+          <horstretch>255</horstretch>
+          <verstretch>255</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>400</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>400</width>
+          <height>500</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>500</width>
+          <height>500</height>
+         </size>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
         <widget class="QWidget" name="tab">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;basic&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <attribute name="title">
-          <string>Tab 1</string>
+          <string>Base</string>
          </attribute>
          <widget class="QPushButton" name="pushButton_quit">
           <property name="geometry">
            <rect>
-            <x>140</x>
-            <y>310</y>
+            <x>10</x>
+            <y>300</y>
             <width>89</width>
             <height>25</height>
            </rect>
@@ -66,8 +138,8 @@
          <widget class="QPushButton" name="pushButton_pc">
           <property name="geometry">
            <rect>
-            <x>140</x>
-            <y>280</y>
+            <x>10</x>
+            <y>50</y>
             <width>89</width>
             <height>25</height>
            </rect>
@@ -76,10 +148,23 @@
            <string>pointcloud</string>
           </property>
          </widget>
+         <widget class="QPushButton" name="pushButton_ex">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>example</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
-          <string>Tab 2</string>
+          <string>Prep</string>
          </attribute>
         </widget>
        </widget>
@@ -87,12 +172,18 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="label_pic">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
+           <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
+            <horstretch>200</horstretch>
             <verstretch>50</verstretch>
            </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>300</height>
+           </size>
           </property>
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
@@ -111,7 +202,7 @@
            <enum>Qt::Vertical</enum>
           </property>
           <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
+           <enum>QSizePolicy::Expanding</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>

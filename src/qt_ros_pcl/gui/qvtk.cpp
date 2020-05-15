@@ -41,7 +41,7 @@ void qvtk::addPointCloudExample()
   /// Setup the cloud pointer
   cloud.reset(new PointCloudT);
   /// The number of points in the cloud
-  cloud->points.resize(200);
+  cloud->points.resize(1000);
 
   /// The default color
   uint8_t red = 0;
@@ -51,23 +51,19 @@ void qvtk::addPointCloudExample()
   /// Fill the cloud with some points
   for (std::size_t i = 0; i < cloud->points.size(); ++i)
   {
-    cloud->points[i].x = 1024 * (rand() / (RAND_MAX + 1.0f));
-    cloud->points[i].y = 1024 * (rand() / (RAND_MAX + 1.0f));
-    cloud->points[i].z = 1024 * (rand() / (RAND_MAX + 1.0f));
+    cloud->points[i].x = 1 * (rand() / (RAND_MAX + 1.0f));
+    cloud->points[i].y = 1 * (rand() / (RAND_MAX + 1.0f));
+    cloud->points[i].z = 1 * (rand() / (RAND_MAX + 1.0f));
 
-    //    cloud->points[i].r = red + uint8_t(255 * i / (cloud->points.size()));
-    //    cloud->points[i].g = green + uint8_t(255 * i /
-    //    (cloud->points.size())); cloud->points[i].b = blue + uint8_t(255 * i /
-    //    (cloud->points.size())); cloud->points[i].a = 255;
     cloud->points[i].r = red + uint8_t(255 * (rand() / (RAND_MAX + 1.0f)));
     cloud->points[i].g = green + uint8_t(255 * (rand() / (RAND_MAX + 1.0f)));
     cloud->points[i].b = blue + uint8_t(255 * (rand() / (RAND_MAX + 1.0f)));
   }
 
+  //  viewer->resetCamera();
   showPointCloud(cloud, "cloud");
   setPointCloudProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3,
                           "cloud");
-  viewer->resetCamera();
   this->update();
 }
 
