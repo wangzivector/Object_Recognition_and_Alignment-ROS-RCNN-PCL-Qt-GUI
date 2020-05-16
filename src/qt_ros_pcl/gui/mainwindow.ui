@@ -145,7 +145,7 @@
            </rect>
           </property>
           <property name="text">
-           <string>pointcloud</string>
+           <string>loadcloud</string>
           </property>
          </widget>
          <widget class="QPushButton" name="pushButton_ex">
@@ -158,7 +158,20 @@
            </rect>
           </property>
           <property name="text">
-           <string>example</string>
+           <string>cubeexam</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_co">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>reconstruct</string>
           </property>
          </widget>
         </widget>

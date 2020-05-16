@@ -11,7 +11,9 @@
 #include <QMainWindow>
 #include "qvtk.h"
 #include "qros.h"
-#include "pcd_io.h"
+#include "objreco.h"
+//#include "pcd_io.h"
+//#include "qpcl.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,7 +29,11 @@ public:
 
   /// ros pointer for publish msg
   qros* qrosObj;
-  pcd_io* pcd_ioObj;
+  ObjReco* ObjectRecognition;
+//  pcd_io* pcd_ioObj;
+
+private slots:
+  void on_pushButton_co_clicked();
 
 private slots:
   void on_pushButton_ex_clicked();

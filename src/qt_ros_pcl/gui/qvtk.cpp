@@ -73,48 +73,9 @@ qvtk::~qvtk()
   viewer->close();
 }
 
-//===================================================
-//  vtkAddPointCloud
-//===================================================
-inline bool qvtk::vtkAddPointCloud(const PointCloudT::Ptr new_pointcloud,
-                                   QString cloud_name)
-{
-  return viewer->addPointCloud<PointT>(new_pointcloud,
-                                       cloud_name.toStdString().c_str());
-}
-
-//===================================================
-//  vtkUpdatePointCloud
-//===================================================
-inline bool qvtk::vtkUpdatePointCloud(const PointCloudT::Ptr pointcloud,
-                                      QString cloud_name)
-{
-  return viewer->updatePointCloud(pointcloud, cloud_name.toStdString().c_str());
-}
-
-//===================================================
-//  vtkRemovePointCloud
-//===================================================
 inline bool qvtk::vtkRemovePointCloud(QString cloud_name)
 {
   return viewer->removePointCloud(cloud_name.toStdString().c_str());
-}
-
-//===================================================
-//  showPointCloud
-//  you can use it if you want to show a pointcloud
-//  no matter add before or not.
-//===================================================
-bool qvtk::showPointCloud(const PointCloudT::Ptr pointcloud, QString cloud_name)
-{
-  if (pointcloud->size() == 0)
-    return false;
-  if (vtkUpdatePointCloud(pointcloud,
-                          cloud_name)) /// if return false, dont exist yet
-    this->update();
-  else if (vtkAddPointCloud(pointcloud, cloud_name))
-    this->update();
-  return true;
 }
 
 //===================================================
@@ -133,4 +94,16 @@ bool qvtk::setPointCloudProperties(
 {
   viewer->setPointCloudRenderingProperties(property_name, property_value,
                                            pc_name.toStdString().c_str());
+}
+
+//===================================================
+//  showPointNormal
+//  for pointxyzrgbnomal type visualization
+//===================================================
+bool qvtk::showPointNormal(pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud,
+                           QString cloud_name)
+{
+  viewer->removeAllPointClouds();
+  viewer->addPointCloudNormals<pcl::PointXYZRGBNormal>(
+      cloud, 40, 0.03f, cloud_name.toStdString().c_str(), 0);
 }

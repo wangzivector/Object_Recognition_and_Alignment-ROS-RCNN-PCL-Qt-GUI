@@ -16,7 +16,7 @@ qpcl::qpcl() {}
 //  by setting its distance to infinite.
 //===================================================
 bool qpcl::axisFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_axis,
-                      const float axis_size = 0.2f, bool keep_organized = false)
+                      const float axis_size, bool keep_organized)
 {
   /// filter z values within a certain range set by parameters
   const float min = -axis_size;
@@ -48,7 +48,7 @@ bool qpcl::axisFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_axis,
 //  using the parameter leaf size
 //===================================================
 bool qpcl::gridFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_grid,
-                      float grid_size = 0.002f)
+                      float grid_size)
 {
   /// use for the grid /downsample
   pcl::VoxelGrid<PointType> sor_grid;
@@ -67,8 +67,7 @@ bool qpcl::gridFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_grid,
 //  with the max size of distance
 //===================================================
 bool qpcl::planeFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_extract,
-                       double threshold_plane = 0.008,
-                       bool keep_organized = false)
+                       double threshold_plane, bool keep_organized)
 {
 
   /// Declare the segmentation object for planes
@@ -111,7 +110,7 @@ bool qpcl::planeFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_extract,
 //  with mean_num in distance of outlier_Thresh
 //===================================================
 bool qpcl::outlierFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_outlier,
-                         int outlier_meanK = 30, double outlier_Thresh = 0.1)
+                         int outlier_meanK, double outlier_Thresh)
 {
   /// use for the outlier
   pcl::StatisticalOutlierRemoval<PointType> sor_outlier;
@@ -130,8 +129,8 @@ bool qpcl::outlierFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_outlier,
 //  after it will apply noise_filter
 //===================================================
 bool qpcl::backgroundFilter(PointCloud::Ptr cloud_g, PointCloud::Ptr cloud_i,
-                            PointCloud::Ptr cloud_extract, int noise_filter = 1,
-                            double resolution = 0.015)
+                            PointCloud::Ptr cloud_extract, int noise_filter,
+                            double resolution)
 {
   pcl::octree::OctreePointCloudChangeDetector<PointType> octree(resolution);
   std::cout << "ground octree ... cloud_groud : " << cloud_g->size()
@@ -180,7 +179,7 @@ bool qpcl::backgroundFilter(PointCloud::Ptr cloud_g, PointCloud::Ptr cloud_i,
 //===================================================
 bool qpcl::downSample(PointCloud::Ptr cloud,
                       pcl::PointCloud<int>::Ptr sampled_indices_cloud,
-                      double sample_radius = 0.005)
+                      double sample_radius)
 {
   pcl::UniformSampling<PointType> uniform_sampling_cloud;
   uniform_sampling_cloud.setInputCloud(cloud);
@@ -200,9 +199,8 @@ bool qpcl::downSample(PointCloud::Ptr cloud,
 
 bool qpcl::rgbSegmentationIndex(
     PointCloud::Ptr cloud, pcl::PointCloud<int>::Ptr sampled_indices_cloud,
-    std::vector<pcl::PointIndices>* clusters_rgb_deliver, float dist_thre = 3,
-    float point_color_thre = 13, float region_color_thre = 30,
-    int min_cluster = 350)
+    std::vector<pcl::PointIndices>* clusters_rgb_deliver, float dist_thre,
+    float point_color_thre, float region_color_thre, int min_cluster)
 {
   pcl::RegionGrowingRGB<PointType> reg_segrgb;
   std::vector<pcl::PointIndices> clusters_rgb;
@@ -255,8 +253,8 @@ bool qpcl::rgbSegmentationIndex(
 //===================================================
 bool qpcl::rgbSegmentation(PointCloud::Ptr cloud,
                            std::vector<pcl::PointIndices>* clusters_rgb,
-                           float dist_thre = 3, float point_color_thre = 13,
-                           float region_color_thre = 30, int min_cluster = 350)
+                           float dist_thre, float point_color_thre,
+                           float region_color_thre, int min_cluster)
 {
   pcl::RegionGrowingRGB<PointType> reg_segrgb;
   pcl::search::Search<PointType>::Ptr tree_segrgb =
@@ -264,15 +262,138 @@ bool qpcl::rgbSegmentation(PointCloud::Ptr cloud,
           new pcl::search::KdTree<PointType>);
   reg_segrgb.setInputCloud(cloud);
   reg_segrgb.setSearchMethod(tree_segrgb);
-  reg_segrgb.setDistanceThreshold(
-      dist_thre); //距离的阀值
-                  /// 点与点之间颜色容差 if points belong to the same
+  ///距离的阀值
+  reg_segrgb.setDistanceThreshold(dist_thre);
+  /// 点与点之间颜色容差 if points belong to the same
   reg_segrgb.setPointColorThreshold(point_color_thre);
   /// 区域之间容差 if regions can be merged.
   reg_segrgb.setRegionColorThreshold(region_color_thre);
-  reg_segrgb.setMinClusterSize(min_cluster); //设置聚类的大小
+  ///设置聚类的大小
+  reg_segrgb.setMinClusterSize(min_cluster);
   reg_segrgb.extract(*clusters_rgb);
   //  seg_num = clusters_rgb.size ();
   cout << "uniform_sampling_cloudstart to redeliver..." << endl;
+  return true;
+}
+
+//===================================================
+//  normalEstimation
+//  may be alot time
+// 	NormalCloud::Ptr cloud_normals=
+//             NormalCloud::Ptr(new NormalCloud());
+//===================================================
+bool qpcl::normalEstimation(PointCloud::Ptr cloud,
+                            NormalCloud::Ptr cloud_normal)
+{
+
+  pcl::NormalEstimationOMP<PointType, NormalType> norm_est_cloud;
+  pcl::search::KdTree<PointType> tree;
+  norm_est_cloud.setSearchMethod(pcl::search::KdTree<PointType>::Ptr(&tree));
+  // norm_est_cloud.setRadiusSearch (0.03);
+  norm_est_cloud.setKSearch(8); // maybe this can be adjust 10
+  norm_est_cloud.setNumberOfThreads(4);
+  norm_est_cloud.setInputCloud(cloud);
+  // norm_est_cloud.setInputCloud (cloud_keypoints);
+  norm_est_cloud.compute(*cloud_normal); // compute normals
+  return true;
+}
+
+//===================================================
+//  shot352Estimation
+//  may failed because some reasons in pcl
+//  output of shot 352 which not use color
+//  DescriptorCloudShot352::Ptr cloud_descriptors_shot352
+//  = DescriptorCloudShot352::Ptr
+//  (new DescriptorCloudShot352());
+//===================================================
+bool qpcl::shot352Estimation(
+    PointCloud::Ptr cloud, PointCloud::Ptr cloud_keypoint,
+    NormalCloud::Ptr cloud_normal,
+    DescriptorCloudShot352::Ptr cloud_descriptors_shot352, double descr_rad_352)
+{
+  pcl::SHOTEstimationOMP<PointType, NormalType, SHOT352> descr_est_shot352;
+  descr_est_shot352.setInputCloud(cloud_keypoint);
+  descr_est_shot352.setRadiusSearch(descr_rad_352);
+  descr_est_shot352.setInputNormals(cloud_normal);
+  descr_est_shot352.setSearchSurface(cloud);
+  descr_est_shot352.compute(*cloud_descriptors_shot352);
+  return true;
+}
+
+//===================================================
+//  shot352Estimation
+//  may failed because some reasons in pcl
+//  this is with color compared with shot352,
+//  i think need to make a justice which is better
+//  DescriptorCloudShot1344::Ptr cloud_descriptors_shot1344
+//  = DescriptorCloudShot1344::Ptr(new DescriptorCloudShot1344());
+//===================================================
+bool qpcl::shot1344Estimation(
+    PointCloud::Ptr cloud, PointCloud::Ptr cloud_keypoint,
+    NormalCloud::Ptr cloud_normal,
+    DescriptorCloudShot1344::Ptr cloud_descriptors_shot1344,
+    double descr_rad_1344)
+{
+  pcl::SHOTColorEstimationOMP<PointType, NormalType, SHOT1344>
+      descr_est_shot1344;
+  descr_est_shot1344.setInputCloud(cloud_keypoint);
+  descr_est_shot1344.setRadiusSearch(descr_rad_1344);
+  descr_est_shot1344.setInputNormals(cloud_normal);
+  descr_est_shot1344.setSearchSurface(cloud);
+  descr_est_shot1344.compute(*cloud_descriptors_shot1344);
+  return true;
+}
+
+//===================================================
+//  fpfhEstimation
+//  DescriptorCloudFPFH::Ptr cloud_descriptors_FPFH
+//  = DescriptorCloudFPFH::Ptr (new DescriptorCloudFPFH());
+//===================================================
+bool qpcl::fpfhEstimation(PointCloud::Ptr cloud, NormalCloud::Ptr cloud_normal,
+                          DescriptorCloudFPFH::Ptr cloud_descriptors_FPFH)
+{
+  pcl::FPFHEstimationOMP<PointType, NormalType, FPFH> descr_est_fpfh;
+  pcl::search::KdTree<PointType> tree_fpfh;
+
+  descr_est_fpfh.setNumberOfThreads(4); ///指定4核计算
+  descr_est_fpfh.setInputCloud(cloud);
+  // descr_est_fpfh.setInputCloud(cloud_keypoints);
+  descr_est_fpfh.setInputNormals(cloud_normal);
+  descr_est_fpfh.setSearchMethod(
+      pcl::search::KdTree<PointType>::Ptr(&tree_fpfh));
+  descr_est_fpfh.setKSearch(10); /// 10
+
+  descr_est_fpfh.compute(*cloud_descriptors_FPFH);
+  return true;
+}
+
+//===================================================
+//  mlsReconstruction
+//  PointRGBNormalCloud::Ptr cloud_pointRGBNormal
+//  = PointRGBNormalCloud::Ptr (new PointRGBNormalCloud());
+//===================================================
+bool qpcl::mlsReconstruction(PointCloud::Ptr cloud,
+                             PointRGBNormalCloud::Ptr cloud_pointRGBNormal,
+                             double search_radius)
+{
+  /// Smoothing object (we choose what point types we want as input and output).
+  pcl::MovingLeastSquares<PointType, PointRGBNormalType> filter_re;
+  filter_re.setInputCloud(cloud);
+  /// Use all neighbors in a radius of 3cm.
+  filter_re.setSearchRadius(search_radius);
+  /// If true, the surface and normal are approximated using a polynomial
+  /// estimation (if false, only a tangent one).
+  filter_re.setPolynomialFit(true);
+  /// We can tell the algorithm to also compute smoothed normals (optional).
+  filter_re.setComputeNormals(true);
+  /// kd-tree object for performing searches.
+  pcl::search::KdTree<PointType>::Ptr kdtree;
+  // or pcl::search::KdTree<PointType>::Ptr kdtree (new
+  //    pcl::search::KdTree<pcl::PointXYZ>);
+  // or 1. pcl::search::KdTree<PointType> kdtree;
+  //    2. pcl::search::KdTree<PointType>::Ptr (&kdtree)
+  filter_re.setSearchMethod(kdtree);
+  std::cout << "start ot filter_re.process" << std::endl;
+  filter_re.process(*cloud_pointRGBNormal);
   return true;
 }

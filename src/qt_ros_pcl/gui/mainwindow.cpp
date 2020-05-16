@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget* parent)
   // Set up the QVTK window and all stuff of render thing :)
   //
   qvtkWidgetObj = new qvtk(this);
+  ObjectRecognition = new ObjReco();
   ui->verticalLayout->addWidget(qvtkWidgetObj);
   //  qvtkWidgetObj->addPointCloudExample();
 }
@@ -42,11 +43,12 @@ void MainWindow::on_pushButton_pc_clicked()
   QString path_read =
       "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/world/world3.pcd";
   std::cout << "start read test ...\n";
-  PointCloud::Ptr cloud_read = PointCloud::Ptr(new PointCloud());
-
-  if (pcd_ioObj->pcdRead(path_read.toStdString().c_str(), cloud_read))
+  PointCloud::Ptr cloud = PointCloud::Ptr(new PointCloud());
+  if (ObjectRecognition->pcdRead(path_read.toStdString().c_str(),
+                                 ObjectRecognition->cloud))
   {
-    if (qvtkWidgetObj->showPointCloud(cloud_read, "cloud_read"))
+    std::cout << "read finished start to show ...";
+    if (qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud, "cloud_read"))
       std::cout << "show finished \n";
   }
   else
@@ -78,7 +80,7 @@ void MainWindow::on_pushButton_ex_clicked()
   QPixmap ico(":/image/icon.jpg");
   ui->label_pic->setScaledContents(true);
   ui->label_pic->setPixmap(ico);
-//  QPixmap scaledPixmap = ico.scaled(picSize, Qt::KeepAspectRatio);
+  //  QPixmap scaledPixmap = ico.scaled(picSize, Qt::KeepAspectRatio);
   qvtkWidgetObj->addPointCloudExample();
   addTextBrowser("example show complished.");
 }
@@ -90,4 +92,16 @@ void MainWindow::addTextBrowser(QString text)
 {
   ui->textBrowser->append(text);
   ui->textBrowser->moveCursor(ui->textBrowser->textCursor().End);
+}
+
+void MainWindow::on_pushButton_co_clicked()
+{
+  std::cout << "start to read pcd ..." << std::endl;
+  ObjectRecognition->pcdRead("/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/world/world3.pcd", ObjectRecognition->cloud);
+  ObjectRecognition->gridFilter(ObjectRecognition->cloud, ObjectRecognition->cloud, 0.02f);
+  std::cout << "start to compute reconstruction ..." << std::endl;
+  ObjectRecognition->checkReconstruction();
+  std::cout << "finish compute, start to visualize .." << std::endl;
+  qvtkWidgetObj->showPointNormal(ObjectRecognition->cloud_pointRGBNormal,
+                                 "reconstruction");
 }

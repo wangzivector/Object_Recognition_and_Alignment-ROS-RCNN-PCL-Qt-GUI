@@ -54,14 +54,19 @@
    ├─ display config - colour visable size
 
 * qpcl<doing>
-   ├─ pointcloud preprocess
-   ├─ keypoint extract
-   ├─ segmentation
-   ├─ normal estimation
-   ├─ feature compute
-   ├─ surface reconstruct
+   ├─ pointcloud preprocess<done>
+   ├─ keypoint extract<done>
+   ├─ segmentation<done>
+   ├─ normal estimation<done>
+   ├─ feature compute<done>
+   ├─ surface reconstruct<done>
    ├─ feature match
    ├─ object detection
+
+* system
+   ├─ pointcloud interface
+   ├─ param editting
+   ├─ error catching
 
 
 
