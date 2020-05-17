@@ -2,5 +2,6 @@
     <qresource prefix="/image">
         <file>icon.jpg</file>
         <file>icon.ico</file>
+        <file>config.ini</file>
     </qresource>
 </RCC>

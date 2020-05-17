@@ -46,6 +46,8 @@ public:
 
   bool showPointNormal(pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud, QString cloud_name);
 
+  bool vtkRemovePointCloud(QString cloud_name, bool all = false);
+
   /// basic pointcloud process in Qvtk widget
   template <typename CloudType>
   inline bool vtkAddPointCloud(const CloudType new_pointcloud,
@@ -61,7 +63,6 @@ public:
     return viewer->updatePointCloud(pointcloud,
                                     cloud_name.toStdString().c_str());
   }
-  bool vtkRemovePointCloud(QString cloud_name);
 
   //===================================================
   //  showPointCloud

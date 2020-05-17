@@ -20,9 +20,9 @@ int main(int argc, char* argv[])
   //
   // create ros node and pass to window object
   //
-  ros::init(argc, argv, "gui_node");
-  qros* qros_node = new qros();
-  w.qrosObj = qros_node;
+//  ros::init(argc, argv, "gui_node");
+//  qros* qros_node = new qros();
+//  w.qrosObj = qros_node;
 
   w.show();
   return a.exec();

@@ -68,22 +68,6 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_right">
       <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>300</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
@@ -110,7 +94,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab">
          <property name="toolTip">
@@ -120,67 +104,310 @@
           <string notr="true"/>
          </property>
          <attribute name="title">
-          <string>Base</string>
+          <string>Main</string>
          </attribute>
-         <widget class="QPushButton" name="pushButton_quit">
+         <widget class="QGroupBox" name="groupBox_en">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>10</y>
+            <width>301</width>
+            <height>101</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">border-color: rgb(0, 0, 0);</string>
+          </property>
+          <property name="title">
+           <string>Select Environment</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <widget class="QComboBox" name="comboBox_mo">
+           <property name="geometry">
+            <rect>
+             <x>130</x>
+             <y>60</y>
+             <width>81</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>model1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>model2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>model3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>model4</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>model5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>model6</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>model7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>model8</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QLabel" name="label_wo">
+           <property name="geometry">
+            <rect>
+             <x>50</x>
+             <y>30</y>
+             <width>71</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-color: rgb(85, 87, 83);</string>
+           </property>
+           <property name="text">
+            <string>World</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="comboBox_wo">
+           <property name="geometry">
+            <rect>
+             <x>130</x>
+             <y>30</y>
+             <width>81</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>world1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>world2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>world3</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QLabel" name="label_mo">
+           <property name="geometry">
+            <rect>
+             <x>50</x>
+             <y>60</y>
+             <width>71</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-color: rgb(46, 52, 54);</string>
+           </property>
+           <property name="text">
+            <string>Model</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QGroupBox" name="groupBox">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>300</y>
-            <width>89</width>
-            <height>25</height>
+            <y>240</y>
+            <width>281</width>
+            <height>121</height>
            </rect>
+          </property>
+          <property name="title">
+           <string>Operation</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <widget class="QPushButton" name="pushButton_ex">
+           <property name="geometry">
+            <rect>
+             <x>150</x>
+             <y>30</y>
+             <width>89</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>cube exam</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButton_lo">
+           <property name="geometry">
+            <rect>
+             <x>50</x>
+             <y>30</y>
+             <width>89</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Load Param</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButton_sa">
+           <property name="geometry">
+            <rect>
+             <x>50</x>
+             <y>60</y>
+             <width>89</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Save Param</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButton_co">
+           <property name="geometry">
+            <rect>
+             <x>150</x>
+             <y>90</y>
+             <width>89</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>reconstruct</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButton_cl">
+           <property name="geometry">
+            <rect>
+             <x>50</x>
+             <y>90</y>
+             <width>89</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Clean VTK</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButton_pc">
+           <property name="geometry">
+            <rect>
+             <x>150</x>
+             <y>60</y>
+             <width>89</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>load cloud</string>
+           </property>
+          </widget>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
+          <string>Filter</string>
+         </attribute>
+         <widget class="QSpinBox" name="spinBox">
+          <property name="geometry">
+           <rect>
+            <x>150</x>
+            <y>30</y>
+            <width>81</width>
+            <height>26</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="doubleSpinBox">
+          <property name="geometry">
+           <rect>
+            <x>150</x>
+            <y>60</y>
+            <width>81</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <property name="correctionMode">
+           <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
+          </property>
+          <property name="decimals">
+           <number>4</number>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>300</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="pushButton_pr">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(7, 162, 67);</string>
+          </property>
+          <property name="text">
+           <string>process</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_quit">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(239, 41, 41);</string>
           </property>
           <property name="text">
            <string>quit</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="pushButton_pc">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>50</y>
-            <width>89</width>
-            <height>25</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>loadcloud</string>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="pushButton_ex">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>89</width>
-            <height>25</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>cubeexam</string>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="pushButton_co">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>90</y>
-            <width>89</width>
-            <height>25</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>reconstruct</string>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="tab_2">
-         <attribute name="title">
-          <string>Prep</string>
-         </attribute>
-        </widget>
-       </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -189,13 +416,13 @@
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
             <horstretch>200</horstretch>
-            <verstretch>50</verstretch>
+            <verstretch>40</verstretch>
            </sizepolicy>
           </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
-            <height>300</height>
+            <width>200</width>
+            <height>200</height>
            </size>
           </property>
           <property name="layoutDirection">
@@ -215,12 +442,12 @@
            <enum>Qt::Vertical</enum>
           </property>
           <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
+           <enum>QSizePolicy::Maximum</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>200</height>
+            <height>150</height>
            </size>
           </property>
          </spacer>
@@ -240,8 +467,32 @@
      <height>28</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave_PCD"/>
+   </widget>
+   <widget class="QMenu" name="menuTool">
+    <property name="title">
+     <string>Tool</string>
+    </property>
+    <addaction name="actionReset_Params"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTool"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSave_PCD">
+   <property name="text">
+    <string>Save PCD...</string>
+   </property>
+  </action>
+  <action name="actionReset_Params">
+   <property name="text">
+    <string>Reset Params</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

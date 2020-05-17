@@ -73,9 +73,11 @@ qvtk::~qvtk()
   viewer->close();
 }
 
-inline bool qvtk::vtkRemovePointCloud(QString cloud_name)
+bool qvtk::vtkRemovePointCloud(QString cloud_name, bool all)
 {
-  return viewer->removePointCloud(cloud_name.toStdString().c_str());
+  if(!all)
+    return viewer->removePointCloud(cloud_name.toStdString().c_str());
+  else return viewer->removeAllPointClouds();
 }
 
 //===================================================

@@ -53,15 +53,15 @@
    ├─ add pointcloud display
    ├─ display config - colour visable size
 
-* qpcl<doing>
+* qpcl<done>
    ├─ pointcloud preprocess<done>
    ├─ keypoint extract<done>
    ├─ segmentation<done>
    ├─ normal estimation<done>
    ├─ feature compute<done>
    ├─ surface reconstruct<done>
-   ├─ feature match
-   ├─ object detection
+   ├─ feature match<done>
+   ├─ object detection<done>
 
 * system
    ├─ pointcloud interface

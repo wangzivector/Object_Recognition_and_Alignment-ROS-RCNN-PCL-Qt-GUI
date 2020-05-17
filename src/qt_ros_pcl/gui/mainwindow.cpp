@@ -41,20 +41,18 @@ void MainWindow::on_pushButton_pc_clicked()
   /// pcd read check
   addTextBrowser("start to read text ..");
   QString path_read =
-      "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/world/world3.pcd";
+      "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/model/"+ ui->comboBox_mo->currentText() +".pcd";
   std::cout << "start read test ...\n";
   PointCloud::Ptr cloud = PointCloud::Ptr(new PointCloud());
   if (ObjectRecognition->pcdRead(path_read.toStdString().c_str(),
-                                 ObjectRecognition->cloud))
+                                 ObjectRecognition->cloud_world))
   {
-    std::cout << "read finished start to show ...";
-    if (qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud, "cloud_read"))
-      std::cout << "show finished \n";
+       addTextBrowser("finish read pcd from " + path_read + "showing it ...");
+    if (qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_read"))
+     addTextBrowser("qvtkWidgetObj show finished ");
   }
   else
-    std::cout << "read failed from : " << path_read.toStdString().c_str()
-              << std::endl;
-  addTextBrowser("finish read pcd from " + path_read);
+    addTextBrowser("read failed from : " + path_read);
 }
 
 //===================================================
@@ -74,6 +72,7 @@ void MainWindow::on_tabWidget_tabBarClicked(int index)
 
 //===================================================
 //  on_pushButton_ex_clicked
+//  eaxample of pointcloud
 //===================================================
 void MainWindow::on_pushButton_ex_clicked()
 {
@@ -94,14 +93,64 @@ void MainWindow::addTextBrowser(QString text)
   ui->textBrowser->moveCursor(ui->textBrowser->textCursor().End);
 }
 
+void MainWindow::reloadParamWidget()
+{
+  //
+  // change the widget saved values.
+  //
+}
+
 void MainWindow::on_pushButton_co_clicked()
 {
-  std::cout << "start to read pcd ..." << std::endl;
-  ObjectRecognition->pcdRead("/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/world/world3.pcd", ObjectRecognition->cloud);
-  ObjectRecognition->gridFilter(ObjectRecognition->cloud, ObjectRecognition->cloud, 0.02f);
-  std::cout << "start to compute reconstruction ..." << std::endl;
+  if (ObjectRecognition->cloud_world->size() == 0)
+  {
+    addTextBrowser("start to read pcd ...");
+    ObjectRecognition->pcdRead(
+        "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/world/world3.pcd",
+        ObjectRecognition->cloud_world);
+  }
+  ObjectRecognition->gridFilter(ObjectRecognition->cloud_world,
+                                ObjectRecognition->cloud_world, 0.004f);
+ addTextBrowser("start to compute reconstruction ...");
   ObjectRecognition->checkReconstruction();
-  std::cout << "finish compute, start to visualize .." << std::endl;
+  addTextBrowser("finish compute, start to visualize ..");
   qvtkWidgetObj->showPointNormal(ObjectRecognition->cloud_pointRGBNormal,
                                  "reconstruction");
+}
+
+void MainWindow::on_pushButton_lo_clicked()
+{
+  if (ObjectRecognition->loadIni())
+    addTextBrowser("Params loaded successivefully.");
+  reloadParamWidget();
+}
+
+void MainWindow::on_pushButton_sa_clicked()
+{
+  if (ObjectRecognition->saveIni())
+    addTextBrowser("Params saved successivefully.");
+}
+
+void MainWindow::on_actionReset_Params_triggered()
+{
+  if (ObjectRecognition->loadIni())
+    addTextBrowser("base Params loaded successivefully.");
+  reloadParamWidget();
+}
+
+void MainWindow::on_comboBox_wo_currentIndexChanged(const QString& arg1)
+{
+  QString path =
+      "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/world/" + arg1 + ".pcd";
+  if (ObjectRecognition->pcdRead(path.toStdString().c_str(),
+                                 ObjectRecognition->cloud_world))
+   addTextBrowser("finished load pcd " + arg1);
+  else
+    addTextBrowser("failed load pcd " + path);
+  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_world");
+}
+
+void MainWindow::on_pushButton_cl_clicked()
+{
+    qvtkWidgetObj->vtkRemovePointCloud("all", true);
 }

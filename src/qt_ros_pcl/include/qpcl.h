@@ -37,6 +37,12 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/surface/mls.h>
 
+/// registraction
+#include <pcl/registration/ia_ransac.h>
+#include <pcl/registration/icp.h>
+#include <pcl/registration/ndt.h>
+#include <pcl/registration/sample_consensus_prerejective.h>
+
 typedef pcl::PointXYZRGB PointType;                ///接收点云的格式
 typedef pcl::Normal NormalType;                    ///点云法向量格式
 typedef pcl::PointXYZRGBNormal PointRGBNormalType; /// resonstruction
@@ -68,7 +74,7 @@ public:
                    double threshold_plane = 0.008, bool keep_organized = false);
   bool outlierFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_outlier,
                      int outlier_meanK = 30, double outlier_Thresh = 0.1);
-  bool backgroundFilter(PointCloud::Ptr cloud_g, PointCloud::Ptr cloud_extract,
+  bool backgroundFilter(PointCloud::Ptr cloud_g, PointCloud::Ptr cloud_i,
                         PointCloud::Ptr cloud_extract, int noise_filter = 1,
                         double resolution = 0.015);
   //
@@ -117,6 +123,40 @@ public:
                      double descr_rad_1344 = 0.03);
   bool fpfhEstimation(PointCloud::Ptr cloud, NormalCloud::Ptr cloud_normal,
                       DescriptorCloudFPFH::Ptr cloud_descriptors_FPFH);
+  //
+  // registration
+  //
+  Eigen::Matrix4f RANSACRegistration(
+      PointCloud::Ptr source_cloud_keypoint,
+      DescriptorCloudFPFH::Ptr source_descriptors_FPFH,
+      PointCloud::Ptr target_cloud_kepoint,
+      DescriptorCloudFPFH::Ptr target_descriptors_FPFH,
+      PointCloud::Ptr cloud_aligned, int max_iterations = 200,
+      int number_samples = 20, int randomness = 10, float similar_thre = 0.9f,
+      double max_corr_distance = 0.015, float min_sample_distance = 0.25);
+
+  Eigen::Matrix4f NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
+                                  PointCloud::Ptr target_cloud_keypoint,
+                                  PointCloud::Ptr cloud_aligned,
+                                  double ndt_transepsilon = 0.001,
+                                  double ndt_stepsize = 0.1,
+                                  float ndt_resolution = 1,
+                                  int ndt_maxiteration = 20);
+  Eigen::Matrix4f
+  SACIARegistration(PointCloud::Ptr source_cloud,
+                    DescriptorCloudFPFH::Ptr source_descriptor_fpfh,
+                    PointCloud::Ptr target_cloud,
+                    DescriptorCloudFPFH::Ptr target_descriptor_fpfh,
+                    PointCloud::Ptr cloud_aligned, int number_samples = 20,
+                    int randomness = 10, float min_sample_distance = 0.25,
+                    double max_correspondence_distance = 0.015,
+                    int max_iterations = 200);
+
+  Eigen::Matrix4f
+  ICPRegistration(PointCloud::Ptr source_cloud, PointCloud::Ptr target_cloud,
+                  PointCloud::Ptr cloud_icped, double max_corr_distance = 0.08,
+                  int max_iter_icp = 100000, double transformation = 1,
+                  double euclidean_Fitness = 0.001);
 };
 
 #endif // QPCL_H

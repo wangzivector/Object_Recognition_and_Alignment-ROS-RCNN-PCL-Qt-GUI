@@ -33,6 +33,21 @@ public:
 //  pcd_io* pcd_ioObj;
 
 private slots:
+  void on_pushButton_cl_clicked();
+
+private slots:
+  void on_comboBox_wo_currentIndexChanged(const QString &arg1);
+
+private slots:
+  void on_actionReset_Params_triggered();
+
+private slots:
+  void on_pushButton_sa_clicked();
+
+private slots:
+  void on_pushButton_lo_clicked();
+
+private slots:
   void on_pushButton_co_clicked();
 
 private slots:
@@ -43,6 +58,7 @@ private slots:
 
 private:
   void addTextBrowser(QString text);
+  void reloadParamWidget();
   qvtk* qvtkWidgetObj;
   Ui::MainWindow *ui;
 };
