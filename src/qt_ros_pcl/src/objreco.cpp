@@ -11,7 +11,19 @@
 ObjReco::ObjReco()
 {
   cloud_world = PointCloud::Ptr(new PointCloud());
+  cloud_world_filter = PointCloud::Ptr(new PointCloud());
+
+  cloud_object = PointCloud::Ptr(new PointCloud());
+  cloud_object_filter = PointCloud::Ptr(new PointCloud());
+
+  cloud_descr_shot352 =
+      DescriptorCloudShot352::Ptr(new DescriptorCloudShot352());
+  cloud_descr_shot1344 =
+      DescriptorCloudShot1344::Ptr(new DescriptorCloudShot1344());
+  cloud_descr_fpfh = DescriptorCloudFPFH::Ptr(new DescriptorCloudFPFH());
+
   cloud_pointRGBNormal = PointRGBNormalCloud::Ptr(new PointRGBNormalCloud());
+
   //
   // filters param
   //
@@ -20,7 +32,7 @@ ObjReco::ObjReco()
   planeFilter_threshold_plane = 0.008;
   outlierFilter_outlier_meanK = 30;
   outlierFilter_outlier_Thresh = 0.1;
-  outlierFilter_noise_filter = 1;
+  backgroundFilter_noise_filter = 1;
   backgroundFilter_resolution = 0.015;
 
   /// param keypoints
@@ -78,6 +90,84 @@ bool ObjReco::checkReconstruction()
   return mlsReconstruction(cloud_world, cloud_pointRGBNormal, 0.1);
 }
 
+void ObjReco::reAxisFilter(bool is_do)
+{
+  if (is_do)
+    axisFilter(cloud_world_filter, cloud_world_filter, axisFilter_axis_size,
+               false);
+  else
+    return;
+}
+
+void ObjReco::reGridFilter(bool is_do)
+{
+  if (is_do)
+    gridFilter(cloud_world_filter, cloud_world_filter, gridFilter_grid_size);
+  else
+    return;
+}
+
+void ObjReco::rePlaneFilter(bool is_do)
+{
+  if (is_do)
+    planeFilter(cloud_world_filter, cloud_world_filter,
+                planeFilter_threshold_plane, false);
+  else
+    return;
+}
+
+void ObjReco::reOutlierFilter(bool is_do)
+{
+  if (is_do)
+    outlierFilter(cloud_world_filter, cloud_world_filter,
+                  outlierFilter_outlier_meanK, outlierFilter_outlier_Thresh);
+  else
+    return;
+}
+
+void ObjReco::reBackGroundFilter(bool is_do)
+{
+  if (is_do)
+    //    backgroundFilter(cloud_world_filter, cloud_ground,
+    //    cloud_world_filter, backgroundFilter_noise_filter,
+    //    backgroundFilter_resolution);
+    //  else
+    return;
+}
+
+void ObjReco::reKeypoint(bool is_do)
+{
+  if (is_do)
+  {
+    pcl::PointCloud<int>::Ptr indies_int =
+        pcl::PointCloud<int>::Ptr(new pcl::PointCloud<int>());
+    downSample(cloud_world_filter, indies_int, downSample_sample_radius);
+    pcl::copyPointCloud(*cloud_world_filter, indies_int->points,
+                        *cloud_world_filter);
+  }
+  else
+    return;
+}
+
+bool ObjReco::pcdReadWorld(std::string path)
+{
+  bool isit = pcdRead(path, cloud_world);
+  pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
+  return isit;
+}
+
+bool ObjReco::pcdReadModel(std::string path)
+{
+  bool isit = pcdRead(path, cloud_object);
+  pcl::copyPointCloud(*cloud_object, *cloud_object_filter);
+  return isit;
+}
+
+void ObjReco::reloadPointCloud()
+{
+  pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
+  pcl::copyPointCloud(*cloud_object, *cloud_object_filter);
+}
 //===================================================
 //  saveIni
 //  save the param of obj reco tasks
@@ -95,7 +185,8 @@ bool ObjReco::saveIni()
   Inifile->setValue("outlierFilter_outlier_meanK", outlierFilter_outlier_meanK);
   Inifile->setValue("outlierFilter_outlier_Thresh",
                     outlierFilter_outlier_Thresh);
-  Inifile->setValue("outlierFilter_noise_filter", outlierFilter_noise_filter);
+  Inifile->setValue("outlierFilter_noise_filter",
+                    backgroundFilter_noise_filter);
   Inifile->setValue("backgroundFilter_resolution", backgroundFilter_resolution);
 
   /// param keypoints
@@ -174,7 +265,7 @@ bool ObjReco::loadIni(bool reset)
       Inifile->value("outlierFilter_outlier_meanK").toInt();
   outlierFilter_outlier_Thresh =
       Inifile->value("outlierFilter_outlier_Thresh").toDouble();
-  outlierFilter_noise_filter =
+  backgroundFilter_noise_filter =
       Inifile->value("outlierFilter_noise_filter").toInt();
   backgroundFilter_resolution =
       Inifile->value("backgroundFilter_resolution").toDouble();

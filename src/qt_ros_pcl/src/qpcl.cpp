@@ -80,22 +80,23 @@ bool qpcl::planeFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_extract,
   seg_plane.setModelType(pcl::SACMODEL_PLANE);
   seg_plane.setMethodType(pcl::SAC_RANSAC);
   seg_plane.setMaxIterations(1000);
-  extract_planes.setNegative(
-      true); /// Extract the found plane to remove the table
+  extract_planes.setNegative(true);
+  /// Extract the found plane to remove the table
   pcl::ModelCoefficients
       coefficients_plane; /// construct coefficients for plane
-  pcl::PointIndices
-      inliers_plane; /// constructor for point found as part of surface
+  pcl::PointIndices::Ptr inliers_plane =
+      pcl::PointIndices::Ptr(new pcl::PointIndices);
+  /// constructor for point found as part of surface
 
   /// set maximal distance from point to surface to be identified as plane
   seg_plane.setDistanceThreshold(threshold_plane);
   /// maybe should set as the cloud_r with the remove part to keep mess
   seg_plane.setInputCloud(cloud);
-  seg_plane.segment(inliers_plane, coefficients_plane);
+  seg_plane.segment(*inliers_plane, coefficients_plane);
 
   /// remove plane from point cloud
   extract_planes.setInputCloud(cloud);
-  extract_planes.setIndices(pcl::PointIndices::Ptr(&inliers_plane));
+  extract_planes.setIndices((inliers_plane));
   extract_planes.setKeepOrganized(keep_organized);
 
   extract_planes.filter(*cloud_extract);
@@ -455,8 +456,8 @@ qpcl::RANSACRegistration(PointCloud::Ptr source_cloud_keypoint,
 Eigen::Matrix4f qpcl::NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
                                       PointCloud::Ptr target_cloud_keypoint,
                                       PointCloud::Ptr cloud_aligned,
-                                      double ndt_transepsilon, double ndt_stepsize,
-                                      float ndt_resolution,
+                                      double ndt_transepsilon,
+                                      double ndt_stepsize, float ndt_resolution,
                                       int ndt_maxiteration)
 {
   cout << "start NDTRegistration ..." << endl;

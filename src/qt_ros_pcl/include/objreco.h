@@ -23,6 +23,30 @@ public:
   bool checkReconstruction();
   bool saveIni();
   bool loadIni(bool reset = false);
+  bool pcdReadModel(std::string path);
+  bool pcdReadWorld(std::string path);
+  void reloadPointCloud();
+
+  void reAxisFilter(bool is_do);
+  void reGridFilter(bool is_do);
+  void rePlaneFilter(bool is_do);
+  void reOutlierFilter(bool is_do);
+  void reBackGroundFilter(bool is_do);
+  void reKeypoint(bool is_do);
+
+
+  /// pointcloud
+  PointCloud::Ptr cloud_world;
+  PointCloud::Ptr cloud_world_filter;
+
+  PointCloud::Ptr cloud_object;
+  PointCloud::Ptr cloud_object_filter;
+
+  DescriptorCloudShot352::Ptr cloud_descr_shot352;
+  DescriptorCloudShot1344::Ptr cloud_descr_shot1344;
+  DescriptorCloudFPFH::Ptr cloud_descr_fpfh;
+
+  PointRGBNormalCloud::Ptr cloud_pointRGBNormal;
 
   /// param filters
   float axisFilter_axis_size;
@@ -30,7 +54,7 @@ public:
   double planeFilter_threshold_plane;
   int outlierFilter_outlier_meanK;
   double outlierFilter_outlier_Thresh;
-  int outlierFilter_noise_filter;
+  int backgroundFilter_noise_filter;
   double backgroundFilter_resolution;
 
   /// param keypoints
@@ -73,9 +97,6 @@ public:
   double ICP_transformation;
   double ICP_euclidean_Fitness;
 
-  /// pointcloud
-  PointCloud::Ptr cloud_world;
-  PointRGBNormalCloud::Ptr cloud_pointRGBNormal;
 };
 
 #endif // OBJRECO_H
