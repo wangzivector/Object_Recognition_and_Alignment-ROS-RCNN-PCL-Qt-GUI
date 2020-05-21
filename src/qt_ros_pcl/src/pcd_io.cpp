@@ -147,6 +147,26 @@ PointCloud::Ptr pcd_io::PCL_Conversion(const rs2::points& points,
   return cloud; /// PCL RGB Point Cloud generated
 }
 
+bool pcd_io::copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in, PointCloud::Ptr cloud_out)
+{
+  cloud_out->points.resize(cloud_in->size());
+  std::cout << "start copyPointRGBNormalToPointRGB" << std::endl;
+  for (size_t i = 0; i < cloud_in->points.size(); i++) {
+      cloud_out->points[i].x = cloud_in->points[i].x;
+      cloud_out->points[i].y = cloud_in->points[i].y;
+      cloud_out->points[i].z = cloud_in->points[i].z;
+      cloud_out->points[i].r = cloud_in->points[i].r;
+      cloud_out->points[i].g = cloud_in->points[i].g;
+      cloud_out->points[i].b = cloud_in->points[i].b;
+  }
+   cloud_out->width = cloud_in->width;
+   cloud_out->height = cloud_in->height;
+   std::cout << "done copyPointRGBNormalToPointRGB : " << cloud_out->size()
+             << "  width/height :" << cloud_out->width << cloud_out->height << std::endl;
+  return true;
+}
+
+
 //======================================================
 // RGB Texture
 // - Function is utilized to extract the RGB data from

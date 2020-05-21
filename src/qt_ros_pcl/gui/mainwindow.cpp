@@ -22,7 +22,9 @@ MainWindow::MainWindow(QWidget* parent)
   ObjectRecognition->loadIni();
   reloadParamWidget();
   ui->verticalLayout->addWidget(qvtkWidgetObj);
-  //  qvtkWidgetObj->addPointCloudExample();
+  table = new QStandardItemModel();
+  ui->tableView_si->setModel(table);
+  tableDisplay();
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -43,8 +45,8 @@ void MainWindow::on_pushButton_pc_clicked()
   if (ObjectRecognition->pcdReadModel(path_read.toStdString().c_str()))
   {
     addTextBrowser("finish read pcd from " + path_read + "showing it ...");
-    if (qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world,
-                                      "cloud_model"))
+    if (qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object,
+                                      "cloud_object"))
       addTextBrowser("qvtkWidgetObj show finished ");
   }
   else
@@ -62,10 +64,10 @@ void MainWindow::on_pushButton_quit_clicked() { this->~MainWindow(); }
 //===================================================
 void MainWindow::on_pushButton_ex_clicked()
 {
-  QPixmap ico(":/image/icon.jpg");
-  QPixmap scaledPixmap = ico.scaled(100, 100, Qt::KeepAspectRatio);
-  ui->label_pic->setScaledContents(true);
-  ui->label_pic->setPixmap(scaledPixmap);
+//  QPixmap ico(":/image/icon.jpg");
+//  QPixmap scaledPixmap = ico.scaled(100, 100, Qt::KeepAspectRatio);
+//  ui->label_pic->setScaledContents(true);
+//  ui->label_pic->setPixmap(scaledPixmap);
   qvtkWidgetObj->addPointCloudExample();
   addTextBrowser("example show complished.");
 }
@@ -136,17 +138,19 @@ void MainWindow::on_pushButton_co_clicked()
   if (ObjectRecognition->cloud_world->size() == 0)
   {
     addTextBrowser("start to read pcd ...");
-    ObjectRecognition->pcdReadWorld(
-        "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/world/world3.pcd");
+    QString path = "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/model/" +
+                   ui->comboBox_mo->currentText() + ".pcd";
+    ObjectRecognition->pcdReadModel(path.toStdString().c_str());
   }
-  ObjectRecognition->gridFilter(
-      ObjectRecognition->cloud_world, ObjectRecognition->cloud_world,
-      ObjectRecognition->mlsReconstruction_search_radius);
+  //  ObjectRecognition->gridFilter(
+  //      ObjectRecognition->cloud_world_filter,
+  //      ObjectRecognition->cloud_world_filter,
+  //      ObjectRecognition->gridFilter_grid_size);
   addTextBrowser("start to compute reconstruction ...");
   ObjectRecognition->checkReconstruction();
-  addTextBrowser("finish compute, start to visualize ..");
-  qvtkWidgetObj->showPointNormal(ObjectRecognition->cloud_pointRGBNormal,
-                                 "reconstruction");
+  addTextBrowser("finish compute checkReconstruction ");
+
+  refreshPloudCloudVTK();
 }
 
 void MainWindow::on_pushButton_lo_clicked()
@@ -197,6 +201,7 @@ void MainWindow::on_comboBox_wo_currentIndexChanged(const QString& arg1)
 void MainWindow::on_pushButton_cl_clicked()
 {
   qvtkWidgetObj->vtkRemovePointCloud("all", true);
+  qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_shot352_world);
 }
 
 void MainWindow::on_spinBox_filter1_valueChanged(double arg1)
@@ -472,41 +477,93 @@ void MainWindow::on_spinBox_sac_9_valueChanged(double arg1)
 
 void MainWindow::on_pushButton_pr_clicked()
 {
+  ObjectRecognition->deal_world = ui->checkBox_dealw->isChecked();
+  ObjectRecognition->deal_object = ui->checkBox_dealo->isChecked();
   if (ObjectRecognition->cloud_world->size() == 0)
   {
-    addTextBrowser("no pointcloud yet, add world2.pcd into world pointcloud.");
-    on_comboBox_wo_currentIndexChanged("world2");
+    addTextBrowser("no pointcloud yet, add .pcd into world pointcloud.");
+    on_comboBox_wo_currentIndexChanged(ui->comboBox_wo->currentText());
   }
-  else ObjectRecognition->reloadPointCloud();
-  addTextBrowser(
-      "world pointcloud size() = " +
-      QString::number(ObjectRecognition->cloud_world->size()));
+  if (ObjectRecognition->cloud_object->size() == 0)
+  {
+    addTextBrowser("no pointcloud yet, add .pcd into object pointcloud.");
+    on_comboBox_mo_currentIndexChanged(ui->comboBox_mo->currentText());
+  }
+  ObjectRecognition->reloadPointCloud(ObjectRecognition->deal_world,ObjectRecognition->deal_object);
+  addTextBrowser("current pointcloud : " +
+                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+                 QString::number(ObjectRecognition->cloud_world_filter->height));
+  addTextBrowser("world pointcloud size() = " +
+                 QString::number(ObjectRecognition->cloud_world_filter->size()));
   ObjectRecognition->reAxisFilter(ui->Axisfilter->isChecked());
-  if(ui->Axisfilter->isChecked()) addTextBrowser(
-      "Axisfilter finished.  size() = " +
-      QString::number(ObjectRecognition->cloud_world_filter->size()));
+  if (ui->Axisfilter->isChecked())
+    addTextBrowser(
+        "Axisfilter finished.  size() = " +
+        QString::number(ObjectRecognition->cloud_world_filter->size()));
+
+  addTextBrowser("current pointcloud : " +
+                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+                 QString::number(ObjectRecognition->cloud_world_filter->height));
+
   ObjectRecognition->reGridFilter(ui->Gridfilter->isChecked());
-  if(ui->Gridfilter->isChecked()) addTextBrowser(
-      "Gridfilter finished.  size() = " +
-      QString::number(ObjectRecognition->cloud_world_filter->size()));
+  if (ui->Gridfilter->isChecked())
+    addTextBrowser(
+        "Gridfilter finished.  size() = " +
+        QString::number(ObjectRecognition->cloud_world_filter->size()));
+
+  addTextBrowser("current pointcloud : " +
+                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+                 QString::number(ObjectRecognition->cloud_world_filter->height));
+
   ObjectRecognition->rePlaneFilter(ui->Planefilter->isChecked());
-  if(ui->Planefilter->isChecked()) addTextBrowser(
-      "Planefilter finished. size() = " +
-      QString::number(ObjectRecognition->cloud_world_filter->size()));
+  if (ui->Planefilter->isChecked())
+    addTextBrowser(
+        "Planefilter finished. size() = " +
+        QString::number(ObjectRecognition->cloud_world_filter->size()));
+
+  addTextBrowser("current pointcloud : " +
+                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+                 QString::number(ObjectRecognition->cloud_world_filter->height));
   ObjectRecognition->reOutlierFilter(ui->Outlierfilter->isChecked());
-  if(ui->Outlierfilter->isChecked()) addTextBrowser(
-      "Outlierfilter finished. size() = " +
-      QString::number(ObjectRecognition->cloud_world_filter->size()));
-  ObjectRecognition->reBackGroundFilter(ui->Background->isChecked());
-  if(ui->Background->isChecked()) addTextBrowser(
-      "Background finished.  size() = " +
-      QString::number(ObjectRecognition->cloud_world_filter->size()));
+
+  if (ui->Outlierfilter->isChecked())
+    addTextBrowser(
+        "Outlierfilter finished. size() = " +
+        QString::number(ObjectRecognition->cloud_world_filter->size()));
+
+  addTextBrowser("current pointcloud : " +
+                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+                 QString::number(ObjectRecognition->cloud_world_filter->height));
+
+  ObjectRecognition->reMlsRecoonstruction(ui->Reconstruction->isChecked());
+  if (ui->Reconstruction->isChecked())
+    addTextBrowser(
+        "Reconstruction finished.  size() = " +
+        QString::number(ObjectRecognition->cloud_world_filter->size()));
+
+  addTextBrowser("current pointcloud : " +
+                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+                 QString::number(ObjectRecognition->cloud_world_filter->height));
+
   ObjectRecognition->reKeypoint(ui->Keypoint->isChecked());
-  if(ui->Keypoint->isChecked()) addTextBrowser(
-      "Keypoint finished.  size() = " +
-      QString::number(ObjectRecognition->cloud_world_filter->size()));
+  if (ui->Keypoint->isChecked())
+    addTextBrowser(
+        "Keypoint finished.  size() = " +
+        QString::number(ObjectRecognition->cloud_world_keypoint->size()));
+
+  addTextBrowser("current pointcloud : " +
+                 QString::number(ObjectRecognition->cloud_world_keypoint->width) + "/" +
+                 QString::number(ObjectRecognition->cloud_world_keypoint->height));
+
   addTextBrowser("\n ### Filters finished. ### \n");
+  addTextBrowser(
+      " world  size = " +
+      QString::number(ObjectRecognition->cloud_world_filter->size()));
+  addTextBrowser(
+      " object size = " +
+      QString::number(ObjectRecognition->cloud_object_filter->size()));
   refreshPloudCloudVTK();
+  tableDisplay();
 }
 
 void MainWindow::refreshPloudCloudVTK()
@@ -518,16 +575,86 @@ void MainWindow::refreshPloudCloudVTK()
   if (ui->checkBox_wk->isChecked())
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world_filter,
                                   "cloud_world_filter");
+  if (ui->checkBox_wr->isChecked())
+    qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world_keypoint,
+                                  "cloud_world_result");
+
   if (ui->checkBox_oc->isChecked())
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object,
                                   "cloud_object");
   if (ui->checkBox_ok->isChecked())
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object_filter,
                                   "cloud_object_filter");
+  if (ui->checkBox_or->isChecked())
+    qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object_keypoint,
+                                  "cloud_object_keypoint");
   addTextBrowser("refresh the pointcloud display done.");
 }
 
-void MainWindow::on_pushButton_di_clicked()
+void MainWindow::on_pushButton_di_clicked() { refreshPloudCloudVTK(); }
+
+void MainWindow::on_checkBox_dealw_clicked(bool checked)
 {
-    refreshPloudCloudVTK();
+  ObjectRecognition->deal_world = checked;
+  addTextBrowser("world state changed : " + QString::number(checked));
+}
+
+void MainWindow::on_checkBox_dealo_clicked(bool checked)
+{
+  ObjectRecognition->deal_object = checked;
+  addTextBrowser("object state changed : " + QString::number(checked));
+}
+
+void MainWindow::on_comboBox_mo_currentIndexChanged(const QString& arg1)
+{
+  QString path =
+      "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/model/" + arg1 + ".pcd";
+  if (ObjectRecognition->pcdReadModel(path.toStdString().c_str()))
+    addTextBrowser("finished load pcd " + arg1);
+  else
+    addTextBrowser("failed load pcd " + path);
+  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object,
+                                "cloud_object");
+}
+
+void MainWindow::on_pushButton_fe_clicked()
+{
+  if (!ObjectRecognition->deal_process)
+  {
+    addTextBrowser("not correct keypoints yet!");
+    return;
+  }
+  if (ui->feature->isChecked())
+    switch (ui->feature_choose->currentIndex())
+    {
+    case 0:
+      addTextBrowser("start shot352...");
+      ObjectRecognition->reSHOT352(true);
+      addTextBrowser("shot352 process done .");
+      break;
+
+    default:
+      addTextBrowser("wrong chose in feature choose box.");
+    }
+  else
+    addTextBrowser("didnt tick feature checkbox yet.");
+}
+
+
+void MainWindow::tableDisplay()
+{
+  table->setColumnCount(3);
+  table->setRowCount(5);
+
+  table->setItem(0, 1,  new QStandardItem ("world"));
+  table->setItem(0, 2,  new QStandardItem ("object"));
+  table->setItem(1, 0,  new QStandardItem ("cloud"));
+  table->setItem(2, 0,  new QStandardItem ("filter"));
+  table->setItem(3, 0,  new QStandardItem ("keypoint"));
+  table->setItem(1, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_world->size())).c_str()));
+  table->setItem(2, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_world_filter->size())).c_str()));
+  table->setItem(3, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_world_keypoint->size())).c_str()));
+  table->setItem(1, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_object->size())).c_str()));
+  table->setItem(2, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_object_filter->size())).c_str()));
+  table->setItem(3, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_object_keypoint->size())).c_str()));
 }

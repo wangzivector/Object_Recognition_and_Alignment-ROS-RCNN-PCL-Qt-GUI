@@ -13,6 +13,10 @@
 #include "qvtk.h"
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QTableView>
+#include <QStandardItemModel>
+
+
 //#include "pcd_io.h"
 //#include "qpcl.h"
 
@@ -29,17 +33,15 @@ public:
   explicit MainWindow(QWidget* parent = nullptr);
   ~MainWindow();
   void refreshPloudCloudVTK();
-
+  void tableDisplay();
   /// ros pointer for publish msg
   qros* qrosObj;
   ObjReco* ObjectRecognition;
+  QStandardItemModel* table;
   //  pcd_io* pcd_ioObj;
 
-private slots:
-  void on_pushButton_di_clicked();
 
 private slots:
-  void on_pushButton_pr_clicked();
 
   void on_spinBox_sac_1_valueChanged(int arg1);
   void on_spinBox_sac_2_valueChanged(int arg1);
@@ -81,14 +83,21 @@ private slots:
   void on_spinBox_filter1_valueChanged(double arg1);
 
   void on_comboBox_wo_currentIndexChanged(const QString& arg1);
+  void on_comboBox_mo_currentIndexChanged(const QString &arg1);
+  void on_checkBox_dealw_clicked(bool checked);
+  void on_checkBox_dealo_clicked(bool checked);
+
+  void on_pushButton_fe_clicked();
+  void on_pushButton_di_clicked();
+  void on_pushButton_pr_clicked();
   void on_pushButton_cl_clicked();
-  void on_actionReset_Params_triggered();
   void on_pushButton_sa_clicked();
   void on_pushButton_lo_clicked();
   void on_pushButton_co_clicked();
   void on_pushButton_ex_clicked();
   void on_pushButton_quit_clicked();
   void on_pushButton_pc_clicked();
+  void on_actionReset_Params_triggered();
 
 private:
   void addTextBrowser(QString text);

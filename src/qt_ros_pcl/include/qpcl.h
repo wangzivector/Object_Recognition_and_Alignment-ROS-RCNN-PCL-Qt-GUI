@@ -67,11 +67,11 @@ public:
   // filters
   //
   bool axisFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_axis,
-                  const float axis_size = 0.2f, bool keep_organized = false);
+                  const float axis_size = 0.2f, bool keep_organized = true);
   bool gridFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_grid,
                   float grid_size = 0.002f);
   bool planeFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_extract,
-                   double threshold_plane = 0.008, bool keep_organized = false);
+                   double threshold_plane = 0.008, bool keep_organized = true);
   bool outlierFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_outlier,
                      int outlier_meanK = 30, double outlier_Thresh = 0.1);
   bool backgroundFilter(PointCloud::Ptr cloud_g, PointCloud::Ptr cloud_i,

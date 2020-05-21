@@ -17,6 +17,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/pcl_plotter.h>
+#include <pcl/visualization/histogram_visualizer.h>
 
 /// Visualization Toolkit (VTK)
 #include <vtkRenderWindow.h>
@@ -39,6 +41,7 @@ public:
 
   /// an example for show QVTKWidget works with pcl and qt.
   void addPointCloudExample();
+  void addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_sho352);
 
   bool
   setPointCloudProperties(pcl::visualization::RenderingProperties property_name,
@@ -81,6 +84,8 @@ public:
       this->update();
     else if (vtkAddPointCloud(pointcloud, cloud_name))
       this->update();
+    setPointCloudProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3,
+                            cloud_name);
     return true;
   }
 

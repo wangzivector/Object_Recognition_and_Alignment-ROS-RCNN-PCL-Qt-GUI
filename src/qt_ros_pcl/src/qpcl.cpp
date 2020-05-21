@@ -288,12 +288,12 @@ bool qpcl::normalEstimation(PointCloud::Ptr cloud,
 {
 
   pcl::NormalEstimationOMP<PointType, NormalType> norm_est_cloud;
-  pcl::search::KdTree<PointType> tree;
-  norm_est_cloud.setSearchMethod(pcl::search::KdTree<PointType>::Ptr(&tree));
+  norm_est_cloud.setInputCloud(cloud);
+  pcl::search::KdTree<PointType>::Ptr tree (new pcl::search::KdTree<PointType> ());;
+  norm_est_cloud.setSearchMethod(tree);
   // norm_est_cloud.setRadiusSearch (0.03);
   norm_est_cloud.setKSearch(8); // maybe this can be adjust 10
   norm_est_cloud.setNumberOfThreads(4);
-  norm_est_cloud.setInputCloud(cloud);
   // norm_est_cloud.setInputCloud (cloud_keypoints);
   norm_est_cloud.compute(*cloud_normal); // compute normals
   return true;
@@ -379,23 +379,29 @@ bool qpcl::mlsReconstruction(PointCloud::Ptr cloud,
 {
   /// Smoothing object (we choose what point types we want as input and output).
   pcl::MovingLeastSquares<PointType, PointRGBNormalType> filter_re;
+  std::cout << "origin size of cloud :" << cloud->size() << std::endl;
+  std::vector<int> mapping;
+  pcl::removeNaNFromPointCloud(*cloud, *cloud, mapping);
   filter_re.setInputCloud(cloud);
   /// Use all neighbors in a radius of 3cm.
   filter_re.setSearchRadius(search_radius);
+  filter_re.setPolynomialOrder(2); /// MLS拟合曲线的阶数，这个阶数在构造函数里默认是2
   /// If true, the surface and normal are approximated using a polynomial
   /// estimation (if false, only a tangent one).
   filter_re.setPolynomialFit(true);
   /// We can tell the algorithm to also compute smoothed normals (optional).
-  filter_re.setComputeNormals(true);
+  filter_re.setComputeNormals(false);
   /// kd-tree object for performing searches.
   pcl::search::KdTree<PointType>::Ptr kdtree;
+  //  (new pcl::search::KdTree<PointType>)
   // or pcl::search::KdTree<PointType>::Ptr kdtree (new
   //    pcl::search::KdTree<pcl::PointXYZ>);
   // or 1. pcl::search::KdTree<PointType> kdtree;
   //    2. pcl::search::KdTree<PointType>::Ptr (&kdtree)
   filter_re.setSearchMethod(kdtree);
-  std::cout << "start ot filter_re.process" << std::endl;
+  std::cout << "start mlsReconstruction process" << std::endl;
   filter_re.process(*cloud_pointRGBNormal);
+  std::cout << "after reconstruction size = " << cloud_pointRGBNormal->size() << std::endl;
   return true;
 }
 

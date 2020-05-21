@@ -18,6 +18,9 @@ typedef pcl::PointXYZRGB PointType;            ///接收点云的格式
 typedef pcl::Normal NormalType;                ///点云法向量格式
 typedef pcl::PointCloud<PointType> PointCloud; ///接收点云的”存储“格式
 typedef pcl::PointCloud<NormalType> NormalCloud; ///接收点云法向量存储格式
+typedef pcl::PointXYZRGBNormal PointRGBNormalType; /// resonstruction
+typedef pcl::PointCloud<PointRGBNormalType> PointRGBNormalCloud;
+
 
 class pcd_io
 {
@@ -25,6 +28,7 @@ public:
   pcd_io();
   bool realsenseInit();
   PointCloud::Ptr readFrameRS();
+  bool copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in, PointCloud::Ptr cloud_out);
   bool pcdRead(std::string path, PointCloud::Ptr);
   bool pcdSave(std::string pcd_path, PointCloud::Ptr cloud);
 

@@ -12,17 +12,33 @@ ObjReco::ObjReco()
 {
   cloud_world = PointCloud::Ptr(new PointCloud());
   cloud_world_filter = PointCloud::Ptr(new PointCloud());
+  cloud_world_keypoint = PointCloud::Ptr(new PointCloud());
+  cloud_world_normal = NormalCloud::Ptr(new NormalCloud());
+  cloud_world_pointRGBNormal =
+      PointRGBNormalCloud::Ptr(new PointRGBNormalCloud());
 
   cloud_object = PointCloud::Ptr(new PointCloud());
   cloud_object_filter = PointCloud::Ptr(new PointCloud());
+  cloud_object_keypoint = PointCloud::Ptr(new PointCloud());
+  cloud_object_normal = NormalCloud::Ptr(new NormalCloud());
+  cloud_object_pointRGBNormal =
+      PointRGBNormalCloud::Ptr(new PointRGBNormalCloud());
 
-  cloud_descr_shot352 =
+  cloud_descr_shot352_world =
       DescriptorCloudShot352::Ptr(new DescriptorCloudShot352());
-  cloud_descr_shot1344 =
+  cloud_descr_shot1344_world =
       DescriptorCloudShot1344::Ptr(new DescriptorCloudShot1344());
-  cloud_descr_fpfh = DescriptorCloudFPFH::Ptr(new DescriptorCloudFPFH());
+  cloud_descr_fpfh_world = DescriptorCloudFPFH::Ptr(new DescriptorCloudFPFH());
 
-  cloud_pointRGBNormal = PointRGBNormalCloud::Ptr(new PointRGBNormalCloud());
+  cloud_descr_shot352_object =
+      DescriptorCloudShot352::Ptr(new DescriptorCloudShot352());
+  cloud_descr_shot1344_object =
+      DescriptorCloudShot1344::Ptr(new DescriptorCloudShot1344());
+  cloud_descr_fpfh_object = DescriptorCloudFPFH::Ptr(new DescriptorCloudFPFH());
+
+  deal_world = false;
+  deal_object = false;
+  deal_process = false;
 
   //
   // filters param
@@ -82,12 +98,25 @@ ObjReco::ObjReco()
 //===================================================
 bool ObjReco::checkReconstruction()
 {
-  if (cloud_world->size() == 0)
+  if (cloud_object_filter->size() == 0)
   {
     std::cout << "processing pointcloud doest be loaded yet.";
     return false;
   }
-  return mlsReconstruction(cloud_world, cloud_pointRGBNormal, 0.1);
+  mlsReconstruction(cloud_object_filter, cloud_object_pointRGBNormal,
+                    mlsReconstruction_search_radius);
+  cloud_object_filter.reset(new PointCloud());
+  std::cout << "before copy cloud_pointRGBNormal : "
+            << cloud_object_pointRGBNormal->size()
+            << "  cloud_object_filter: " << cloud_object_filter->size()
+            << std::endl;
+  copyPointRGBNormalToPointRGB(cloud_object_pointRGBNormal,
+                               cloud_object_filter);
+  std::cout << "after copy cloud_pointRGBNormal : "
+            << cloud_object_pointRGBNormal->size()
+            << "  cloud_object_filter: " << cloud_object_filter->size()
+            << std::endl;
+  return true;
 }
 
 void ObjReco::reAxisFilter(bool is_do)
@@ -101,10 +130,12 @@ void ObjReco::reAxisFilter(bool is_do)
 
 void ObjReco::reGridFilter(bool is_do)
 {
-  if (is_do)
-    gridFilter(cloud_world_filter, cloud_world_filter, gridFilter_grid_size);
-  else
+  if (!is_do)
     return;
+  if (deal_world)
+    gridFilter(cloud_world_filter, cloud_world_filter, gridFilter_grid_size);
+  if (deal_object)
+    gridFilter(cloud_object_filter, cloud_object_filter, gridFilter_grid_size);
 }
 
 void ObjReco::rePlaneFilter(bool is_do)
@@ -135,18 +166,91 @@ void ObjReco::reBackGroundFilter(bool is_do)
     return;
 }
 
-void ObjReco::reKeypoint(bool is_do)
+void ObjReco::reMlsRecoonstruction(bool is_do)
 {
   if (is_do)
   {
-    pcl::PointCloud<int>::Ptr indies_int =
-        pcl::PointCloud<int>::Ptr(new pcl::PointCloud<int>());
-    downSample(cloud_world_filter, indies_int, downSample_sample_radius);
-    pcl::copyPointCloud(*cloud_world_filter, indies_int->points,
-                        *cloud_world_filter);
+    if (deal_world)
+    {
+      mlsReconstruction(cloud_world_filter, cloud_world_pointRGBNormal,
+                        mlsReconstruction_search_radius);
+      cloud_world_filter.reset(new PointCloud());
+      copyPointRGBNormalToPointRGB(cloud_world_pointRGBNormal,
+                                   cloud_world_filter);
+    }
+    if (deal_object)
+    {
+      mlsReconstruction(cloud_object_filter, cloud_object_pointRGBNormal,
+                        mlsReconstruction_search_radius);
+      cloud_object_filter.reset(new PointCloud());
+      copyPointRGBNormalToPointRGB(cloud_object_pointRGBNormal,
+                                   cloud_object_filter);
+    }
+  }
+  return;
+}
+
+void ObjReco::reKeypoint(bool is_do)
+{
+  deal_process = false;
+  if (is_do)
+  {
+    if (deal_world)
+    {
+      pcl::PointCloud<int>::Ptr indies_int =
+          pcl::PointCloud<int>::Ptr(new pcl::PointCloud<int>());
+      downSample(cloud_world_filter, indies_int, downSample_sample_radius);
+      pcl::copyPointCloud(*cloud_world_filter, indies_int->points,
+                          *cloud_world_keypoint);
+    }
+    if (deal_object)
+    {
+      pcl::PointCloud<int>::Ptr indies_into =
+          pcl::PointCloud<int>::Ptr(new pcl::PointCloud<int>());
+      downSample(cloud_object_filter, indies_into, downSample_sample_radius);
+      pcl::copyPointCloud(*cloud_object_filter, indies_into->points,
+                          *cloud_object_keypoint);
+    }
+    if (deal_object && deal_world)
+      deal_process = true;
   }
   else
     return;
+}
+
+bool ObjReco::reNormalEstimation()
+{
+  if (deal_process)
+  {
+    std::cout << "start calculating normal ..." << std::endl;
+    normalEstimation(cloud_world_filter, cloud_world_normal);
+    normalEstimation(cloud_object_filter, cloud_object_normal);
+    std::cout << "finished calculate normal." << std::endl;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool ObjReco::reSHOT352(bool is_do)
+{
+  if (!is_do)
+    return false;
+  if (reNormalEstimation())
+  {
+    std::cout << "start calculating feature 1 ..." << std::endl;
+    shot352Estimation(cloud_world_filter, cloud_world_keypoint,
+                      cloud_world_normal, cloud_descr_shot352_world,
+                      shot352Estimation_descr_rad_352);
+    std::cout << "start calculating feature 2 ..." << std::endl;
+    shot352Estimation(cloud_object_filter, cloud_object_keypoint,
+                      cloud_object_normal, cloud_descr_shot352_object,
+                      shot352Estimation_descr_rad_352);
+    std::cout << "finished feature. " << std::endl;
+    return true;
+  }
+  else
+    return false;
 }
 
 bool ObjReco::pcdReadWorld(std::string path)
@@ -163,11 +267,12 @@ bool ObjReco::pcdReadModel(std::string path)
   return isit;
 }
 
-void ObjReco::reloadPointCloud()
+void ObjReco::reloadPointCloud(bool world, bool object)
 {
-  pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
-  pcl::copyPointCloud(*cloud_object, *cloud_object_filter);
+  if(world) pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
+  if(object) pcl::copyPointCloud(*cloud_object, *cloud_object_filter);
 }
+
 //===================================================
 //  saveIni
 //  save the param of obj reco tasks
@@ -322,7 +427,7 @@ bool ObjReco::loadIni(bool reset)
   ICP_transformation = Inifile->value("ICP_transformation").toDouble();
   ICP_euclidean_Fitness = Inifile->value("ICP_euclidean_Fitness").toDouble();
 
-  std::cout << "ICP_euclidean_Fitness : " << ICP_euclidean_Fitness << std::endl;
+//  std::cout << "ICP_euclidean_Fitness : " << ICP_euclidean_Fitness << std::endl;
   delete Inifile;
   return true;
 }

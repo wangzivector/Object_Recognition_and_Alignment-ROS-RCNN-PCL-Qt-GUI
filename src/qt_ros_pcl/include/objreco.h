@@ -25,28 +25,43 @@ public:
   bool loadIni(bool reset = false);
   bool pcdReadModel(std::string path);
   bool pcdReadWorld(std::string path);
-  void reloadPointCloud();
+  void reloadPointCloud(bool world, bool object);
 
   void reAxisFilter(bool is_do);
   void reGridFilter(bool is_do);
   void rePlaneFilter(bool is_do);
   void reOutlierFilter(bool is_do);
   void reBackGroundFilter(bool is_do);
+  void reMlsRecoonstruction(bool is_do);
   void reKeypoint(bool is_do);
+  bool reNormalEstimation();
+  bool reSHOT352(bool is_do);
 
+  bool deal_world;
+  bool deal_object;
+  bool deal_process;
 
   /// pointcloud
   PointCloud::Ptr cloud_world;
   PointCloud::Ptr cloud_world_filter;
+  PointCloud::Ptr cloud_world_keypoint;
+  NormalCloud::Ptr cloud_world_normal;
+  PointRGBNormalCloud::Ptr cloud_world_pointRGBNormal;
 
   PointCloud::Ptr cloud_object;
   PointCloud::Ptr cloud_object_filter;
+  PointCloud::Ptr cloud_object_keypoint;
+  NormalCloud::Ptr cloud_object_normal;
+  PointRGBNormalCloud::Ptr cloud_object_pointRGBNormal;
 
-  DescriptorCloudShot352::Ptr cloud_descr_shot352;
-  DescriptorCloudShot1344::Ptr cloud_descr_shot1344;
-  DescriptorCloudFPFH::Ptr cloud_descr_fpfh;
+  DescriptorCloudShot352::Ptr cloud_descr_shot352_world;
+  DescriptorCloudShot1344::Ptr cloud_descr_shot1344_world;
+  DescriptorCloudFPFH::Ptr cloud_descr_fpfh_world;
 
-  PointRGBNormalCloud::Ptr cloud_pointRGBNormal;
+  DescriptorCloudShot352::Ptr cloud_descr_shot352_object;
+  DescriptorCloudShot1344::Ptr cloud_descr_shot1344_object;
+  DescriptorCloudFPFH::Ptr cloud_descr_fpfh_object;
+
 
   /// param filters
   float axisFilter_axis_size;

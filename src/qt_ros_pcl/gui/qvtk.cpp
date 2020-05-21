@@ -22,7 +22,7 @@ qvtk::qvtk(QWidget* parent) : QVTKWidget(parent)
       "viewer", false)); // setup viewer for pcl loader
   this->SetRenderWindow(this->viewer->getRenderWindow());
   this->viewer->setupInteractor(this->GetInteractor(), this->GetRenderWindow());
-  this->viewer->setBackgroundColor(0, 0, 0);
+  this->viewer->setBackgroundColor(224, 224, 224);
   this->viewer->addCoordinateSystem();
   //  this->viewer->setCameraPosition(-0.825088, 0.568006, -0.633452, 0.322216,
   //                                  -0.780572, -0.535616);
@@ -108,4 +108,18 @@ bool qvtk::showPointNormal(pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud,
   viewer->removeAllPointClouds();
   viewer->addPointCloudNormals<pcl::PointXYZRGBNormal>(
       cloud, 40, 0.03f, cloud_name.toStdString().c_str(), 0);
+}
+
+
+void qvtk::addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_sho352)
+{
+//  pcl::visualization::PCLPlotter plotter;
+//  plotter.addFeatureHistogram(*descri_sho352, 300);
+//  plotter.plot();
+
+  pcl::visualization::PCLHistogramVisualizer view;
+  view.setBackgroundColor(255,0,0);
+  view.addFeatureHistogram<pcl::SHOT352>(*descri_sho352,"shot",10);
+  view.spinOnce(10000);
+
 }
