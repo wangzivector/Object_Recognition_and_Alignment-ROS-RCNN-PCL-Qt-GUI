@@ -30,27 +30,27 @@ MainWindow::MainWindow(QWidget* parent)
 MainWindow::~MainWindow() { delete ui; }
 
 //===================================================
-//  on_pushButton_pc_clicked
-//  an example for testing pcl and qt vision
-//  update the test process of adding pc.
+//  on_pushButton_sh_clicked
+//  show feature histagrams
 //===================================================
-void MainWindow::on_pushButton_pc_clicked()
+void MainWindow::on_pushButton_sh_clicked()
 {
-  /// pcd read check
-  addTextBrowser("start to read text ..");
-  QString path_read = "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/model/" +
-                      ui->comboBox_mo->currentText() + ".pcd";
-  std::cout << "start read test ...\n";
-  PointCloud::Ptr cloud = PointCloud::Ptr(new PointCloud());
-  if (ObjectRecognition->pcdReadModel(path_read.toStdString().c_str()))
+  switch (ui->feature_choose->currentIndex())
   {
-    addTextBrowser("finish read pcd from " + path_read + "showing it ...");
-    if (qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object,
-                                      "cloud_object"))
-      addTextBrowser("qvtkWidgetObj show finished ");
+  case 0:
+    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_shot352_world, "# world ");
+    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_shot352_object, "# object ");
+    break;
+  case 1:
+    break;
+  case 2:
+    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_fpfh_world, "# world ");
+    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_fpfh_object, "# object ");
+    break;
+
+  default:
+    addTextBrowser("wrong chose in feature choose box.");
   }
-  else
-    addTextBrowser("read failed from : " + path_read);
 }
 
 //===================================================
@@ -201,7 +201,6 @@ void MainWindow::on_comboBox_wo_currentIndexChanged(const QString& arg1)
 void MainWindow::on_pushButton_cl_clicked()
 {
   qvtkWidgetObj->vtkRemovePointCloud("all", true);
-  qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_shot352_world);
 }
 
 void MainWindow::on_spinBox_filter1_valueChanged(double arg1)
@@ -630,7 +629,14 @@ void MainWindow::on_pushButton_fe_clicked()
     case 0:
       addTextBrowser("start shot352...");
       ObjectRecognition->reSHOT352(true);
-      addTextBrowser("shot352 process done .");
+      addTextBrowser("## shot352 process done ##");
+      break;
+    case 1:
+      break;
+    case 2:
+      addTextBrowser("start fpfh...");
+      ObjectRecognition->reFPFH(true);
+      addTextBrowser("## fpfh process done ##");
       break;
 
     default:
@@ -638,6 +644,7 @@ void MainWindow::on_pushButton_fe_clicked()
     }
   else
     addTextBrowser("didnt tick feature checkbox yet.");
+  tableDisplay();
 }
 
 
@@ -651,10 +658,43 @@ void MainWindow::tableDisplay()
   table->setItem(1, 0,  new QStandardItem ("cloud"));
   table->setItem(2, 0,  new QStandardItem ("filter"));
   table->setItem(3, 0,  new QStandardItem ("keypoint"));
+  table->setItem(4, 0,  new QStandardItem ("shot352"));
+  table->setItem(5, 0,  new QStandardItem ("fpfh"));
   table->setItem(1, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_world->size())).c_str()));
   table->setItem(2, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_world_filter->size())).c_str()));
   table->setItem(3, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_world_keypoint->size())).c_str()));
   table->setItem(1, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_object->size())).c_str()));
   table->setItem(2, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_object_filter->size())).c_str()));
   table->setItem(3, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_object_keypoint->size())).c_str()));
+  table->setItem(4, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_descr_shot352_world->size())).c_str()));
+  table->setItem(4, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_descr_shot352_object->size())).c_str()));
+  table->setItem(5, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_descr_fpfh_world->size())).c_str()));
+  table->setItem(5, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_descr_fpfh_object->size())).c_str()));
+}
+
+void MainWindow::on_pushButton_do_clicked()
+{
+    switch(ui->comboBox_do->currentIndex())
+    {
+    case 0:
+      //filter
+      on_pushButton_pr_clicked();
+      break;
+    case 1:
+      //filter feature
+      on_pushButton_pr_clicked();
+      on_pushButton_fe_clicked();
+      break;
+    case 2:
+      //filter feature reco
+      on_pushButton_pr_clicked();
+      on_pushButton_fe_clicked();
+      on_pushButton_re_clicked();
+      break;
+    }
+}
+
+void MainWindow::on_pushButton_re_clicked()
+{
+    //recognition
 }

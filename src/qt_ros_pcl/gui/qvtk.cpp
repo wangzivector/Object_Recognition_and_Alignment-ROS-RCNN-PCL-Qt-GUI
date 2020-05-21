@@ -111,15 +111,27 @@ bool qvtk::showPointNormal(pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud,
 }
 
 
-void qvtk::addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_sho352)
+void qvtk::addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_shot352, std::string name)
 {
-//  pcl::visualization::PCLPlotter plotter;
-//  plotter.addFeatureHistogram(*descri_sho352, 300);
-//  plotter.plot();
+  pcl::visualization::PCLPlotter plotter;
+  for(int i = 0; i<descri_shot352->size(); i+=100)
+  {
+    plotter.clearPlots();
+    plotter.setTitle((QString(name.c_str()) + QString::number(i)).toStdString().c_str());
+    plotter.addFeatureHistogram(*descri_shot352, "shot", i);
+    plotter.spinOnce(500);
+  }
+}
 
-  pcl::visualization::PCLHistogramVisualizer view;
-  view.setBackgroundColor(255,0,0);
-  view.addFeatureHistogram<pcl::SHOT352>(*descri_sho352,"shot",10);
-  view.spinOnce(10000);
 
+void qvtk::addPlotterExample(pcl::PointCloud<pcl::FPFHSignature33>::Ptr descri_fpfh, std::string name)
+{
+  pcl::visualization::PCLPlotter plotter;
+  for(int i = 0; i<descri_fpfh->size(); i+=100)
+  {
+    plotter.clearPlots();
+    plotter.setTitle((QString(name.c_str()) + QString::number(i)).toStdString().c_str());
+    plotter.addFeatureHistogram(*descri_fpfh, "fpfh", i);
+    plotter.spinOnce(500);
+  }
 }

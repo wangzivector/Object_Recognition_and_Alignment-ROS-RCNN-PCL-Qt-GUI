@@ -246,7 +246,26 @@ bool ObjReco::reSHOT352(bool is_do)
     shot352Estimation(cloud_object_filter, cloud_object_keypoint,
                       cloud_object_normal, cloud_descr_shot352_object,
                       shot352Estimation_descr_rad_352);
-    std::cout << "finished feature. " << std::endl;
+    std::cout << "## finished two feature. ## " << std::endl;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool ObjReco::reFPFH(bool is_do)
+{
+  if (!is_do)
+    return false;
+  if (reNormalEstimation())
+  {
+    std::cout << "start calculating feature 1 ..." << std::endl;
+    fpfhEstimation(cloud_world_filter, cloud_world_normal,
+                   cloud_descr_fpfh_world);
+    std::cout << "start calculating feature 2 ..." << std::endl;
+    fpfhEstimation(cloud_object_filter, cloud_object_normal,
+                   cloud_descr_fpfh_object);
+    std::cout << "## finished two feature. ## " << std::endl;
     return true;
   }
   else
@@ -269,8 +288,10 @@ bool ObjReco::pcdReadModel(std::string path)
 
 void ObjReco::reloadPointCloud(bool world, bool object)
 {
-  if(world) pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
-  if(object) pcl::copyPointCloud(*cloud_object, *cloud_object_filter);
+  if (world)
+    pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
+  if (object)
+    pcl::copyPointCloud(*cloud_object, *cloud_object_filter);
 }
 
 //===================================================
@@ -427,7 +448,8 @@ bool ObjReco::loadIni(bool reset)
   ICP_transformation = Inifile->value("ICP_transformation").toDouble();
   ICP_euclidean_Fitness = Inifile->value("ICP_euclidean_Fitness").toDouble();
 
-//  std::cout << "ICP_euclidean_Fitness : " << ICP_euclidean_Fitness << std::endl;
+  //  std::cout << "ICP_euclidean_Fitness : " << ICP_euclidean_Fitness <<
+  //  std::endl;
   delete Inifile;
   return true;
 }

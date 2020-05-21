@@ -354,14 +354,13 @@ bool qpcl::fpfhEstimation(PointCloud::Ptr cloud, NormalCloud::Ptr cloud_normal,
                           DescriptorCloudFPFH::Ptr cloud_descriptors_FPFH)
 {
   pcl::FPFHEstimationOMP<PointType, NormalType, FPFH> descr_est_fpfh;
-  pcl::search::KdTree<PointType> tree_fpfh;
+  pcl::search::KdTree<PointType>::Ptr tree_fpfh(new pcl::search::KdTree<PointType>);
 
   descr_est_fpfh.setNumberOfThreads(4); ///指定4核计算
   descr_est_fpfh.setInputCloud(cloud);
   // descr_est_fpfh.setInputCloud(cloud_keypoints);
   descr_est_fpfh.setInputNormals(cloud_normal);
-  descr_est_fpfh.setSearchMethod(
-      pcl::search::KdTree<PointType>::Ptr(&tree_fpfh));
+  descr_est_fpfh.setSearchMethod(tree_fpfh);
   descr_est_fpfh.setKSearch(10); /// 10
 
   descr_est_fpfh.compute(*cloud_descriptors_FPFH);

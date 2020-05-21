@@ -41,7 +41,8 @@ public:
 
   /// an example for show QVTKWidget works with pcl and qt.
   void addPointCloudExample();
-  void addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_sho352);
+  void addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_sho352, std::string name);
+  void addPlotterExample(pcl::PointCloud<pcl::FPFHSignature33>::Ptr descri_fpfh, std::string name);
 
   bool
   setPointCloudProperties(pcl::visualization::RenderingProperties property_name,

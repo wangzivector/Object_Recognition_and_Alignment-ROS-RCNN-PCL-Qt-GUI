@@ -36,6 +36,7 @@ public:
   void reKeypoint(bool is_do);
   bool reNormalEstimation();
   bool reSHOT352(bool is_do);
+  bool reFPFH(bool is_do);
 
   bool deal_world;
   bool deal_object;

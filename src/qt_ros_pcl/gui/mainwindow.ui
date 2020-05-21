@@ -147,6 +147,9 @@ border-bottom-color: rgb(0, 0, 0);</string>
              <height>25</height>
             </rect>
            </property>
+           <property name="currentIndex">
+            <number>6</number>
+           </property>
            <item>
             <property name="text">
              <string>model1</string>
@@ -367,7 +370,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>Clean VTK</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="pushButton_pc">
+          <widget class="QPushButton" name="pushButton_sh">
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -377,7 +380,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             </rect>
            </property>
            <property name="text">
-            <string>load model</string>
+            <string>show feat</string>
            </property>
           </widget>
           <widget class="QCheckBox" name="checkBox_wc">
@@ -561,7 +564,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>Plane filter</string>
            </property>
            <property name="checked">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
           </widget>
           <widget class="QCheckBox" name="Outlierfilter">
@@ -580,7 +583,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>Outlier filter</string>
            </property>
            <property name="checked">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
           </widget>
           <widget class="QCheckBox" name="Reconstruction">
@@ -597,6 +600,9 @@ border-bottom-color: rgb(0, 0, 0);</string>
            </property>
            <property name="text">
             <string>Mls recon</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
           <widget class="QCheckBox" name="Keypoint">
@@ -1090,6 +1096,22 @@ border-bottom-color: rgb(0, 0, 0);</string>
            <double>0.010000000000000</double>
           </property>
          </widget>
+         <widget class="QPushButton" name="pushButton_pr">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>160</y>
+            <width>80</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(3, 196, 0);</string>
+          </property>
+          <property name="text">
+           <string>process</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
@@ -1297,6 +1319,22 @@ border-bottom-color: rgb(0, 0, 0);</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_fe">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>250</y>
+            <width>146</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(0, 180, 0);</string>
+          </property>
+          <property name="text">
+           <string>feature</string>
           </property>
          </widget>
         </widget>
@@ -1654,6 +1692,22 @@ border-bottom-color: rgb(0, 0, 0);</string>
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
+         <widget class="QPushButton" name="pushButton_re">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>340</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(7, 162, 67);</string>
+          </property>
+          <property name="text">
+           <string>recognition</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="tab_5">
          <attribute name="title">
@@ -1993,22 +2047,34 @@ border-bottom-color: rgb(0, 0, 0);</string>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="pushButton_pr">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(3, 196, 0);</string>
+         <widget class="QComboBox" name="comboBox_do">
+          <property name="currentIndex">
+           <number>1</number>
           </property>
-          <property name="text">
-           <string>process</string>
-          </property>
+          <item>
+           <property name="text">
+            <string>Filter</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Feature</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Recognition</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_fe">
+         <widget class="QPushButton" name="pushButton_do">
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(0, 180, 0);</string>
+           <string notr="true">background-color: rgb(7, 162, 67);</string>
           </property>
           <property name="text">
-           <string>feature</string>
+           <string>DO!</string>
           </property>
          </widget>
         </item>
@@ -2068,6 +2134,9 @@ border-bottom-color: rgb(0, 0, 0);</string>
           </attribute>
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderDefaultSectionSize">
+           <number>20</number>
           </attribute>
           <attribute name="verticalHeaderHighlightSections">
            <bool>false</bool>

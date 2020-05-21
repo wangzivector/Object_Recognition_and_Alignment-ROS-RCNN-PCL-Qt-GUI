@@ -87,6 +87,8 @@ private slots:
   void on_checkBox_dealw_clicked(bool checked);
   void on_checkBox_dealo_clicked(bool checked);
 
+  void on_pushButton_re_clicked();
+  void on_pushButton_do_clicked();
   void on_pushButton_fe_clicked();
   void on_pushButton_di_clicked();
   void on_pushButton_pr_clicked();
@@ -96,7 +98,7 @@ private slots:
   void on_pushButton_co_clicked();
   void on_pushButton_ex_clicked();
   void on_pushButton_quit_clicked();
-  void on_pushButton_pc_clicked();
+  void on_pushButton_sh_clicked();
   void on_actionReset_Params_triggered();
 
 private:
