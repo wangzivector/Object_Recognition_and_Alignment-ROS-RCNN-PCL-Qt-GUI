@@ -18,6 +18,7 @@
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/octree/octree_pointcloud_changedetector.h>
 #include <pcl/segmentation/sac_segmentation.h>
 
@@ -137,7 +138,6 @@ public:
 
   Eigen::Matrix4f NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
                                   PointCloud::Ptr target_cloud_keypoint,
-                                  PointCloud::Ptr cloud_aligned,
                                   double ndt_transepsilon = 0.001,
                                   double ndt_stepsize = 0.1,
                                   float ndt_resolution = 1,
@@ -155,7 +155,7 @@ public:
   Eigen::Matrix4f
   ICPRegistration(PointCloud::Ptr source_cloud, PointCloud::Ptr target_cloud,
                   PointCloud::Ptr cloud_icped, double max_corr_distance = 0.08,
-                  int max_iter_icp = 100000, double transformation = 1,
+                  int max_iter_icp = 100000, double transformation = 1.00,
                   double euclidean_Fitness = 0.001);
 };
 

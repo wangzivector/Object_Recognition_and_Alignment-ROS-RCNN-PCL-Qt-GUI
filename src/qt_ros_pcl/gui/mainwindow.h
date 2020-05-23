@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QTableView>
 #include <QStandardItemModel>
+#include <QTime>
 
 
 //#include "pcd_io.h"
@@ -38,6 +39,7 @@ public:
   qros* qrosObj;
   ObjReco* ObjectRecognition;
   QStandardItemModel* table;
+  QTime current_time;
   //  pcd_io* pcd_ioObj;
 
 
@@ -50,7 +52,7 @@ private slots:
   void on_spinBox_sac_5_valueChanged(int arg1);
   void on_spinBox_sac_6_valueChanged(double arg1);
   void on_spinBox_sac_7_valueChanged(int arg1);
-  void on_spinBox_sac_8_valueChanged(int arg1);
+  void on_spinBox_sac_8_valueChanged(double arg1);
   void on_spinBox_sac_9_valueChanged(double arg1);
 
   void on_spinBox_ran_1_valueChanged(int arg1);
@@ -62,7 +64,7 @@ private slots:
   void on_spinBox_ran_6_valueChanged(double arg1);
   void on_spinBox_ran_7_valueChanged(double arg1);
   void on_spinBox_ran_8_valueChanged(double arg1);
-  void on_spinBox_ran_9_valueChanged(int arg1);
+  void on_spinBox_ran_9_valueChanged(double arg1);
   void on_spinBox_ran_10_valueChanged(int arg1);
 
   void on_spinBox_seg_1_valueChanged(int arg1);
@@ -87,7 +89,7 @@ private slots:
   void on_checkBox_dealw_clicked(bool checked);
   void on_checkBox_dealo_clicked(bool checked);
 
-  void on_pushButton_re_clicked();
+  void on_pushButton_al_clicked();
   void on_pushButton_do_clicked();
   void on_pushButton_fe_clicked();
   void on_pushButton_di_clicked();
@@ -100,9 +102,11 @@ private slots:
   void on_pushButton_quit_clicked();
   void on_pushButton_sh_clicked();
   void on_actionReset_Params_triggered();
+  void on_pushButton_clicked();
+  void on_pushButton_regi_clicked();
 
 private:
-  void addTextBrowser(QString text);
+  void addTextBrowser(QString head_text, QString text);
   void reloadParamWidget();
   qvtk* qvtkWidgetObj;
   Ui::MainWindow* ui;

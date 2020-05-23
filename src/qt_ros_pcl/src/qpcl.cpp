@@ -37,7 +37,7 @@ bool qpcl::axisFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_axis,
   pt.setFilterFieldName("y");
   pt.setFilterLimits(min, max);
   pt.filter(*cloud_axis);
-  std::cout << "after axis filter point size: " << cloud_axis->size() << endl;
+  std::cout << "after axis filter point size: " << cloud_axis->size() << std::endl;
   return true;
 }
 
@@ -57,7 +57,7 @@ bool qpcl::gridFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_grid,
   sor_grid.setInputCloud(cloud);
   sor_grid.setLeafSize(grid_size, grid_size, grid_size);
   sor_grid.filter(*cloud_grid);
-  std::cout << "after grid point size: " << cloud_grid->size() << endl;
+  std::cout << "after grid point size: " << cloud_grid->size() << std::endl;
   return true;
 }
 
@@ -119,7 +119,7 @@ bool qpcl::outlierFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_outlier,
   sor_outlier.setMeanK(outlier_meanK);
   sor_outlier.setStddevMulThresh(outlier_Thresh);
   sor_outlier.filter(*cloud_outlier);
-  std::cout << "after outlier point size: " << cloud_outlier->size() << endl;
+  std::cout << "after outlier point size: " << cloud_outlier->size() <<std::endl;
   return true;
 }
 
@@ -135,18 +135,18 @@ bool qpcl::backgroundFilter(PointCloud::Ptr cloud_g, PointCloud::Ptr cloud_i,
 {
   pcl::octree::OctreePointCloudChangeDetector<PointType> octree(resolution);
   std::cout << "ground octree ... cloud_groud : " << cloud_g->size()
-            << " resolution: " << resolution << endl;
+            << " resolution: " << resolution << std::endl;
   octree.setInputCloud(cloud_g);
   octree.addPointsFromInputCloud();
   octree.switchBuffers();
-  std::cout << "compare change ... cloud_input : " << cloud_i->size() << endl;
+  std::cout << "compare change ... cloud_input : " << cloud_i->size() << std::endl;
   octree.setInputCloud(cloud_i);
   octree.addPointsFromInputCloud();
   std::vector<int> newPointIdxVector;
   /// Get vector of point indices from octree voxels which did not exist in
   /// previous buffer
   octree.getPointIndicesFromNewVoxels(newPointIdxVector, noise_filter);
-  std::cout << "  newPointIdxVector : " << newPointIdxVector.size() << endl;
+  std::cout << "  newPointIdxVector : " << newPointIdxVector.size() << std::endl;
 
   if (newPointIdxVector.size() == 0)
   {
@@ -160,7 +160,7 @@ bool qpcl::backgroundFilter(PointCloud::Ptr cloud_g, PointCloud::Ptr cloud_i,
       cloud_extract->points.push_back(cloud_i->points[newPointIdxVector[i]]);
     /// cloud_extract->width = cloud_extract->size ();
     /// cloud_extract->height = 1;
-    cout << "after extra point size: " << cloud_extract->size() << endl;
+    cout << "after extra point size: " << cloud_extract->size() << std::endl;
   }
 
   return true;
@@ -219,7 +219,7 @@ bool qpcl::rgbSegmentationIndex(
   reg_segrgb.setMinClusterSize(min_cluster); //设置聚类的大小
   reg_segrgb.extract(clusters_rgb);
   //  seg_num = clusters_rgb.size ();
-  cout << "uniform_sampling_cloudstart to redeliver..." << endl;
+  cout << "uniform_sampling_cloudstart to redeliver..." << std::endl;
   clusters_rgb_deliver->clear();
   pcl::PointIndices empty_index;
   for (int i = 0; i < clusters_rgb.size(); i++)
@@ -273,7 +273,7 @@ bool qpcl::rgbSegmentation(PointCloud::Ptr cloud,
   reg_segrgb.setMinClusterSize(min_cluster);
   reg_segrgb.extract(*clusters_rgb);
   //  seg_num = clusters_rgb.size ();
-  cout << "uniform_sampling_cloudstart to redeliver..." << endl;
+  cout << "uniform_sampling_cloudstart to redeliver..." << std::endl;
   return true;
 }
 
@@ -454,54 +454,6 @@ qpcl::RANSACRegistration(PointCloud::Ptr source_cloud_keypoint,
 }
 
 //===================================================
-//  NDTRegistration
-//  Normal Distributions Transform to get position
-//  recognition to get the matrix transform the model
-//===================================================
-Eigen::Matrix4f qpcl::NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
-                                      PointCloud::Ptr target_cloud_keypoint,
-                                      PointCloud::Ptr cloud_aligned,
-                                      double ndt_transepsilon,
-                                      double ndt_stepsize, float ndt_resolution,
-                                      int ndt_maxiteration)
-{
-  cout << "start NDTRegistration ..." << endl;
-  printf("NDTR source/target = %d/%d points",
-         (int)source_cloud_keypoint->size(),
-         (int)target_cloud_keypoint->size());
-  /// Initializing Normal Distributions Transform (NDT).
-  pcl::NormalDistributionsTransform<PointType, PointType> ndt;
-  /// Setting scale dependent NDT parameters
-  ndt.setTransformationEpsilon(ndt_transepsilon);
-  /// Setting minimum transformation difference for termination condition.
-  ndt.setStepSize(ndt_stepsize);
-  /// Setting maximum step size for More-Thuente line search.
-  ndt.setResolution(ndt_resolution);
-  /// Setting Resolution of NDT grid structure(VoxelGridCovariance).
-  /// must be adjusted before use
-  ndt.setMaximumIterations(ndt_maxiteration);
-  /// Setting max number of registration iterations.
-  ndt.setInputSource(source_cloud_keypoint);
-  /// Setting point cloud to be aligned.
-  ndt.setInputTarget(target_cloud_keypoint);
-  /// Setting point cloud to be aligned to.
-
-  /// Set initial alignment estimate found using robot odometry.
-  Eigen::AngleAxisf init_rotation(0.0, Eigen::Vector3f::UnitZ());
-  Eigen::Translation3f init_translation(0.05f, -0.04f, -0.2f);
-  Eigen::Matrix4f init_guess = (init_translation * init_rotation).matrix();
-  Eigen::Matrix4f result_transformation;
-  // Calculating required rigid transform to align input cloud to target cloud.
-  ndt.align(*cloud_aligned, init_guess);
-  result_transformation = ndt.getFinalTransformation();
-  double NDT_score = ndt.getFitnessScore();
-  std::cout << "Normal Distributions Transform has converged:"
-            << ndt.hasConverged() << " score: " << NDT_score << endl
-            << "matrix ; " << ndt.getFinalTransformation() << std::endl;
-  return result_transformation;
-}
-
-//===================================================
 //  SACIARegistration
 //  SACIA  method to get position recognition
 //  to get the matrix transform the model into world
@@ -515,7 +467,7 @@ qpcl::SACIARegistration(PointCloud::Ptr source_cloud,
                         int randomness, float min_sample_distance,
                         double max_correspondence_distance, int max_iterations)
 {
-  printf("process source/target = %d/%d of points", (int)source_cloud->size(),
+  printf("process source/target = %d/%d of points \n", (int)source_cloud->size(),
          (int)target_cloud->size());
   //
   //   sacia for a rough align
@@ -546,9 +498,57 @@ qpcl::SACIARegistration(PointCloud::Ptr source_cloud,
          matrix1(1, 2));
   printf("    | %6.3f %6.3f %6.3f | \n", matrix1(2, 0), matrix1(2, 1),
          matrix1(2, 2));
-  std::cout << "with sacia_fitness_score : " << sacia_fitness_score << endl;
+  std::cout << "with sacia_fitness_score : " << sacia_fitness_score << std::endl;
   return matrix1;
 }
+
+
+//===================================================
+//  NDTRegistration
+//  Normal Distributions Transform to get position
+//  recognition to get the matrix transform the model
+//===================================================
+Eigen::Matrix4f qpcl::NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
+                                      PointCloud::Ptr target_cloud_keypoint,
+                                      double ndt_transepsilon,
+                                      double ndt_stepsize, float ndt_resolution,
+                                      int ndt_maxiteration)
+{
+  cout << "start NDTRegistration ..." << std::endl;
+  printf("NDTR source/target = %d/%d points",
+         (int)source_cloud_keypoint->size(),
+         (int)target_cloud_keypoint->size());
+  /// Initializing Normal Distributions Transform (NDT).
+  pcl::NormalDistributionsTransform<PointType, PointType> ndt;
+  PointCloud::Ptr cloud_aligned = PointCloud::Ptr (new PointCloud());
+  /// Setting scale dependent NDT parameters
+  ndt.setTransformationEpsilon(ndt_transepsilon); /// converg condiction
+  /// Setting minimum transformation difference for termination condition.
+  ndt.setStepSize(ndt_stepsize);
+  /// Setting maximum step size for More-Thuente line search.
+  ndt.setResolution(ndt_resolution);
+  /// Setting Resolution of NDT grid structure(VoxelGridCovariance).
+  /// must be adjusted before use
+  ndt.setMaximumIterations(ndt_maxiteration);
+  /// Setting max number of registration iterations.
+  ndt.setInputSource(source_cloud_keypoint);
+  /// Setting point cloud to be aligned.
+  ndt.setInputTarget(target_cloud_keypoint);
+  /// Setting point cloud to be aligned to.
+
+  /// Set initial alignment estimate found using robot odometry.
+  Eigen::Matrix4f init_guess = Eigen::Matrix4f::Identity();
+  Eigen::Matrix4f result_transformation;
+  // Calculating required rigid transform to align input cloud to target cloud.
+  ndt.align(*cloud_aligned, init_guess);
+  result_transformation = ndt.getFinalTransformation();
+  double NDT_score = ndt.getFitnessScore();
+  std::cout << "\n Normal Distributions Transform has converged:"
+            << ndt.hasConverged() << "\n score: " << NDT_score << std::endl
+            << "matrix : \n" << result_transformation << std::endl;
+  return result_transformation;
+}
+
 
 //===================================================
 //  ICPRegistration
@@ -557,7 +557,7 @@ qpcl::SACIARegistration(PointCloud::Ptr source_cloud,
 //  pcl::transformPointCloud(*object_keypoints,
 //         *inverse_pointcloud, matrix3.inverse());
 //===================================================
-Eigen::Matrix4f ICPRegistration(PointCloud::Ptr source_cloud,
+Eigen::Matrix4f qpcl::ICPRegistration(PointCloud::Ptr source_cloud,
                                 PointCloud::Ptr target_cloud,
                                 PointCloud::Ptr cloud_icped,
                                 double max_corr_distance, int max_iter_icp,
@@ -575,15 +575,15 @@ Eigen::Matrix4f ICPRegistration(PointCloud::Ptr source_cloud,
   /// (e.g.,correspondences with higher distances will be ignored)
   ICP.setMaximumIterations(max_iter_icp);
   /// 最大迭代次数
-  ICP.setTransformationEpsilon(transformation);
+  ICP.setTransformationEpsilon(transformation); /// converg condiction
   /// 两次变化矩阵之间的差值//setTransformationEpsilon，
   /// 前一个变换矩阵和当前变换矩阵的差异小于阈值时，就认为已经收敛了，是一条收敛条件
-  ICP.setEuclideanFitnessEpsilon(euclidean_Fitness);
+  ICP.setEuclideanFitnessEpsilon(euclidean_Fitness); /// converg condiction
   ///收敛条件是均方误差和小于阈值， 停止迭代。
   ICP.align(*cloud_icped);
   Eigen::Matrix4f matrix2 = ICP.getFinalTransformation();
   double icp_fitness_score = ICP.getFitnessScore();
-  printf(" icp score is : %f", icp_fitness_score);
+  printf(" icp score is : %f\n", icp_fitness_score);
   printf("    | %6.3f %6.3f %6.3f | \n", matrix2(0, 0), matrix2(0, 1),
          matrix2(0, 2));
   printf("R = | %6.3f %6.3f %6.3f |  of icp matrics \n", matrix2(1, 0),

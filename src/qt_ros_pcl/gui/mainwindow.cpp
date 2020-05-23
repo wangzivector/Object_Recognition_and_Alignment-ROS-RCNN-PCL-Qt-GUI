@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget* parent)
   //
   qvtkWidgetObj = new qvtk(this);
   ObjectRecognition = new ObjReco();
+  current_time = QTime::currentTime();
   ObjectRecognition->loadIni();
   reloadParamWidget();
   ui->verticalLayout->addWidget(qvtkWidgetObj);
@@ -38,18 +39,22 @@ void MainWindow::on_pushButton_sh_clicked()
   switch (ui->feature_choose->currentIndex())
   {
   case 0:
-    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_shot352_world, "# world ");
-    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_shot352_object, "# object ");
+    qvtkWidgetObj->addPlotterExample(
+        ObjectRecognition->cloud_descr_shot352_world, "# world ");
+    qvtkWidgetObj->addPlotterExample(
+        ObjectRecognition->cloud_descr_shot352_object, "# object ");
     break;
   case 1:
     break;
   case 2:
-    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_fpfh_world, "# world ");
-    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_fpfh_object, "# object ");
+    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_fpfh_world,
+                                     "# world ");
+    qvtkWidgetObj->addPlotterExample(ObjectRecognition->cloud_descr_fpfh_object,
+                                     "# object ");
     break;
 
   default:
-    addTextBrowser("wrong chose in feature choose box.");
+    addTextBrowser("Plot", "wrong chose in feature choose box.");
   }
 }
 
@@ -64,20 +69,23 @@ void MainWindow::on_pushButton_quit_clicked() { this->~MainWindow(); }
 //===================================================
 void MainWindow::on_pushButton_ex_clicked()
 {
-//  QPixmap ico(":/image/icon.jpg");
-//  QPixmap scaledPixmap = ico.scaled(100, 100, Qt::KeepAspectRatio);
-//  ui->label_pic->setScaledContents(true);
-//  ui->label_pic->setPixmap(scaledPixmap);
+  //  QPixmap ico(":/image/icon.jpg");
+  //  QPixmap scaledPixmap = ico.scaled(100, 100, Qt::KeepAspectRatio);
+  //  ui->label_pic->setScaledContents(true);
+  //  ui->label_pic->setPixmap(scaledPixmap);
   qvtkWidgetObj->addPointCloudExample();
-  addTextBrowser("example show complished.");
+  addTextBrowser("Exam", "example show complished.");
 }
 
 //===================================================
 //  addTextBrowser
 //===================================================
-void MainWindow::addTextBrowser(QString text)
+void MainWindow::addTextBrowser(QString head_text, QString text)
 {
-  ui->textBrowser->append(text);
+  current_time.restart();
+  ui->textBrowser->append("[" + QString::number(current_time.second()) + ":" +
+                          QString::number(current_time.msec()) + "] " + "<" +
+                          head_text + ">  " + text);
   ui->textBrowser->moveCursor(ui->textBrowser->textCursor().End);
 }
 
@@ -137,7 +145,7 @@ void MainWindow::on_pushButton_co_clicked()
 {
   if (ObjectRecognition->cloud_world->size() == 0)
   {
-    addTextBrowser("start to read pcd ...");
+    addTextBrowser("Cons", "start to read pcd ...");
     QString path = "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/model/" +
                    ui->comboBox_mo->currentText() + ".pcd";
     ObjectRecognition->pcdReadModel(path.toStdString().c_str());
@@ -146,9 +154,9 @@ void MainWindow::on_pushButton_co_clicked()
   //      ObjectRecognition->cloud_world_filter,
   //      ObjectRecognition->cloud_world_filter,
   //      ObjectRecognition->gridFilter_grid_size);
-  addTextBrowser("start to compute reconstruction ...");
+  addTextBrowser("Cons", "start to compute reconstruction ...");
   ObjectRecognition->checkReconstruction();
-  addTextBrowser("finish compute checkReconstruction ");
+  addTextBrowser("Cons", "finish compute checkReconstruction ");
 
   refreshPloudCloudVTK();
 }
@@ -162,7 +170,7 @@ void MainWindow::on_pushButton_lo_clicked()
   if (btn == QMessageBox::Yes)
   {
     if (ObjectRecognition->loadIni())
-      addTextBrowser("Params loaded successivefully.");
+      addTextBrowser("Para", "Params loaded successivefully.");
     reloadParamWidget();
   }
 }
@@ -176,14 +184,14 @@ void MainWindow::on_pushButton_sa_clicked()
   if (btn == QMessageBox::Yes)
   {
     if (ObjectRecognition->saveIni())
-      addTextBrowser("Params saved successivefully.");
+      addTextBrowser("Para", "Params saved successivefully.");
   }
 }
 
 void MainWindow::on_actionReset_Params_triggered()
 {
   if (ObjectRecognition->loadIni())
-    addTextBrowser("base Params loaded successivefully.");
+    addTextBrowser("Para", "base Params loaded successivefully.");
   reloadParamWidget();
 }
 
@@ -192,9 +200,9 @@ void MainWindow::on_comboBox_wo_currentIndexChanged(const QString& arg1)
   QString path =
       "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/world/" + arg1 + ".pcd";
   if (ObjectRecognition->pcdReadWorld(path.toStdString().c_str()))
-    addTextBrowser("finished load pcd " + arg1);
+    addTextBrowser("Pcds", "finished load pcd " + arg1);
   else
-    addTextBrowser("failed load pcd " + path);
+    addTextBrowser("Pcds", "failed load pcd " + path);
   qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_world");
 }
 
@@ -389,9 +397,9 @@ void MainWindow::on_spinBox_ran_8_valueChanged(double arg1)
       QString::number(ObjectRecognition->NDT_stepsize, 'f', 4));
 }
 
-void MainWindow::on_spinBox_ran_9_valueChanged(int arg1)
+void MainWindow::on_spinBox_ran_9_valueChanged(double arg1)
 {
-  ObjectRecognition->NDT_resolution = arg1;
+  ObjectRecognition->NDT_resolution = float(arg1);
   ui->textBrowser->append("param changed : " +
                           QString::number(ObjectRecognition->NDT_resolution));
 }
@@ -458,7 +466,7 @@ void MainWindow::on_spinBox_sac_7_valueChanged(int arg1)
                           QString::number(ObjectRecognition->ICP_max_iter_icp));
 }
 
-void MainWindow::on_spinBox_sac_8_valueChanged(int arg1)
+void MainWindow::on_spinBox_sac_8_valueChanged(double arg1)
 {
   ObjectRecognition->ICP_transformation = arg1;
   ui->textBrowser->append(
@@ -480,87 +488,115 @@ void MainWindow::on_pushButton_pr_clicked()
   ObjectRecognition->deal_object = ui->checkBox_dealo->isChecked();
   if (ObjectRecognition->cloud_world->size() == 0)
   {
-    addTextBrowser("no pointcloud yet, add .pcd into world pointcloud.");
+    addTextBrowser("Pcds",
+                   "no pointcloud yet, add .pcd into world pointcloud.");
     on_comboBox_wo_currentIndexChanged(ui->comboBox_wo->currentText());
   }
   if (ObjectRecognition->cloud_object->size() == 0)
   {
-    addTextBrowser("no pointcloud yet, add .pcd into object pointcloud.");
+    addTextBrowser("Pcds",
+                   "no pointcloud yet, add .pcd into object pointcloud.");
     on_comboBox_mo_currentIndexChanged(ui->comboBox_mo->currentText());
   }
-  ObjectRecognition->reloadPointCloud(ObjectRecognition->deal_world,ObjectRecognition->deal_object);
-  addTextBrowser("current pointcloud : " +
-                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
-                 QString::number(ObjectRecognition->cloud_world_filter->height));
-  addTextBrowser("world pointcloud size() = " +
-                 QString::number(ObjectRecognition->cloud_world_filter->size()));
+  ObjectRecognition->reloadPointCloud(ObjectRecognition->deal_world,
+                                      ObjectRecognition->deal_object);
+  addTextBrowser(
+      "Info",
+      "current pointcloud : " +
+          QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+          QString::number(ObjectRecognition->cloud_world_filter->height));
+  addTextBrowser(
+      "Info",
+      "world pointcloud size() = " +
+          QString::number(ObjectRecognition->cloud_world_filter->size()));
   ObjectRecognition->reAxisFilter(ui->Axisfilter->isChecked());
   if (ui->Axisfilter->isChecked())
     addTextBrowser(
+        "Filt",
         "Axisfilter finished.  size() = " +
-        QString::number(ObjectRecognition->cloud_world_filter->size()));
+            QString::number(ObjectRecognition->cloud_world_filter->size()));
 
-  addTextBrowser("current pointcloud : " +
-                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
-                 QString::number(ObjectRecognition->cloud_world_filter->height));
+  addTextBrowser(
+      "Filt",
+      "current pointcloud : " +
+          QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+          QString::number(ObjectRecognition->cloud_world_filter->height));
 
   ObjectRecognition->reGridFilter(ui->Gridfilter->isChecked());
   if (ui->Gridfilter->isChecked())
     addTextBrowser(
+        "Filt",
         "Gridfilter finished.  size() = " +
-        QString::number(ObjectRecognition->cloud_world_filter->size()));
+            QString::number(ObjectRecognition->cloud_world_filter->size()));
 
-  addTextBrowser("current pointcloud : " +
-                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
-                 QString::number(ObjectRecognition->cloud_world_filter->height));
+  addTextBrowser(
+      "Filt",
+      "current pointcloud : " +
+          QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+          QString::number(ObjectRecognition->cloud_world_filter->height));
 
   ObjectRecognition->rePlaneFilter(ui->Planefilter->isChecked());
   if (ui->Planefilter->isChecked())
     addTextBrowser(
+        "Filt",
         "Planefilter finished. size() = " +
-        QString::number(ObjectRecognition->cloud_world_filter->size()));
+            QString::number(ObjectRecognition->cloud_world_filter->size()));
 
-  addTextBrowser("current pointcloud : " +
-                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
-                 QString::number(ObjectRecognition->cloud_world_filter->height));
+  addTextBrowser(
+      "Filt",
+      "current pointcloud : " +
+          QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+          QString::number(ObjectRecognition->cloud_world_filter->height));
   ObjectRecognition->reOutlierFilter(ui->Outlierfilter->isChecked());
 
   if (ui->Outlierfilter->isChecked())
     addTextBrowser(
+        "Filt",
         "Outlierfilter finished. size() = " +
-        QString::number(ObjectRecognition->cloud_world_filter->size()));
+            QString::number(ObjectRecognition->cloud_world_filter->size()));
 
-  addTextBrowser("current pointcloud : " +
-                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
-                 QString::number(ObjectRecognition->cloud_world_filter->height));
+  addTextBrowser(
+      "Filt",
+      "current pointcloud : " +
+          QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+          QString::number(ObjectRecognition->cloud_world_filter->height));
 
   ObjectRecognition->reMlsRecoonstruction(ui->Reconstruction->isChecked());
   if (ui->Reconstruction->isChecked())
     addTextBrowser(
+        "Filt",
         "Reconstruction finished.  size() = " +
-        QString::number(ObjectRecognition->cloud_world_filter->size()));
+            QString::number(ObjectRecognition->cloud_world_filter->size()));
 
-  addTextBrowser("current pointcloud : " +
-                 QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
-                 QString::number(ObjectRecognition->cloud_world_filter->height));
+  addTextBrowser(
+      "Filt",
+      "current pointcloud : " +
+          QString::number(ObjectRecognition->cloud_world_filter->width) + "/" +
+          QString::number(ObjectRecognition->cloud_world_filter->height));
 
   ObjectRecognition->reKeypoint(ui->Keypoint->isChecked());
   if (ui->Keypoint->isChecked())
     addTextBrowser(
+        "KeyP",
         "Keypoint finished.  size() = " +
-        QString::number(ObjectRecognition->cloud_world_keypoint->size()));
+            QString::number(ObjectRecognition->cloud_world_keypoint->size()));
 
-  addTextBrowser("current pointcloud : " +
-                 QString::number(ObjectRecognition->cloud_world_keypoint->width) + "/" +
-                 QString::number(ObjectRecognition->cloud_world_keypoint->height));
-
-  addTextBrowser("\n ### Filters finished. ### \n");
   addTextBrowser(
+      "KeyP",
+      "current pointcloud : " +
+          QString::number(ObjectRecognition->cloud_world_keypoint->width) +
+          "/" +
+          QString::number(ObjectRecognition->cloud_world_keypoint->height));
+
+  addTextBrowser("Filt", "\n ### Filters finished. ### \n");
+  addTextBrowser(
+      "Filt",
       " world  size = " +
-      QString::number(ObjectRecognition->cloud_world_filter->size()));
+          QString::number(ObjectRecognition->cloud_world_filter->size()));
   addTextBrowser(
+      "Filt",
       " object size = " +
-      QString::number(ObjectRecognition->cloud_object_filter->size()));
+          QString::number(ObjectRecognition->cloud_object_filter->size()));
   refreshPloudCloudVTK();
   tableDisplay();
 }
@@ -577,7 +613,9 @@ void MainWindow::refreshPloudCloudVTK()
   if (ui->checkBox_wr->isChecked())
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world_keypoint,
                                   "cloud_world_result");
-
+  if (ui->checkBox_wa->isChecked())
+    qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world_aligned,
+                                  "cloud_world_aligned");
   if (ui->checkBox_oc->isChecked())
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object,
                                   "cloud_object");
@@ -587,7 +625,11 @@ void MainWindow::refreshPloudCloudVTK()
   if (ui->checkBox_or->isChecked())
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object_keypoint,
                                   "cloud_object_keypoint");
-  addTextBrowser("refresh the pointcloud display done.");
+  if (ui->checkBox_oa->isChecked())
+    qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object_aligned,
+                                  "cloud_object_alianed");
+
+  addTextBrowser("Qvtk", "refresh the pointcloud display done.");
 }
 
 void MainWindow::on_pushButton_di_clicked() { refreshPloudCloudVTK(); }
@@ -595,13 +637,13 @@ void MainWindow::on_pushButton_di_clicked() { refreshPloudCloudVTK(); }
 void MainWindow::on_checkBox_dealw_clicked(bool checked)
 {
   ObjectRecognition->deal_world = checked;
-  addTextBrowser("world state changed : " + QString::number(checked));
+  addTextBrowser("Info", "world state changed : " + QString::number(checked));
 }
 
 void MainWindow::on_checkBox_dealo_clicked(bool checked)
 {
   ObjectRecognition->deal_object = checked;
-  addTextBrowser("object state changed : " + QString::number(checked));
+  addTextBrowser("Info", "object state changed : " + QString::number(checked));
 }
 
 void MainWindow::on_comboBox_mo_currentIndexChanged(const QString& arg1)
@@ -609,9 +651,9 @@ void MainWindow::on_comboBox_mo_currentIndexChanged(const QString& arg1)
   QString path =
       "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/model/" + arg1 + ".pcd";
   if (ObjectRecognition->pcdReadModel(path.toStdString().c_str()))
-    addTextBrowser("finished load pcd " + arg1);
+    addTextBrowser("Pcds", "finished load pcd " + arg1);
   else
-    addTextBrowser("failed load pcd " + path);
+    addTextBrowser("Pcds", "failed load pcd " + path);
   qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object,
                                 "cloud_object");
 }
@@ -620,81 +662,173 @@ void MainWindow::on_pushButton_fe_clicked()
 {
   if (!ObjectRecognition->deal_process)
   {
-    addTextBrowser("not correct keypoints yet!");
+    addTextBrowser("Feat", "not correct keypoints yet!");
     return;
   }
   if (ui->feature->isChecked())
     switch (ui->feature_choose->currentIndex())
     {
     case 0:
-      addTextBrowser("start shot352...");
+      addTextBrowser("Feat", "start shot352...");
       ObjectRecognition->reSHOT352(true);
-      addTextBrowser("## shot352 process done ##");
+      addTextBrowser("Feat", "\n## shot352 process done ##\n\n");
       break;
     case 1:
       break;
     case 2:
-      addTextBrowser("start fpfh...");
+      addTextBrowser("Feat", "start fpfh...");
       ObjectRecognition->reFPFH(true);
-      addTextBrowser("## fpfh process done ##");
+      addTextBrowser("Feat", "\n ## fpfh process done ##\n\n");
       break;
 
     default:
-      addTextBrowser("wrong chose in feature choose box.");
+      addTextBrowser("Feat", "wrong chose in feature choose box.");
     }
   else
-    addTextBrowser("didnt tick feature checkbox yet.");
+    addTextBrowser("Feat", "didnt tick feature checkbox yet.");
   tableDisplay();
 }
-
 
 void MainWindow::tableDisplay()
 {
   table->setColumnCount(3);
   table->setRowCount(5);
 
-  table->setItem(0, 1,  new QStandardItem ("world"));
-  table->setItem(0, 2,  new QStandardItem ("object"));
-  table->setItem(1, 0,  new QStandardItem ("cloud"));
-  table->setItem(2, 0,  new QStandardItem ("filter"));
-  table->setItem(3, 0,  new QStandardItem ("keypoint"));
-  table->setItem(4, 0,  new QStandardItem ("shot352"));
-  table->setItem(5, 0,  new QStandardItem ("fpfh"));
-  table->setItem(1, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_world->size())).c_str()));
-  table->setItem(2, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_world_filter->size())).c_str()));
-  table->setItem(3, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_world_keypoint->size())).c_str()));
-  table->setItem(1, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_object->size())).c_str()));
-  table->setItem(2, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_object_filter->size())).c_str()));
-  table->setItem(3, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_object_keypoint->size())).c_str()));
-  table->setItem(4, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_descr_shot352_world->size())).c_str()));
-  table->setItem(4, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_descr_shot352_object->size())).c_str()));
-  table->setItem(5, 1,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_descr_fpfh_world->size())).c_str()));
-  table->setItem(5, 2,  new QStandardItem (std::to_string(int(ObjectRecognition->cloud_descr_fpfh_object->size())).c_str()));
+  table->setItem(0, 1, new QStandardItem("world"));
+  table->setItem(0, 2, new QStandardItem("object"));
+  table->setItem(1, 0, new QStandardItem("cloud"));
+  table->setItem(2, 0, new QStandardItem("filter"));
+  table->setItem(3, 0, new QStandardItem("keypoint"));
+  table->setItem(4, 0, new QStandardItem("shot352"));
+  table->setItem(5, 0, new QStandardItem("fpfh"));
+  table->setItem(
+      1, 1,
+      new QStandardItem(
+          std::to_string(int(ObjectRecognition->cloud_world->size())).c_str()));
+  table->setItem(
+      2, 1,
+      new QStandardItem(
+          std::to_string(int(ObjectRecognition->cloud_world_filter->size()))
+              .c_str()));
+  table->setItem(
+      3, 1,
+      new QStandardItem(
+          std::to_string(int(ObjectRecognition->cloud_world_keypoint->size()))
+              .c_str()));
+  table->setItem(
+      1, 2,
+      new QStandardItem(
+          std::to_string(int(ObjectRecognition->cloud_object->size()))
+              .c_str()));
+  table->setItem(
+      2, 2,
+      new QStandardItem(
+          std::to_string(int(ObjectRecognition->cloud_object_filter->size()))
+              .c_str()));
+  table->setItem(
+      3, 2,
+      new QStandardItem(
+          std::to_string(int(ObjectRecognition->cloud_object_keypoint->size()))
+              .c_str()));
+  table->setItem(
+      4, 1,
+      new QStandardItem(
+          std::to_string(
+              int(ObjectRecognition->cloud_descr_shot352_world->size()))
+              .c_str()));
+  table->setItem(
+      4, 2,
+      new QStandardItem(
+          std::to_string(
+              int(ObjectRecognition->cloud_descr_shot352_object->size()))
+              .c_str()));
+  table->setItem(
+      5, 1,
+      new QStandardItem(
+          std::to_string(int(ObjectRecognition->cloud_descr_fpfh_world->size()))
+              .c_str()));
+  table->setItem(
+      5, 2,
+      new QStandardItem(
+          std::to_string(
+              int(ObjectRecognition->cloud_descr_fpfh_object->size()))
+              .c_str()));
 }
 
 void MainWindow::on_pushButton_do_clicked()
 {
-    switch(ui->comboBox_do->currentIndex())
-    {
-    case 0:
-      //filter
-      on_pushButton_pr_clicked();
-      break;
-    case 1:
-      //filter feature
-      on_pushButton_pr_clicked();
-      on_pushButton_fe_clicked();
-      break;
-    case 2:
-      //filter feature reco
-      on_pushButton_pr_clicked();
-      on_pushButton_fe_clicked();
-      on_pushButton_re_clicked();
-      break;
-    }
+  switch (ui->comboBox_do->currentIndex())
+  {
+  case 0:
+    // filter
+    on_pushButton_pr_clicked();
+    break;
+  case 1:
+    // filter feature
+    on_pushButton_pr_clicked();
+    on_pushButton_fe_clicked();
+    break;
+  case 2:
+    // filter feature align
+    on_pushButton_pr_clicked();
+    on_pushButton_fe_clicked();
+    on_pushButton_al_clicked();
+    break;
+  case 3:
+    on_pushButton_pr_clicked();
+    on_pushButton_fe_clicked();
+    on_pushButton_al_clicked();
+    on_pushButton_regi_clicked();
+    break;
+  }
+  refreshPloudCloudVTK();
 }
 
-void MainWindow::on_pushButton_re_clicked()
+void MainWindow::on_pushButton_al_clicked()
 {
-    //recognition
+  // align
+  if (ui->Registration->isChecked())
+  {
+    switch (ui->regi_choose->currentIndex())
+    {
+    case 0:
+      addTextBrowser("Algn", "start RANSACFPFH.");
+      if (ObjectRecognition->reRANSACFPFH(true))
+        addTextBrowser("Algn", "finish RANSACFPFH.");
+      else
+        addTextBrowser("Algn", "you didn't get fpfh yet.");
+      break;
+    case 1:
+      addTextBrowser("Algn", "start SACIAFPFH.");
+      if (ObjectRecognition->reSACIAFPFH(true))
+        addTextBrowser("Algn", "finish SACIAFPFH.");
+      else
+        addTextBrowser("Algn", "you didn't get fpfh yet.");
+      break;
+    }
+  }
+  else
+    addTextBrowser("Algn", "you didn't tick the align checkbox.");
+}
+
+void MainWindow::on_pushButton_clicked() { refreshPloudCloudVTK(); }
+
+void MainWindow::on_pushButton_regi_clicked()
+{
+  if (ui->NDT->isChecked())
+  {
+    addTextBrowser("Regi", "NDT start...");
+    if(ObjectRecognition->reNDT(true))
+    addTextBrowser("Regi", "NDT finished.");
+    else addTextBrowser("Regi", "NDT can't get the cloud properly.");
+  }
+
+  if (ui->ICP->isChecked())
+  {
+    addTextBrowser("Regi", "NDT start...");
+    if(ObjectRecognition->reICP(true))
+    addTextBrowser("Regi", "ICP finished.");
+    else addTextBrowser("Regi", "ICP can't get the cloud properly.");
+  }
+  refreshPloudCloudVTK();
 }

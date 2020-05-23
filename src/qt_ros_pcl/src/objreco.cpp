@@ -13,6 +13,8 @@ ObjReco::ObjReco()
   cloud_world = PointCloud::Ptr(new PointCloud());
   cloud_world_filter = PointCloud::Ptr(new PointCloud());
   cloud_world_keypoint = PointCloud::Ptr(new PointCloud());
+  cloud_world_aligned = PointCloud::Ptr(new PointCloud());
+  cloud_world_registrated = PointCloud::Ptr(new PointCloud());
   cloud_world_normal = NormalCloud::Ptr(new NormalCloud());
   cloud_world_pointRGBNormal =
       PointRGBNormalCloud::Ptr(new PointRGBNormalCloud());
@@ -20,6 +22,8 @@ ObjReco::ObjReco()
   cloud_object = PointCloud::Ptr(new PointCloud());
   cloud_object_filter = PointCloud::Ptr(new PointCloud());
   cloud_object_keypoint = PointCloud::Ptr(new PointCloud());
+  cloud_object_aligned = PointCloud::Ptr(new PointCloud());
+  cloud_object_registrated = PointCloud::Ptr(new PointCloud());
   cloud_object_normal = NormalCloud::Ptr(new NormalCloud());
   cloud_object_pointRGBNormal =
       PointRGBNormalCloud::Ptr(new PointRGBNormalCloud());
@@ -36,9 +40,15 @@ ObjReco::ObjReco()
       DescriptorCloudShot1344::Ptr(new DescriptorCloudShot1344());
   cloud_descr_fpfh_object = DescriptorCloudFPFH::Ptr(new DescriptorCloudFPFH());
 
+  trans_align= Eigen::Matrix4f::Identity();
+  trans_regi_ndt = Eigen::Matrix4f::Identity();
+  trans_regi_icp = Eigen::Matrix4f::Identity();
+  trans_filter_regi = Eigen::Matrix4f::Identity();
+
   deal_world = false;
   deal_object = false;
   deal_process = false;
+  deal_fpfh = false;
 
   //
   // filters param
@@ -266,6 +276,92 @@ bool ObjReco::reFPFH(bool is_do)
     fpfhEstimation(cloud_object_filter, cloud_object_normal,
                    cloud_descr_fpfh_object);
     std::cout << "## finished two feature. ## " << std::endl;
+    deal_fpfh = true;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool ObjReco::reSACIAFPFH(bool is_do)
+{
+  if (!is_do)
+    return false;
+  if (deal_fpfh)
+  {
+    std::cout << "start calculating SACIAFPFH ..." << std::endl;
+    Eigen::Matrix4f trans_align_temp = SACIARegistration(
+        cloud_world_filter, cloud_descr_fpfh_world, cloud_object_filter,
+        cloud_descr_fpfh_object, cloud_world_aligned, SACIA_number_samples,
+        SACIA_randomness, SACIA_min_sample_distance,
+        SACIA_max_correspondence_distance, SACIA_max_iterations);
+    trans_align = trans_align_temp.inverse();
+    std::cout << "matrix: \n" << trans_align << std::endl;
+    pcl::transformPointCloud(*cloud_object_filter, *cloud_object_aligned, trans_align);
+    std::cout << "## finished SACIAFPFH ## " << std::endl;
+    trans_filter_regi = trans_align;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool ObjReco::reRANSACFPFH(bool is_do)
+{
+  if (!is_do)
+    return false;
+  if (deal_fpfh)
+  {
+    std::cout << "start calculating RANSACFPFH ..." << std::endl;
+    Eigen::Matrix4f trans_align_temp = RANSACRegistration(
+        cloud_world_filter, cloud_descr_fpfh_world, cloud_object_filter,
+        cloud_descr_fpfh_object, cloud_world_aligned, RANSA_max_iterations,
+        RANSA_number_samples, RANSA_randomness, RANSA_similar_thre,
+        RANSA_max_corr_distance, RANSA_min_sample_distance);
+    trans_align = trans_align_temp.inverse();
+    std::cout << "matrix.inverse: \n" << trans_align << std::endl;
+    pcl::transformPointCloud(*cloud_object_filter, *cloud_object_aligned, trans_align);
+    std::cout << "## finished RANSACFPFH ## " << std::endl;
+    trans_filter_regi = trans_align;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool ObjReco::reNDT(bool is_do)
+{
+  if (!is_do)
+    return false;
+  if ((cloud_object_aligned->size() != 0) && (cloud_world_filter->size() != 0))
+  {
+    std::cout << "start calculating NDT ..." << std::endl;
+    trans_regi_ndt = NDTRegistration(cloud_world_keypoint, cloud_object_aligned,
+                    NDT_transepsilon, NDT_stepsize,
+                    NDT_resolution, NDT_maxiteration);
+
+    pcl::transformPointCloud(*cloud_object_aligned, *cloud_object_aligned, trans_regi_ndt.inverse());
+    std::cout << "## finished NDT ## " << std::endl;
+    trans_filter_regi = trans_regi_ndt.inverse() * trans_filter_regi;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool ObjReco::reICP(bool is_do)
+{
+  if (!is_do)
+    return false;
+  if ((cloud_object_aligned->size() != 0) && (cloud_world_filter->size() != 0))
+  {
+    std::cout << "start calculating ICP ..." << std::endl;
+    trans_regi_icp = ICPRegistration(cloud_object_aligned, cloud_world_filter,
+                    cloud_object_aligned, ICP_max_corr_distance,
+                    ICP_max_iter_icp, ICP_transformation,
+                    ICP_euclidean_Fitness);
+    std::cout << "## finished ICP ## " << std::endl;
+    trans_filter_regi = trans_regi_icp * trans_filter_regi;
     return true;
   }
   else
@@ -276,6 +372,7 @@ bool ObjReco::pcdReadWorld(std::string path)
 {
   bool isit = pcdRead(path, cloud_world);
   pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
+  deal_fpfh = false;
   return isit;
 }
 
@@ -283,6 +380,7 @@ bool ObjReco::pcdReadModel(std::string path)
 {
   bool isit = pcdRead(path, cloud_object);
   pcl::copyPointCloud(*cloud_object, *cloud_object_filter);
+  deal_fpfh = false;
   return isit;
 }
 

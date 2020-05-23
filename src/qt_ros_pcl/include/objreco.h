@@ -37,21 +37,30 @@ public:
   bool reNormalEstimation();
   bool reSHOT352(bool is_do);
   bool reFPFH(bool is_do);
+  bool reSACIAFPFH(bool is_do);
+  bool reRANSACFPFH(bool is_do);
+  bool reNDT(bool is_do);
+  bool reICP(bool is_do);
 
   bool deal_world;
   bool deal_object;
   bool deal_process;
+  bool deal_fpfh;
 
   /// pointcloud
   PointCloud::Ptr cloud_world;
   PointCloud::Ptr cloud_world_filter;
   PointCloud::Ptr cloud_world_keypoint;
+  PointCloud::Ptr cloud_world_aligned;
+  PointCloud::Ptr cloud_world_registrated;
   NormalCloud::Ptr cloud_world_normal;
   PointRGBNormalCloud::Ptr cloud_world_pointRGBNormal;
 
   PointCloud::Ptr cloud_object;
   PointCloud::Ptr cloud_object_filter;
   PointCloud::Ptr cloud_object_keypoint;
+  PointCloud::Ptr cloud_object_aligned;
+  PointCloud::Ptr cloud_object_registrated;
   NormalCloud::Ptr cloud_object_normal;
   PointRGBNormalCloud::Ptr cloud_object_pointRGBNormal;
 
@@ -62,6 +71,11 @@ public:
   DescriptorCloudShot352::Ptr cloud_descr_shot352_object;
   DescriptorCloudShot1344::Ptr cloud_descr_shot1344_object;
   DescriptorCloudFPFH::Ptr cloud_descr_fpfh_object;
+
+  Eigen::Matrix4f trans_align;
+  Eigen::Matrix4f trans_regi_ndt;
+  Eigen::Matrix4f trans_regi_icp;
+  Eigen::Matrix4f trans_filter_regi;
 
 
   /// param filters

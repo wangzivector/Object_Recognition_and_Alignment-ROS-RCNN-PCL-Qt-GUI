@@ -94,8 +94,12 @@ bool qvtk::setPointCloudProperties(
     pcl::visualization::RenderingProperties property_name, int property_value,
     QString pc_name)
 {
+  if(property_name != 4)
   viewer->setPointCloudRenderingProperties(property_name, property_value,
                                            pc_name.toStdString().c_str());
+  else
+    viewer->setPointCloudRenderingProperties(property_name, property_value, 0, 0,
+                                             pc_name.toStdString().c_str());
 }
 
 //===================================================
@@ -119,7 +123,7 @@ void qvtk::addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_shot352, 
     plotter.clearPlots();
     plotter.setTitle((QString(name.c_str()) + QString::number(i)).toStdString().c_str());
     plotter.addFeatureHistogram(*descri_shot352, "shot", i);
-    plotter.spinOnce(500);
+    plotter.spinOnce(100);
   }
 }
 
@@ -132,6 +136,6 @@ void qvtk::addPlotterExample(pcl::PointCloud<pcl::FPFHSignature33>::Ptr descri_f
     plotter.clearPlots();
     plotter.setTitle((QString(name.c_str()) + QString::number(i)).toStdString().c_str());
     plotter.addFeatureHistogram(*descri_fpfh, "fpfh", i);
-    plotter.spinOnce(500);
+    plotter.spinOnce(100);
   }
 }

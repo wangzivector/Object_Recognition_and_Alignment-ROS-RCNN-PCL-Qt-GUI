@@ -79,14 +79,18 @@ public:
   {
     if (pointcloud->size() == 0)
       return false;
-
     /// if return false, dont exist yet
-    if (vtkUpdatePointCloud(pointcloud, cloud_name))
-      this->update();
-    else if (vtkAddPointCloud(pointcloud, cloud_name))
-      this->update();
+    if (!vtkUpdatePointCloud(pointcloud, cloud_name))
+       vtkAddPointCloud(pointcloud, cloud_name);
     setPointCloudProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3,
                             cloud_name);
+    if(cloud_name.contains("object", Qt::CaseSensitive)){
+      setPointCloudProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 3,
+                              cloud_name);
+      setPointCloudProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2,
+                              cloud_name);
+    }
+    this->update();
     return true;
   }
 
