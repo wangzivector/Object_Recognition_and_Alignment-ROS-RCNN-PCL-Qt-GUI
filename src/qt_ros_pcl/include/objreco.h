@@ -38,7 +38,9 @@ public:
   bool reSHOT352(bool is_do);
   bool reFPFH(bool is_do);
   bool reSACIAFPFH(bool is_do);
+  bool reSACIASHOT352(bool is_do);
   bool reRANSACFPFH(bool is_do);
+  bool reRANSACSHOT352(bool is_do);
   bool reNDT(bool is_do);
   bool reICP(bool is_do);
 
@@ -46,6 +48,7 @@ public:
   bool deal_object;
   bool deal_process;
   bool deal_fpfh;
+  bool deal_shot352;
 
   /// pointcloud
   PointCloud::Ptr cloud_world;

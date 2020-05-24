@@ -14,11 +14,11 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 /// z filter/grid/outliner/plane/background
+#include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/octree/octree_pointcloud_changedetector.h>
 #include <pcl/segmentation/sac_segmentation.h>
 
@@ -125,7 +125,7 @@ public:
   bool fpfhEstimation(PointCloud::Ptr cloud, NormalCloud::Ptr cloud_normal,
                       DescriptorCloudFPFH::Ptr cloud_descriptors_FPFH);
   //
-  // registration
+  // aligned
   //
   Eigen::Matrix4f RANSACRegistration(
       PointCloud::Ptr source_cloud_keypoint,
@@ -136,12 +136,15 @@ public:
       int number_samples = 20, int randomness = 10, float similar_thre = 0.9f,
       double max_corr_distance = 0.015, float min_sample_distance = 0.25);
 
-  Eigen::Matrix4f NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
-                                  PointCloud::Ptr target_cloud_keypoint,
-                                  double ndt_transepsilon = 0.001,
-                                  double ndt_stepsize = 0.1,
-                                  float ndt_resolution = 1,
-                                  int ndt_maxiteration = 20);
+  Eigen::Matrix4f RANSACRegistration(
+      PointCloud::Ptr source_cloud_keypoint,
+      DescriptorCloudShot352::Ptr source_descriptors_shot352,
+      PointCloud::Ptr target_cloud_kepoint,
+      DescriptorCloudShot352::Ptr target_descriptors_shot352,
+      PointCloud::Ptr cloud_aligned, int max_iterations = 200,
+      int number_samples = 20, int randomness = 10, float similar_thre = 0.9f,
+      double max_corr_distance = 0.015, float min_sample_distance = 0.25);
+
   Eigen::Matrix4f
   SACIARegistration(PointCloud::Ptr source_cloud,
                     DescriptorCloudFPFH::Ptr source_descriptor_fpfh,
@@ -152,6 +155,24 @@ public:
                     double max_correspondence_distance = 0.015,
                     int max_iterations = 200);
 
+  Eigen::Matrix4f
+  SACIARegistration(PointCloud::Ptr source_cloud,
+                    DescriptorCloudShot352::Ptr source_descriptor_shot352,
+                    PointCloud::Ptr target_cloud,
+                    DescriptorCloudShot352::Ptr target_descriptor_shot352,
+                    PointCloud::Ptr cloud_aligned, int number_samples = 20,
+                    int randomness = 10, float min_sample_distance = 0.25,
+                    double max_correspondence_distance = 0.015,
+                    int max_iterations = 200);
+  //
+  // registration
+  //
+  Eigen::Matrix4f NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
+                                  PointCloud::Ptr target_cloud_keypoint,
+                                  double ndt_transepsilon = 0.001,
+                                  double ndt_stepsize = 0.1,
+                                  float ndt_resolution = 1,
+                                  int ndt_maxiteration = 20);
   Eigen::Matrix4f
   ICPRegistration(PointCloud::Ptr source_cloud, PointCloud::Ptr target_cloud,
                   PointCloud::Ptr cloud_icped, double max_corr_distance = 0.08,

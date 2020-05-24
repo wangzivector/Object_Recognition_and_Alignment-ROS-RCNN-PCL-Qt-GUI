@@ -792,18 +792,46 @@ void MainWindow::on_pushButton_al_clicked()
     switch (ui->regi_choose->currentIndex())
     {
     case 0:
-      addTextBrowser("Algn", "start RANSACFPFH.");
-      if (ObjectRecognition->reRANSACFPFH(true))
-        addTextBrowser("Algn", "finish RANSACFPFH.");
-      else
-        addTextBrowser("Algn", "you didn't get fpfh yet.");
+      if (ui->feature_choose->currentText() == QString("SHOT352"))
+      {
+        addTextBrowser("Algn", "start RANSACshot352 .");
+        if (ObjectRecognition->reRANSACSHOT352(true))
+          addTextBrowser("Algn", "finish RANSACshot352 .");
+        else
+          addTextBrowser("Algn", "you didn't get shot352 yet.");
+      }
+      else if (ui->feature_choose->currentText() == QString("SHOT1344"))
+      {
+      }
+      else if (ui->feature_choose->currentText() == QString("FPFH"))
+      {
+        addTextBrowser("Algn", "start RANSACFPFH.");
+        if (ObjectRecognition->reRANSACFPFH(true))
+          addTextBrowser("Algn", "finish RANSACFPFH.");
+        else
+          addTextBrowser("Algn", "you didn't get fpfh yet.");
+      }
       break;
     case 1:
-      addTextBrowser("Algn", "start SACIAFPFH.");
-      if (ObjectRecognition->reSACIAFPFH(true))
-        addTextBrowser("Algn", "finish SACIAFPFH.");
-      else
-        addTextBrowser("Algn", "you didn't get fpfh yet.");
+      if (ui->feature_choose->currentText() == QString("SHOT352"))
+      {
+        addTextBrowser("Algn", "start SACIASHOT352.");
+        if (ObjectRecognition->reSACIASHOT352(true))
+          addTextBrowser("Algn", "finish SACIASHOT352.");
+        else
+          addTextBrowser("Algn", "you didn't get SHOT352 yet.");
+      }
+      else if (ui->feature_choose->currentText() == QString("SHOT1344"))
+      {
+      }
+      else if (ui->feature_choose->currentText() == QString("FPFH"))
+      {
+        addTextBrowser("Algn", "start SACIAFPFH.");
+        if (ObjectRecognition->reSACIAFPFH(true))
+          addTextBrowser("Algn", "finish SACIAFPFH.");
+        else
+          addTextBrowser("Algn", "you didn't get fpfh yet.");
+      }
       break;
     }
   }
@@ -818,17 +846,53 @@ void MainWindow::on_pushButton_regi_clicked()
   if (ui->NDT->isChecked())
   {
     addTextBrowser("Regi", "NDT start...");
-    if(ObjectRecognition->reNDT(true))
-    addTextBrowser("Regi", "NDT finished.");
-    else addTextBrowser("Regi", "NDT can't get the cloud properly.");
+    if (ObjectRecognition->reNDT(true))
+      addTextBrowser("Regi", "NDT finished.");
+    else
+      addTextBrowser("Regi", "NDT can't get the cloud properly.");
   }
 
   if (ui->ICP->isChecked())
   {
     addTextBrowser("Regi", "NDT start...");
-    if(ObjectRecognition->reICP(true))
-    addTextBrowser("Regi", "ICP finished.");
-    else addTextBrowser("Regi", "ICP can't get the cloud properly.");
+    if (ObjectRecognition->reICP(true))
+      addTextBrowser("Regi", "ICP finished.");
+    else
+      addTextBrowser("Regi", "ICP can't get the cloud properly.");
   }
   refreshPloudCloudVTK();
+}
+
+void MainWindow::on_actionobject_save_triggered()
+{
+  QString filename;
+  QWidget* qwidget = new QWidget();
+  filename = QFileDialog::getSaveFileName(
+      qwidget, "Open File", "./src/qt_ros_pcl/pcd/", "PCD File(*.pcd)");
+  if (filename == "")
+  {
+    return;
+  }
+  if (ObjectRecognition->pcdSave(filename.toStdString().c_str(),
+                                 ObjectRecognition->cloud_world_filter))
+    addTextBrowser("Save", "filter successfully saved on :" + filename);
+  else
+    addTextBrowser("Save", "filter failed saving on :" + filename);
+}
+
+void MainWindow::on_actionworld_save_triggered()
+{
+  QString filename;
+  QWidget* qwidget = new QWidget();
+  filename = QFileDialog::getSaveFileName(
+      qwidget, "Open File", "./src/qt_ros_pcl/pcd/", "PCD File(*.pcd)");
+  if (filename == "")
+  {
+    return;
+  }
+  if (ObjectRecognition->pcdSave(filename.toStdString().c_str(),
+                                 ObjectRecognition->cloud_world))
+    addTextBrowser("Save", "world successfully saved on :" + filename);
+  else
+    addTextBrowser("Save", "world failed saving on :" + filename);
 }

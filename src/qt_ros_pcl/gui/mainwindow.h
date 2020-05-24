@@ -16,6 +16,7 @@
 #include <QTableView>
 #include <QStandardItemModel>
 #include <QTime>
+#include <QFileDialog>
 
 
 //#include "pcd_io.h"
@@ -42,6 +43,12 @@ public:
   QTime current_time;
   //  pcd_io* pcd_ioObj;
 
+
+private slots:
+  void on_actionworld_save_triggered();
+
+private slots:
+  void on_actionobject_save_triggered();
 
 private slots:
 

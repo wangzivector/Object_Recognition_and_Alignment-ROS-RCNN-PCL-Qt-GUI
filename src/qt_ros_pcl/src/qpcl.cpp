@@ -37,7 +37,8 @@ bool qpcl::axisFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_axis,
   pt.setFilterFieldName("y");
   pt.setFilterLimits(min, max);
   pt.filter(*cloud_axis);
-  std::cout << "after axis filter point size: " << cloud_axis->size() << std::endl;
+  std::cout << "after axis filter point size: " << cloud_axis->size()
+            << std::endl;
   return true;
 }
 
@@ -119,7 +120,8 @@ bool qpcl::outlierFilter(PointCloud::Ptr cloud, PointCloud::Ptr cloud_outlier,
   sor_outlier.setMeanK(outlier_meanK);
   sor_outlier.setStddevMulThresh(outlier_Thresh);
   sor_outlier.filter(*cloud_outlier);
-  std::cout << "after outlier point size: " << cloud_outlier->size() <<std::endl;
+  std::cout << "after outlier point size: " << cloud_outlier->size()
+            << std::endl;
   return true;
 }
 
@@ -139,14 +141,16 @@ bool qpcl::backgroundFilter(PointCloud::Ptr cloud_g, PointCloud::Ptr cloud_i,
   octree.setInputCloud(cloud_g);
   octree.addPointsFromInputCloud();
   octree.switchBuffers();
-  std::cout << "compare change ... cloud_input : " << cloud_i->size() << std::endl;
+  std::cout << "compare change ... cloud_input : " << cloud_i->size()
+            << std::endl;
   octree.setInputCloud(cloud_i);
   octree.addPointsFromInputCloud();
   std::vector<int> newPointIdxVector;
   /// Get vector of point indices from octree voxels which did not exist in
   /// previous buffer
   octree.getPointIndicesFromNewVoxels(newPointIdxVector, noise_filter);
-  std::cout << "  newPointIdxVector : " << newPointIdxVector.size() << std::endl;
+  std::cout << "  newPointIdxVector : " << newPointIdxVector.size()
+            << std::endl;
 
   if (newPointIdxVector.size() == 0)
   {
@@ -289,7 +293,9 @@ bool qpcl::normalEstimation(PointCloud::Ptr cloud,
 
   pcl::NormalEstimationOMP<PointType, NormalType> norm_est_cloud;
   norm_est_cloud.setInputCloud(cloud);
-  pcl::search::KdTree<PointType>::Ptr tree (new pcl::search::KdTree<PointType> ());;
+  pcl::search::KdTree<PointType>::Ptr tree(
+      new pcl::search::KdTree<PointType>());
+  ;
   norm_est_cloud.setSearchMethod(tree);
   // norm_est_cloud.setRadiusSearch (0.03);
   norm_est_cloud.setKSearch(8); // maybe this can be adjust 10
@@ -354,7 +360,8 @@ bool qpcl::fpfhEstimation(PointCloud::Ptr cloud, NormalCloud::Ptr cloud_normal,
                           DescriptorCloudFPFH::Ptr cloud_descriptors_FPFH)
 {
   pcl::FPFHEstimationOMP<PointType, NormalType, FPFH> descr_est_fpfh;
-  pcl::search::KdTree<PointType>::Ptr tree_fpfh(new pcl::search::KdTree<PointType>);
+  pcl::search::KdTree<PointType>::Ptr tree_fpfh(
+      new pcl::search::KdTree<PointType>);
 
   descr_est_fpfh.setNumberOfThreads(4); ///指定4核计算
   descr_est_fpfh.setInputCloud(cloud);
@@ -384,7 +391,8 @@ bool qpcl::mlsReconstruction(PointCloud::Ptr cloud,
   filter_re.setInputCloud(cloud);
   /// Use all neighbors in a radius of 3cm.
   filter_re.setSearchRadius(search_radius);
-  filter_re.setPolynomialOrder(2); /// MLS拟合曲线的阶数，这个阶数在构造函数里默认是2
+  filter_re.setPolynomialOrder(
+      2); /// MLS拟合曲线的阶数，这个阶数在构造函数里默认是2
   /// If true, the surface and normal are approximated using a polynomial
   /// estimation (if false, only a tangent one).
   filter_re.setPolynomialFit(true);
@@ -400,7 +408,8 @@ bool qpcl::mlsReconstruction(PointCloud::Ptr cloud,
   filter_re.setSearchMethod(kdtree);
   std::cout << "start mlsReconstruction process" << std::endl;
   filter_re.process(*cloud_pointRGBNormal);
-  std::cout << "after reconstruction size = " << cloud_pointRGBNormal->size() << std::endl;
+  std::cout << "after reconstruction size = " << cloud_pointRGBNormal->size()
+            << std::endl;
   return true;
 }
 
@@ -423,19 +432,68 @@ qpcl::RANSACRegistration(PointCloud::Ptr source_cloud_keypoint,
   SACPJ.setSourceFeatures(source_descriptors_FPFH);
   SACPJ.setInputTarget(target_cloud_kepoint);
   SACPJ.setTargetFeatures(target_descriptors_FPFH);
-  SACPJ.setMaximumIterations(max_iterations); // Number of RANSAC iterations
-  SACPJ.setNumberOfSamples(number_samples);   // Number of points to sample for
-                                              // generating/prerejecting a pose
+  SACPJ.setMaximumIterations(max_iterations); /// Number of RANSAC iterations
+  SACPJ.setNumberOfSamples(number_samples);   /// Number of points to sample for
+                                              /// generating/prerejecting a pose
   SACPJ.setCorrespondenceRandomness(
-      randomness); // Number of nearest features to use
+      randomness); /// Number of nearest features to use
   SACPJ.setSimilarityThreshold(
-      similar_thre); // Polygonal edge length similarity threshold
+      similar_thre); /// Polygonal edge length similarity threshold
   SACPJ.setMaxCorrespondenceDistance(max_corr_distance); // Inlier threshold
-  SACPJ.setInlierFraction(min_sample_distance); // Required inlier fraction for
-                                                // accepting a pose hypothesis
+  SACPJ.setInlierFraction(min_sample_distance); /// Required inlier fraction for
+                                                /// accepting a pose hypothesis
   SACPJ.align(*cloud_aligned);
   Eigen::Matrix4f transformation = SACPJ.getFinalTransformation();
-  // Print results
+  /// Print results
+  printf("\n");
+  pcl::console::print_info("    | %6.3f %6.3f %6.3f | \n", transformation(0, 0),
+                           transformation(0, 1), transformation(0, 2));
+  pcl::console::print_info("R = | %6.3f %6.3f %6.3f | \n", transformation(1, 0),
+                           transformation(1, 1), transformation(1, 2));
+  pcl::console::print_info("    | %6.3f %6.3f %6.3f | \n", transformation(2, 0),
+                           transformation(2, 1), transformation(2, 2));
+  pcl::console::print_info("\n");
+  pcl::console::print_info("t = < %0.3f, %0.3f, %0.3f >\n",
+                           transformation(0, 3), transformation(1, 3),
+                           transformation(2, 3));
+  pcl::console::print_info("\n");
+  pcl::console::print_info("Inliers: %i/%i\n", SACPJ.getInliers().size(),
+                           target_cloud_kepoint->size());
+  return transformation;
+}
+
+//===================================================
+//  RANSACRegistration
+//  SampleConsensusPrerejective to get position
+//  recognition to get the matrix transform the model
+//===================================================
+Eigen::Matrix4f
+qpcl::RANSACRegistration(PointCloud::Ptr source_cloud_keypoint,
+                         DescriptorCloudShot352::Ptr source_descriptors_shot352,
+                         PointCloud::Ptr target_cloud_kepoint,
+                         DescriptorCloudShot352::Ptr target_descriptors_shot352,
+                         PointCloud::Ptr cloud_aligned, int max_iterations,
+                         int number_samples, int randomness, float similar_thre,
+                         double max_corr_distance, float min_sample_distance)
+{
+  pcl::SampleConsensusPrerejective<PointType, PointType, SHOT352> SACPJ;
+  SACPJ.setInputSource(source_cloud_keypoint);
+  SACPJ.setSourceFeatures(source_descriptors_shot352);
+  SACPJ.setInputTarget(target_cloud_kepoint);
+  SACPJ.setTargetFeatures(target_descriptors_shot352);
+  SACPJ.setMaximumIterations(max_iterations); /// Number of RANSAC iterations
+  SACPJ.setNumberOfSamples(number_samples);   /// Number of points to sample for
+                                              /// generating/prerejecting a pose
+  SACPJ.setCorrespondenceRandomness(
+      randomness); /// Number of nearest features to use
+  SACPJ.setSimilarityThreshold(
+      similar_thre); /// Polygonal edge length similarity threshold
+  SACPJ.setMaxCorrespondenceDistance(max_corr_distance); // Inlier threshold
+  SACPJ.setInlierFraction(min_sample_distance); /// Required inlier fraction for
+                                                /// accepting a pose hypothesis
+  SACPJ.align(*cloud_aligned);
+  Eigen::Matrix4f transformation = SACPJ.getFinalTransformation();
+  /// Print results
   printf("\n");
   pcl::console::print_info("    | %6.3f %6.3f %6.3f | \n", transformation(0, 0),
                            transformation(0, 1), transformation(0, 2));
@@ -467,8 +525,8 @@ qpcl::SACIARegistration(PointCloud::Ptr source_cloud,
                         int randomness, float min_sample_distance,
                         double max_correspondence_distance, int max_iterations)
 {
-  printf("process source/target = %d/%d of points \n", (int)source_cloud->size(),
-         (int)target_cloud->size());
+  printf("process source/target = %d/%d of points \n",
+         (int)source_cloud->size(), (int)target_cloud->size());
   //
   //   sacia for a rough align
   //
@@ -498,10 +556,60 @@ qpcl::SACIARegistration(PointCloud::Ptr source_cloud,
          matrix1(1, 2));
   printf("    | %6.3f %6.3f %6.3f | \n", matrix1(2, 0), matrix1(2, 1),
          matrix1(2, 2));
-  std::cout << "with sacia_fitness_score : " << sacia_fitness_score << std::endl;
+  std::cout << "with sacia_fitness_score : " << sacia_fitness_score
+            << std::endl;
   return matrix1;
 }
 
+//===================================================
+//  SACIARegistration
+//  SACIA  method to get position recognition
+//  to get the matrix transform the model into world
+//===================================================
+Eigen::Matrix4f
+qpcl::SACIARegistration(PointCloud::Ptr source_cloud,
+                        DescriptorCloudShot352::Ptr source_descriptor_shot352,
+                        PointCloud::Ptr target_cloud,
+                        DescriptorCloudShot352::Ptr target_descriptor_shot352,
+                        PointCloud::Ptr cloud_aligned, int number_samples,
+                        int randomness, float min_sample_distance,
+                        double max_correspondence_distance, int max_iterations)
+{
+  printf("process source/target = %d/%d of points \n",
+         (int)source_cloud->size(), (int)target_cloud->size());
+  //
+  //   sacia for a rough align
+  //
+  pcl::SampleConsensusInitialAlignment<PointType, PointType, SHOT352> SACIA;
+  SACIA.setInputSource(source_cloud);
+  SACIA.setSourceFeatures(source_descriptor_shot352);
+  SACIA.setInputTarget(target_cloud);
+  SACIA.setTargetFeatures(target_descriptor_shot352);
+
+  SACIA.setNumberOfSamples(number_samples);
+  ///设置每次迭代计算中使用的样本数量（可省）,可节省时间
+  SACIA.setCorrespondenceRandomness(randomness);
+  ///设置计算协方差时选择多少近邻点，该值越大，协防差越精确，但是计算效率越低.(可省)
+  SACIA.setMinSampleDistance(min_sample_distance);
+  /// we’ve decided to truncate the error with an upper limit of 0.01 squared.
+  SACIA.setMaxCorrespondenceDistance(max_correspondence_distance);
+  /// maximum correspondence distance is actually specified as squared distance;
+  SACIA.setMaximumIterations(max_iterations);
+  SACIA.align(*cloud_aligned);
+  float sacia_fitness_score =
+      (float)SACIA.getFitnessScore(max_correspondence_distance);
+  Eigen::Matrix4f matrix1 = SACIA.getFinalTransformation();
+
+  printf("    | %6.3f %6.3f %6.3f | \n", matrix1(0, 0), matrix1(0, 1),
+         matrix1(0, 2));
+  printf("R = | %6.3f %6.3f %6.3f | \n", matrix1(1, 0), matrix1(1, 1),
+         matrix1(1, 2));
+  printf("    | %6.3f %6.3f %6.3f | \n", matrix1(2, 0), matrix1(2, 1),
+         matrix1(2, 2));
+  std::cout << "with sacia_fitness_score : " << sacia_fitness_score
+            << std::endl;
+  return matrix1;
+}
 
 //===================================================
 //  NDTRegistration
@@ -520,7 +628,7 @@ Eigen::Matrix4f qpcl::NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
          (int)target_cloud_keypoint->size());
   /// Initializing Normal Distributions Transform (NDT).
   pcl::NormalDistributionsTransform<PointType, PointType> ndt;
-  PointCloud::Ptr cloud_aligned = PointCloud::Ptr (new PointCloud());
+  PointCloud::Ptr cloud_aligned = PointCloud::Ptr(new PointCloud());
   /// Setting scale dependent NDT parameters
   ndt.setTransformationEpsilon(ndt_transepsilon); /// converg condiction
   /// Setting minimum transformation difference for termination condition.
@@ -545,10 +653,10 @@ Eigen::Matrix4f qpcl::NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
   double NDT_score = ndt.getFitnessScore();
   std::cout << "\n Normal Distributions Transform has converged:"
             << ndt.hasConverged() << "\n score: " << NDT_score << std::endl
-            << "matrix : \n" << result_transformation << std::endl;
+            << "matrix : \n"
+            << result_transformation << std::endl;
   return result_transformation;
 }
-
 
 //===================================================
 //  ICPRegistration
@@ -558,10 +666,11 @@ Eigen::Matrix4f qpcl::NDTRegistration(PointCloud::Ptr source_cloud_keypoint,
 //         *inverse_pointcloud, matrix3.inverse());
 //===================================================
 Eigen::Matrix4f qpcl::ICPRegistration(PointCloud::Ptr source_cloud,
-                                PointCloud::Ptr target_cloud,
-                                PointCloud::Ptr cloud_icped,
-                                double max_corr_distance, int max_iter_icp,
-                                double transformation, double euclidean_Fitness)
+                                      PointCloud::Ptr target_cloud,
+                                      PointCloud::Ptr cloud_icped,
+                                      double max_corr_distance,
+                                      int max_iter_icp, double transformation,
+                                      double euclidean_Fitness)
 {
   //
   //   icp for percise align

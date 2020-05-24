@@ -257,6 +257,7 @@ bool ObjReco::reSHOT352(bool is_do)
                       cloud_object_normal, cloud_descr_shot352_object,
                       shot352Estimation_descr_rad_352);
     std::cout << "## finished two feature. ## " << std::endl;
+    deal_shot352 = true;
     return true;
   }
   else
@@ -306,6 +307,29 @@ bool ObjReco::reSACIAFPFH(bool is_do)
     return false;
 }
 
+bool ObjReco::reSACIASHOT352(bool is_do)
+{
+  if (!is_do)
+    return false;
+  if (deal_shot352)
+  {
+    std::cout << "start calculating SACIASHOT352 ..." << std::endl;
+    Eigen::Matrix4f trans_align_temp = SACIARegistration(
+        cloud_world_keypoint, cloud_descr_shot352_world, cloud_object_keypoint,
+        cloud_descr_shot352_object, cloud_world_aligned, SACIA_number_samples,
+        SACIA_randomness, SACIA_min_sample_distance,
+        SACIA_max_correspondence_distance, SACIA_max_iterations);
+    trans_align = trans_align_temp.inverse();
+    std::cout << "matrix: \n" << trans_align << std::endl;
+    pcl::transformPointCloud(*cloud_object_filter, *cloud_object_aligned, trans_align);
+    std::cout << "## finished SACIASHOT352 ## " << std::endl;
+    trans_filter_regi = trans_align;
+    return true;
+  }
+  else
+    return false;
+}
+
 bool ObjReco::reRANSACFPFH(bool is_do)
 {
   if (!is_do)
@@ -322,6 +346,29 @@ bool ObjReco::reRANSACFPFH(bool is_do)
     std::cout << "matrix.inverse: \n" << trans_align << std::endl;
     pcl::transformPointCloud(*cloud_object_filter, *cloud_object_aligned, trans_align);
     std::cout << "## finished RANSACFPFH ## " << std::endl;
+    trans_filter_regi = trans_align;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool ObjReco::reRANSACSHOT352(bool is_do)
+{
+  if (!is_do)
+    return false;
+  if (deal_shot352)
+  {
+    std::cout << "start calculating RANSACSHOT352 ..." << std::endl;
+    Eigen::Matrix4f trans_align_temp = RANSACRegistration(
+        cloud_world_keypoint, cloud_descr_shot352_world, cloud_object_keypoint,
+        cloud_descr_shot352_object, cloud_world_aligned, RANSA_max_iterations,
+        RANSA_number_samples, RANSA_randomness, RANSA_similar_thre,
+        RANSA_max_corr_distance, RANSA_min_sample_distance);
+    trans_align = trans_align_temp.inverse();
+    std::cout << "matrix.inverse: \n" << trans_align << std::endl;
+    pcl::transformPointCloud(*cloud_object_filter, *cloud_object_aligned, trans_align);
+    std::cout << "## finished RANSACSHOT352 ## " << std::endl;
     trans_filter_regi = trans_align;
     return true;
   }
@@ -373,6 +420,7 @@ bool ObjReco::pcdReadWorld(std::string path)
   bool isit = pcdRead(path, cloud_world);
   pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
   deal_fpfh = false;
+  deal_shot352 = false;
   return isit;
 }
 
@@ -381,6 +429,7 @@ bool ObjReco::pcdReadModel(std::string path)
   bool isit = pcdRead(path, cloud_object);
   pcl::copyPointCloud(*cloud_object, *cloud_object_filter);
   deal_fpfh = false;
+  deal_shot352 = false;
   return isit;
 }
 

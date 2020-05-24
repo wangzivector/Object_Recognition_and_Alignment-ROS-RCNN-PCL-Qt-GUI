@@ -5,9 +5,11 @@
 (diff cpp files)
 
 * Qtdisplay class
-* Param     class
+  Param     class
 * PCL       class
+* pcl_io    class
 * ROS       class
+* Recog     class
 
 2. Dialog
 * point cloud display window <left up big>
@@ -18,19 +20,20 @@
 3. Timeline
 * setup ros_qt basic env  		<done>
 * basic implement of PCL and RealSense	<done>
-* Vision of point cloud			<done> -- based : QVTKwidget(PLC_qt_visualizer_tutorial)    librviz(testRVIZ)	//openGL
+* Vision of point cloud			<done> 
+-- based : QVTKwidget(PLC_qt_visualizer_tutorial)    librviz(testRVIZ)	//openGL
   thing about it, is it have to use ROS, also the rviz topic manage.
   what's the step of QVTKwidget. this should be more convenient.
 
-* Class setup of pointcloud class       <doing>
-* Param class
-* GUI Interface setup
-* Makeup 
+* Class setup of pointcloud class       <done>
+* Param class				<done>
+* GUI Interface setup			<done>
+* Makeup 				<done>
 
 4. Feature
-* class orientation
-* scalable<optional>
-* Exception handling
+* class orientation	<done>
+* scalable<optional>  	<done>
+* Exception handling	<doing>
 
 5. cpp discription
 * gui<done>
@@ -59,13 +62,15 @@
    ├─ segmentation<done>
    ├─ normal estimation<done>
    ├─ feature compute<done>
-   ├─ surface reconstruct<done>
-   ├─ feature match<done>
-   ├─ object detection<done>
+   ├─ surface reconstruct<done> -- *MLS
+   ├─ alignment<done> -- *RANSAC *SACIA
+   ├─ registration<done> -- *NDT *ICP
+   ├─ diff feature same reco<doing> -- *shot352 *fpfh
 
-* system
-   ├─ pointcloud interface
-   ├─ param editting
+* system<wait>
+   ├─ pointcloud interface<done>
+   ├─ poincloud realsense
+   ├─ param editting<done>
    ├─ error catching
 
 
