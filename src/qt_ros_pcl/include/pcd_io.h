@@ -10,6 +10,8 @@
 
 /// Include RealSense Cross Platform API
 #include <librealsense2/rs.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/opencv.hpp>
 #include <pcl/conversions.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -21,20 +23,35 @@ typedef pcl::PointCloud<NormalType> NormalCloud; ///接收点云法向量存储�
 typedef pcl::PointXYZRGBNormal PointRGBNormalType; /// resonstruction
 typedef pcl::PointCloud<PointRGBNormalType> PointRGBNormalCloud;
 
-
 class pcd_io
 {
 public:
   pcd_io();
   bool realsenseInit();
-  PointCloud::Ptr readFrameRS();
-  bool copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in, PointCloud::Ptr cloud_out);
+
+  bool maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
+                             std::tuple<uchar, uchar, uchar> mask_rgb);
+
+  cv::Mat maskExample(int row = 480, int col = 640, uchar intensity = 120);
+
+  bool copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in,
+                                    PointCloud::Ptr cloud_out);
+
   bool pcdRead(std::string path, PointCloud::Ptr);
+
   bool pcdSave(std::string pcd_path, PointCloud::Ptr cloud);
+
+  bool readFrameRS(PointCloud::Ptr cloud, cv::Mat& img);
+
+  void releasePipe();
+
+  cv::Mat mask;
+  std::tuple<uchar, uchar, uchar> mask_color;
 
 private:
   PointCloud::Ptr PCL_Conversion(const rs2::points& points,
-                                 const rs2::video_frame& color);
+                              const rs2::video_frame& color);
+
   std::tuple<int, int, int> RGB_Texture(rs2::video_frame texture,
                                         rs2::texture_coordinate Texture_XY);
   /// Declare pointcloud object, for calculating pointclouds and texture

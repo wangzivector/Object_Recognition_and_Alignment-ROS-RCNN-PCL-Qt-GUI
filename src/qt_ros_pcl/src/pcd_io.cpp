@@ -7,7 +7,103 @@
  */
 #include "pcd_io.h"
 
-pcd_io::pcd_io() {}
+pcd_io::pcd_io()
+{
+  mask = cv::Mat(640, 480, CV_8UC3);
+  mask_color = std::tuple<uchar, uchar, uchar>(255, 255, 255);
+}
+
+bool pcd_io::pcdRead(std::string pcd_path, PointCloud::Ptr cloud)
+{
+  /// read cloud from pcd_path deliver from param
+  if (pcl::io::loadPCDFile(pcd_path, *cloud) == -1)
+  {
+    PCL_ERROR("Couldn't read file %s \n", pcd_path.c_str());
+    return false;
+  }
+  return true;
+}
+
+bool pcd_io::pcdSave(std::string pcd_path, PointCloud::Ptr cloud)
+{
+  if (cloud->size() == 0)
+    std::cout << "saving cloud is 0 size ! failed saveed." << std::endl;
+  if (pcl::io::savePCDFileASCII(pcd_path, *cloud) == -1)
+  {
+    PCL_ERROR("Couldn't save file %s \n", pcd_path.c_str());
+    return false;
+  }
+  return true;
+}
+
+bool pcd_io::maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
+                           std::tuple<uchar, uchar, uchar> mask_rgb)
+{
+  if (input_cloud->height > 1)
+  {
+    if ((mask_img.rows == input_cloud->height) &&
+        (mask_img.cols == input_cloud->width))
+    {
+      std::cout << "image size is : " << mask_img.rows << "/" << mask_img.cols
+                << std::endl;
+    }
+    else
+    {
+      std::cout << "rows =/= height or cols =/= width: " << mask_img.rows
+                << input_cloud->height << "  " << mask_img.cols
+                << input_cloud->width << std::endl;
+      return false;
+    }
+  }
+  else
+  {
+    std::cout << "this is not a organized pointcloud\n" << std::endl;
+    return false;
+  }
+
+  cv::Mat img = mask_img.clone();
+  PointCloud::Ptr output_cloud = PointCloud::Ptr(new PointCloud());
+  uchar b = std::get<2>(mask_rgb);
+  uchar g = std::get<1>(mask_rgb);
+  uchar r = std::get<0>(mask_rgb);
+  for (int i = 0; i < img.rows; i++)
+  {
+    for (int j = 0; j < img.cols; j++)
+    {
+      if ((img.at<cv::Vec3b>(i, j)[0] == b) &&
+          (img.at<cv::Vec3b>(i, j)[1] == g) &&
+          (img.at<cv::Vec3b>(i, j)[2] == r))
+        output_cloud->push_back(input_cloud->at(j, i));
+    }
+  }
+  pcl::copyPointCloud(*output_cloud, *input_cloud);
+  std::cout << "cloud size :" << input_cloud->height << input_cloud->width
+            << std::endl;
+  return true;
+}
+
+cv::Mat pcd_io::maskExample(int row, int col, uchar intensity)
+{
+  cv::Mat img(row, col, CV_8UC3);
+  for (int i = 0; i < row; i++)
+    for (int j = 0; j < col; j++)
+      if ((i > row / 3) && (j > col / 3) && (i < row / 1.5) && (j < col / 1.5))
+      {
+        img.at<cv::Vec3b>(i, j)[0] = intensity;
+        img.at<cv::Vec3b>(i, j)[1] = intensity;
+        img.at<cv::Vec3b>(i, j)[2] = intensity;
+      }
+      else
+      {
+        img.at<cv::Vec3b>(i, j)[0] = 255;
+        img.at<cv::Vec3b>(i, j)[1] = 255;
+        img.at<cv::Vec3b>(i, j)[2] = 255;
+      }
+  cv::imwrite("/home/wang/catkin_qtws/img.jpg", img);
+  mask = img.clone();
+  mask_color = std::tuple<uchar, uchar, uchar>(intensity, intensity, intensity);
+  return img;
+}
 
 bool pcd_io::realsenseInit()
 {
@@ -38,56 +134,48 @@ bool pcd_io::realsenseInit()
     cfg.enable_stream(RS2_STREAM_DEPTH, frame_width, frame_height,
                       RS2_FORMAT_Z16, frame_rate);
 
-    // rs2::pipeline_profile selection = pipe.start(cfg);
     pipe_point->start(cfg);
+
+  for (int i = 0; i < 10; i++)
+    auto frames =
+        pipe_point->wait_for_frames(); // Drop several frames for auto-exposure
   }
   catch (std::exception& e)
   {
     std::cout << "open realsense error occurs : " << e.what() << std::endl;
     return false;
   }
-  std::cout << "** wait for frame settle **   \n";
-  for (int i = 0; i < 10; i++)
-    auto frames =
-        pipe_point->wait_for_frames(); // Drop several frames for auto-exposure
+  std::cout << "have wait for frame settle. got sensor.\n";
   return true;
 }
 
-PointCloud::Ptr pcd_io::readFrameRS()
+bool pcd_io::readFrameRS(PointCloud::Ptr cloud, cv::Mat& img)
 {
   auto frames = pipe_point->wait_for_frames();
   auto color = frames.get_color_frame();
-
   if (!color)
     color = frames.get_infrared_frame();
+
   /// Tell pointcloud object to map to this color frame
   pc_pointer->map_to(color);
   auto depth = frames.get_depth_frame();
 
   /// Generate the pointcloud and texture mappings
   *points_pointer = pc_pointer->calculate(depth);
-  return PCL_Conversion(*points_pointer, color); // get PCL pointcloud type
-}
+  PointCloud::Ptr cloud_get = PCL_Conversion(*points_pointer, color); /// get PCL pointcloud type
+  pcl::copyPointCloud(*cloud_get, *cloud);
 
-bool pcd_io::pcdRead(std::string pcd_path, PointCloud::Ptr cloud)
-{
-  /// read cloud from pcd_path deliver from param
-  if (pcl::io::loadPCDFile(pcd_path, *cloud) == -1)
-  {
-    PCL_ERROR("Couldn't read file %s \n", pcd_path.c_str());
-    return false;
-  }
+  //
+  // get img frame
+  //
+  img = cv::Mat(cloud->height, cloud->width, CV_8UC3, (void*)color.get_data());
+  cv::cvtColor(img, img, CV_RGB2BGR);
   return true;
 }
 
-bool pcd_io::pcdSave(std::string pcd_path, PointCloud::Ptr cloud)
+void pcd_io::releasePipe()
 {
-  if (pcl::io::savePCDFileASCII(pcd_path, *cloud) == -1)
-  {
-    PCL_ERROR("Couldn't save file %s \n", pcd_path.c_str());
-    return false;
-  }
-  return true;
+  pipe_point->stop();
 }
 
 using namespace std;
@@ -99,12 +187,12 @@ using namespace std;
 //  frame captured using the Realsense.
 //===================================================
 PointCloud::Ptr pcd_io::PCL_Conversion(const rs2::points& points,
-                                       const rs2::video_frame& color)
+                            const rs2::video_frame& color)
 {
   /// input param is points and RGB ,combine it to return
 
   /// Object Declaration (Point Cloud)
-  PointCloud::Ptr cloud(new PointCloud);
+  PointCloud::Ptr cloud = PointCloud::Ptr(new PointCloud());
 
   /// Declare Tuple for RGB value Storage (<t0>, <t1>, <t2>)
   std::tuple<uint8_t, uint8_t, uint8_t> RGB_Color;
@@ -143,29 +231,8 @@ PointCloud::Ptr pcd_io::PCL_Conversion(const rs2::points& points,
     cloud->points[i].g = std::get<1>(RGB_Color); // Reference tuple<1>
     cloud->points[i].b = std::get<0>(RGB_Color); // Reference tuple<0>
   }
-
-  return cloud; /// PCL RGB Point Cloud generated
+  return cloud;
 }
-
-bool pcd_io::copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in, PointCloud::Ptr cloud_out)
-{
-  cloud_out->points.resize(cloud_in->size());
-  std::cout << "start copyPointRGBNormalToPointRGB" << std::endl;
-  for (size_t i = 0; i < cloud_in->points.size(); i++) {
-      cloud_out->points[i].x = cloud_in->points[i].x;
-      cloud_out->points[i].y = cloud_in->points[i].y;
-      cloud_out->points[i].z = cloud_in->points[i].z;
-      cloud_out->points[i].r = cloud_in->points[i].r;
-      cloud_out->points[i].g = cloud_in->points[i].g;
-      cloud_out->points[i].b = cloud_in->points[i].b;
-  }
-   cloud_out->width = cloud_in->width;
-   cloud_out->height = cloud_in->height;
-   std::cout << "done copyPointRGBNormalToPointRGB : " << cloud_out->size()
-             << "  width/height :" << cloud_out->width << cloud_out->height << std::endl;
-  return true;
-}
-
 
 //======================================================
 // RGB Texture
@@ -204,4 +271,26 @@ pcd_io::RGB_Texture(rs2::video_frame texture,
   int NT3 = New_Texture[Text_Index + 2];
 
   return std::tuple<int, int, int>(NT1, NT2, NT3);
+}
+
+bool pcd_io::copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in,
+                                          PointCloud::Ptr cloud_out)
+{
+  cloud_out->points.resize(cloud_in->size());
+  std::cout << "start copyPointRGBNormalToPointRGB" << std::endl;
+  for (size_t i = 0; i < cloud_in->points.size(); i++)
+  {
+    cloud_out->points[i].x = cloud_in->points[i].x;
+    cloud_out->points[i].y = cloud_in->points[i].y;
+    cloud_out->points[i].z = cloud_in->points[i].z;
+    cloud_out->points[i].r = cloud_in->points[i].r;
+    cloud_out->points[i].g = cloud_in->points[i].g;
+    cloud_out->points[i].b = cloud_in->points[i].b;
+  }
+  cloud_out->width = cloud_in->width;
+  cloud_out->height = cloud_in->height;
+  std::cout << "done copyPointRGBNormalToPointRGB : " << cloud_out->size()
+            << "  width/height :" << cloud_out->width << cloud_out->height
+            << std::endl;
+  return true;
 }

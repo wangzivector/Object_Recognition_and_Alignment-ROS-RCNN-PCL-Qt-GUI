@@ -17,6 +17,7 @@
 #include <QStandardItemModel>
 #include <QTime>
 #include <QFileDialog>
+#include <QTimer>
 
 
 //#include "pcd_io.h"
@@ -42,13 +43,6 @@ public:
   QStandardItemModel* table;
   QTime current_time;
   //  pcd_io* pcd_ioObj;
-
-
-private slots:
-  void on_actionworld_save_triggered();
-
-private slots:
-  void on_actionobject_save_triggered();
 
 private slots:
 
@@ -108,13 +102,23 @@ private slots:
   void on_pushButton_ex_clicked();
   void on_pushButton_quit_clicked();
   void on_pushButton_sh_clicked();
-  void on_actionReset_Params_triggered();
   void on_pushButton_clicked();
   void on_pushButton_regi_clicked();
+  void on_actionReset_Params_triggered();
+  void on_actionmask_pointcloud_triggered();
+  void on_actionmask_generate_triggered();
+  void on_actionworld_save_triggered();
+  void on_actionobject_save_triggered();
+  void on_pushButton_image_clicked();
+  void on_pushButton_kinetic_clicked();
+  void on_actiondebug_triggered();
+
+  void TimerTimeout_cap();
 
 private:
   void addTextBrowser(QString head_text, QString text);
   void reloadParamWidget();
+  QTimer *m_timer;
   qvtk* qvtkWidgetObj;
   Ui::MainWindow* ui;
 };

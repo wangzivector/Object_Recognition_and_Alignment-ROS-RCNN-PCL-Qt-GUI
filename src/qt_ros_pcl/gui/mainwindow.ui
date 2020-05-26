@@ -99,7 +99,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="tab">
          <property name="toolTip">
@@ -262,6 +262,35 @@ border-bottom-color: rgb(0, 0, 0);</string>
            </property>
            <property name="checked">
             <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButton_kinetic">
+           <property name="geometry">
+            <rect>
+             <x>190</x>
+             <y>40</y>
+             <width>89</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>OPEN</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_16">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>20</y>
+             <width>67</width>
+             <height>17</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Kinetic</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </widget>
@@ -1072,7 +1101,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
         </widget>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
-          <string>S/F</string>
+          <string>Feat</string>
          </attribute>
          <widget class="QLabel" name="label_9">
           <property name="geometry">
@@ -1396,7 +1425,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
         </widget>
         <widget class="QWidget" name="tab_4">
          <attribute name="title">
-          <string>RAN/SAC</string>
+          <string>Align</string>
          </attribute>
          <widget class="QPushButton" name="pushButton_al">
           <property name="geometry">
@@ -1822,7 +1851,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
         </widget>
         <widget class="QWidget" name="tab_5">
          <attribute name="title">
-          <string>NDT/ICP</string>
+          <string>Regi</string>
          </attribute>
          <widget class="QDoubleSpinBox" name="spinBox_sac_9">
           <property name="geometry">
@@ -2133,6 +2162,56 @@ border-bottom-color: rgb(0, 0, 0);</string>
           </property>
          </widget>
         </widget>
+        <widget class="QWidget" name="tab_8">
+         <attribute name="title">
+          <string>Sens</string>
+         </attribute>
+         <widget class="QPushButton" name="pushButton_image">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>30</y>
+            <width>261</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>image</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_17">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>10</y>
+            <width>67</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>sensor</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_image">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>100</y>
+            <width>280</width>
+            <height>210</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>image</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </widget>
        </widget>
       </item>
       <item>
@@ -2345,6 +2424,9 @@ border-bottom-color: rgb(0, 0, 0);</string>
      <string>Tool</string>
     </property>
     <addaction name="actionReset_Params"/>
+    <addaction name="actionmask_generate"/>
+    <addaction name="actionmask_pointcloud"/>
+    <addaction name="actiondebug"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTool"/>
@@ -2368,6 +2450,21 @@ border-bottom-color: rgb(0, 0, 0);</string>
   <action name="actionworld_save">
    <property name="text">
     <string>world</string>
+   </property>
+  </action>
+  <action name="actionmask_generate">
+   <property name="text">
+    <string>mask generate</string>
+   </property>
+  </action>
+  <action name="actionmask_pointcloud">
+   <property name="text">
+    <string>mask pointcloud</string>
+   </property>
+  </action>
+  <action name="actiondebug">
+   <property name="text">
+    <string>debug</string>
    </property>
   </action>
  </widget>

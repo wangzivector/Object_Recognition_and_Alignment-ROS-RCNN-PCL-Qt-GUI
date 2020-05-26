@@ -69,8 +69,9 @@
 
 * system<wait>
    ├─ pointcloud interface<done>
-   ├─ poincloud realsense
+   ├─ poincloud realsense -- *continuning_play *multi_processing 
    ├─ param editting<done>
+   ├─ Pointcloud mask<done>
    ├─ error catching
 
 

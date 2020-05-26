@@ -8,8 +8,8 @@
  */
 #ifndef OBJRECO_H
 #define OBJRECO_H
-#include "qpcl.h"
 #include "pcd_io.h"
+#include "qpcl.h"
 #include <QSettings>
 
 //
@@ -24,7 +24,9 @@ public:
   bool saveIni();
   bool loadIni(bool reset = false);
   bool pcdReadModel(std::string path);
-  bool pcdReadWorld(std::string path);
+  bool pcdReadWorld(std::string path, bool is_mask = false);
+  bool pcdCapWorld(PointCloud::Ptr cloud, bool is_mask = false);
+
   void reloadPointCloud(bool world, bool object);
 
   void reAxisFilter(bool is_do);
@@ -80,7 +82,6 @@ public:
   Eigen::Matrix4f trans_regi_icp;
   Eigen::Matrix4f trans_filter_regi;
 
-
   /// param filters
   float axisFilter_axis_size;
   float gridFilter_grid_size;
@@ -111,7 +112,7 @@ public:
   int RANSA_number_samples;
   int RANSA_randomness;
   float RANSA_similar_thre;
-  double RANSA_max_corr_distance ;
+  double RANSA_max_corr_distance;
   float RANSA_min_sample_distance;
 
   double NDT_transepsilon;
@@ -129,7 +130,6 @@ public:
   int ICP_max_iter_icp;
   double ICP_transformation;
   double ICP_euclidean_Fitness;
-
 };
 
 #endif // OBJRECO_H

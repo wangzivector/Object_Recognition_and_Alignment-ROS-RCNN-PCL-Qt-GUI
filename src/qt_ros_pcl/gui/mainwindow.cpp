@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget* parent)
   qvtkWidgetObj = new qvtk(this);
   ObjectRecognition = new ObjReco();
   current_time = QTime::currentTime();
+  m_timer = new QTimer;
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(TimerTimeout_cap()));
   ObjectRecognition->loadIni();
   reloadParamWidget();
   ui->verticalLayout->addWidget(qvtkWidgetObj);
@@ -83,8 +85,8 @@ void MainWindow::on_pushButton_ex_clicked()
 void MainWindow::addTextBrowser(QString head_text, QString text)
 {
   current_time.restart();
-  ui->textBrowser->append("[" + QString::number(current_time.second()) + ":" +
-                          QString::number(current_time.msec()) + "] " + "<" +
+  ui->textBrowser->append("[" + QString::number(current_time.minute()) + ":" +
+                          QString::number(current_time.second()) + "] " + "<" +
                           head_text + ">  " + text);
   ui->textBrowser->moveCursor(ui->textBrowser->textCursor().End);
 }
@@ -895,4 +897,82 @@ void MainWindow::on_actionworld_save_triggered()
     addTextBrowser("Save", "world successfully saved on :" + filename);
   else
     addTextBrowser("Save", "world failed saving on :" + filename);
+}
+
+void MainWindow::on_actionmask_generate_triggered()
+{
+  ObjectRecognition->maskExample();
+  addTextBrowser(
+      "Mask", "mask img size:" + QString::number(ObjectRecognition->mask.cols) +
+                  "/" + QString::number(ObjectRecognition->mask.rows));
+}
+
+void MainWindow::on_actionmask_pointcloud_triggered()
+{
+  ObjectRecognition->maskExample();
+  addTextBrowser("Mask", "mask img generated.");
+  QString arg1 = ui->comboBox_wo->currentText();
+  QString path =
+      "/home/wang/catkin_qtws/src/qt_ros_pcl/pcd/world/" + arg1 + ".pcd";
+  if (ObjectRecognition->pcdReadWorld(path.toStdString().c_str(), true))
+    addTextBrowser("Pcds", "finished load pcd " + arg1);
+  else
+    addTextBrowser("Pcds", "failed load pcd " + path);
+  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_world");
+  ObjectRecognition->pcdSave("/home/wang/catkin_qtws/pcd.pcd",
+                             ObjectRecognition->cloud_world);
+}
+
+void MainWindow::on_actiondebug_triggered()
+{
+  for (int i = 0; i < ObjectRecognition->cloud_world->size(); i += 10000)
+    std::cout << "point" << i << " : "
+              << ObjectRecognition->cloud_world->points[i].x
+              << ObjectRecognition->cloud_world->points[i].y
+              << ObjectRecognition->cloud_world->points[i].z << std::endl;
+}
+
+void MainWindow::on_pushButton_kinetic_clicked()
+{
+  if (ui->pushButton_kinetic->text() == QString("OPEN"))
+  {
+    if (ObjectRecognition->realsenseInit())
+    {
+      ui->pushButton_kinetic->setText("CLOSE");
+      addTextBrowser("Sens", "ssuccessfully connect realsense.");
+      m_timer->start(1000);
+    }
+    else
+      addTextBrowser("Sens", "failed connect realsense.");
+  }
+  else if (ui->pushButton_kinetic->text() == QString("CLOSE"))
+  {
+    ObjectRecognition->releasePipe();
+    addTextBrowser("Sens", "close connect realsense.");
+    m_timer->stop();
+    ui->pushButton_kinetic->setText("OPEN");
+  }
+  // readFrameRS(PointCloud::Ptr cloud, cv::Mat img);
+}
+
+void MainWindow::TimerTimeout_cap()
+{
+  PointCloud::Ptr cloud_cap = PointCloud::Ptr(new PointCloud());
+  ObjectRecognition->readFrameRS(cloud_cap, ObjectRecognition->mask);
+
+  QPixmap pix_mask = QPixmap::fromImage(QImage (ObjectRecognition->mask.data,
+                                                ObjectRecognition->mask.cols, ObjectRecognition->mask.rows,
+                                                static_cast<int>(ObjectRecognition->mask.step),
+                                                QImage::Format_RGB888 ));
+  ui->label_image->setPixmap(pix_mask);
+  ui->label_image->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+  ui->label_image->setScaledContents(true);
+  ObjectRecognition->pcdCapWorld(cloud_cap);
+  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_world");
+  addTextBrowser("Time", "readFrameRS added.");
+}
+
+void MainWindow::on_pushButton_image_clicked()
+{
+    on_pushButton_kinetic_clicked();
 }

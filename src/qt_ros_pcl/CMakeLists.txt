@@ -35,13 +35,14 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Qt5  REQUIRED COMPONENTS  Widgets)
 
 find_package(VTK REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(PCL 1.7.1 REQUIRED)
 find_package(realsense2 2.29.0)
 
 
 # Fix a compilation bug under ubuntu 16.04 (Xenial)
 list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
-include_directories(${PCL_INCLUDE_DIRS})
+include_directories(${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 # 指明需要参与编译的cpp及ui文件，分别给它们起个变量名叫SOURCES和FORMS，后续会用到。
@@ -77,4 +78,4 @@ include_directories( include  ${catkin_INCLUDE_DIRS} )
  add_executable(${PROJECT_NAME}_node  src/basic.cpp)
 #在链接环节，告诉目标文件需要qt5的widgets组件作为动态链接库。
  target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES} )
- target_link_libraries(gui_node  Qt5::Widgets ${catkin_LIBRARIES} ${PCL_LIBRARIES} realsense2)
+ target_link_libraries(gui_node  Qt5::Widgets ${catkin_LIBRARIES} ${PCL_LIBRARIES} realsense2 ${OpenCV_LIBRARIES})

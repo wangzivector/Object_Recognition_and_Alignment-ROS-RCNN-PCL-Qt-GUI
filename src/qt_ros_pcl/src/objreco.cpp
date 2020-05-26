@@ -415,13 +415,28 @@ bool ObjReco::reICP(bool is_do)
     return false;
 }
 
-bool ObjReco::pcdReadWorld(std::string path)
+bool ObjReco::pcdReadWorld(std::string path, bool is_mask)
 {
   bool isit = pcdRead(path, cloud_world);
+//  for(int i = 0 ; i< cloud_world->size(); i+=10000)
+//    std::cout << cloud_world->points[i].x;
+  if(is_mask)
+    maskImplement(cloud_world, mask, mask_color);
   pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
   deal_fpfh = false;
   deal_shot352 = false;
   return isit;
+}
+
+bool ObjReco::pcdCapWorld(PointCloud::Ptr cloud, bool is_mask)
+{
+   pcl::copyPointCloud(*cloud, *cloud_world);
+  if(is_mask)
+    maskImplement(cloud_world, mask, mask_color);
+  pcl::copyPointCloud(*cloud_world, *cloud_world_filter);
+  deal_fpfh = false;
+  deal_shot352 = false;
+  return true;
 }
 
 bool ObjReco::pcdReadModel(std::string path)
