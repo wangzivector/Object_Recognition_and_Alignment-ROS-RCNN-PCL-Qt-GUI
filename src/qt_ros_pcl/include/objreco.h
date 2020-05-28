@@ -19,6 +19,10 @@
 class ObjReco : public qpcl, public pcd_io
 {
 public:
+
+  //
+  // world and object cloud process related
+  //
   ObjReco();
   bool checkReconstruction();
   bool saveIni();
@@ -26,9 +30,11 @@ public:
   bool pcdReadModel(std::string path);
   bool pcdReadWorld(std::string path, bool is_mask = false);
   bool pcdCapWorld(PointCloud::Ptr cloud, bool is_mask = false);
-
   void reloadPointCloud(bool world, bool object);
 
+  //
+  // an reimplement for diff process without param explicitly
+  //
   void reAxisFilter(bool is_do);
   void reGridFilter(bool is_do);
   void rePlaneFilter(bool is_do);

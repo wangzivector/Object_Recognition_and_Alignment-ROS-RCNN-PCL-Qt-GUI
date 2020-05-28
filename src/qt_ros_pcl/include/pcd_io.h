@@ -3,7 +3,7 @@
  *
  *  Created on: May 13, 2020
  *      Author: wangzivector
- *  pcd realated
+ *  pcd read / write realated
  */
 #ifndef PCD_IO_H
 #define PCD_IO_H
@@ -27,28 +27,38 @@ class pcd_io
 {
 public:
   pcd_io();
-  bool realsenseInit();
 
-  bool maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
-                             std::tuple<uchar, uchar, uchar> mask_rgb);
-
-  cv::Mat maskExample(int row = 480, int col = 640, uchar intensity = 120);
-
-  bool copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in,
-                                    PointCloud::Ptr cloud_out);
-
+  //
+  // pcd reader/writer
+  //
   bool pcdRead(std::string path, PointCloud::Ptr);
 
   bool pcdSave(std::string pcd_path, PointCloud::Ptr cloud);
+
+  //
+  // realsense read/stop
+  //
+  bool realsenseInit();
 
   bool readFrameRS(PointCloud::Ptr cloud, cv::Mat& img);
 
   void releasePipe();
 
+  //
+  // MASK implement
+  //
+  bool maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
+                             std::tuple<uchar, uchar, uchar> mask_rgb);
+
+  bool copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in,
+                                    PointCloud::Ptr cloud_out);
+
+  cv::Mat maskExample(int row = 480, int col = 640, uchar intensity = 120);
   cv::Mat mask;
   std::tuple<uchar, uchar, uchar> mask_color;
 
 private:
+  /// fun for realsense format transformation
   PointCloud::Ptr PCL_Conversion(const rs2::points& points,
                               const rs2::video_frame& color);
 

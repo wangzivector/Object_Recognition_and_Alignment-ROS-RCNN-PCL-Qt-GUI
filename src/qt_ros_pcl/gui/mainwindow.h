@@ -35,17 +35,26 @@ class MainWindow : public QMainWindow
 public:
   explicit MainWindow(QWidget* parent = nullptr);
   ~MainWindow();
+  /// if you change the cloud or setting, do this.
   void refreshPloudCloudVTK();
+  /// basic static info about clouds
   void tableDisplay();
+
   /// ros pointer for publish msg
   qros* qrosObj;
+  /// all pcl&cloud implement finished in it.
   ObjReco* ObjectRecognition;
+
+  /// info visualize related.
   QStandardItemModel* table;
   QTime current_time;
-  //  pcd_io* pcd_ioObj;
 
 private slots:
 
+  //
+  // slot related funs, you need to check cpp
+  // for they functions.
+  //
   void on_spinBox_sac_1_valueChanged(int arg1);
   void on_spinBox_sac_2_valueChanged(int arg1);
   void on_spinBox_sac_3_valueChanged(double arg1);
@@ -113,11 +122,17 @@ private slots:
   void on_pushButton_kinetic_clicked();
   void on_actiondebug_triggered();
 
+  /// a timer callback fun to capture the sensor frame
   void TimerTimeout_cap();
 
 private:
+
+  /// info print fun
   void addTextBrowser(QString head_text, QString text);
+
+  /// you can reload the pcl params
   void reloadParamWidget();
+
   QTimer *m_timer;
   qvtk* qvtkWidgetObj;
   Ui::MainWindow* ui;

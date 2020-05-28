@@ -1,7 +1,18 @@
+/*
+ * basic.cpp
+ *
+ *  Created on: May 13, 2020
+ *      Author: wangzivector
+ */
 #include <ros/ros.h>
 #include <qt_ros_pcl/info.h>
 
-void	info_Callback(const	qt_ros_pcl::info::ConstPtr	&msg_info)
+//===================================================
+//  info_Callback
+//  just another exe to try ros if is work
+// for info subscrib.
+//===================================================
+void info_Callback(const	qt_ros_pcl::info::ConstPtr	&msg_info)
 {
   ROS_INFO("Basic Listener:	%s", msg_info->infomation.c_str());
 }

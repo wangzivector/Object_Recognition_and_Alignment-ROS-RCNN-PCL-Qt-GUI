@@ -120,6 +120,8 @@ bool ObjReco::checkReconstruction()
             << cloud_object_pointRGBNormal->size()
             << "  cloud_object_filter: " << cloud_object_filter->size()
             << std::endl;
+  /// after reconstrution, the output is not pointcloud type yet, with
+  /// normal; extract it.
   copyPointRGBNormalToPointRGB(cloud_object_pointRGBNormal,
                                cloud_object_filter);
   std::cout << "after copy cloud_pointRGBNormal : "
@@ -129,6 +131,9 @@ bool ObjReco::checkReconstruction()
   return true;
 }
 
+//===================================================
+//  reAxisFilter
+//===================================================
 void ObjReco::reAxisFilter(bool is_do)
 {
   if (is_do)
@@ -138,16 +143,25 @@ void ObjReco::reAxisFilter(bool is_do)
     return;
 }
 
+//===================================================
+//  reGridFilter
+//===================================================
 void ObjReco::reGridFilter(bool is_do)
 {
   if (!is_do)
     return;
+
+  /// if implement to world cloud
   if (deal_world)
     gridFilter(cloud_world_filter, cloud_world_filter, gridFilter_grid_size);
+  /// if implement to object cloud
   if (deal_object)
     gridFilter(cloud_object_filter, cloud_object_filter, gridFilter_grid_size);
 }
 
+//===================================================
+//  rePlaneFilter
+//===================================================
 void ObjReco::rePlaneFilter(bool is_do)
 {
   if (is_do)
@@ -157,6 +171,9 @@ void ObjReco::rePlaneFilter(bool is_do)
     return;
 }
 
+//===================================================
+//  reOutlierFilter
+//===================================================
 void ObjReco::reOutlierFilter(bool is_do)
 {
   if (is_do)
@@ -166,6 +183,10 @@ void ObjReco::reOutlierFilter(bool is_do)
     return;
 }
 
+//===================================================
+//  reBackGroundFilter
+//  this may not useful yet..
+//===================================================
 void ObjReco::reBackGroundFilter(bool is_do)
 {
   if (is_do)
@@ -176,6 +197,9 @@ void ObjReco::reBackGroundFilter(bool is_do)
     return;
 }
 
+//===================================================
+//  reMlsRecoonstruction
+//===================================================
 void ObjReco::reMlsRecoonstruction(bool is_do)
 {
   if (is_do)
@@ -200,6 +224,10 @@ void ObjReco::reMlsRecoonstruction(bool is_do)
   return;
 }
 
+//===================================================
+//  reKeypoint
+//  you probally need to do it before shot feture compute
+//===================================================
 void ObjReco::reKeypoint(bool is_do)
 {
   deal_process = false;
@@ -228,6 +256,9 @@ void ObjReco::reKeypoint(bool is_do)
     return;
 }
 
+//===================================================
+//  reNormalEstimation
+//===================================================
 bool ObjReco::reNormalEstimation()
 {
   if (deal_process)
@@ -242,6 +273,11 @@ bool ObjReco::reNormalEstimation()
     return false;
 }
 
+//===================================================
+//  reSHOT352
+//  if feature, you have to implement it two both
+//  world and object, for reco
+//===================================================
 bool ObjReco::reSHOT352(bool is_do)
 {
   if (!is_do)
@@ -264,6 +300,9 @@ bool ObjReco::reSHOT352(bool is_do)
     return false;
 }
 
+//===================================================
+//  reFPFH
+//===================================================
 bool ObjReco::reFPFH(bool is_do)
 {
   if (!is_do)
@@ -284,6 +323,9 @@ bool ObjReco::reFPFH(bool is_do)
     return false;
 }
 
+//===================================================
+//  reSACIAFPFH
+//===================================================
 bool ObjReco::reSACIAFPFH(bool is_do)
 {
   if (!is_do)
@@ -296,6 +338,9 @@ bool ObjReco::reSACIAFPFH(bool is_do)
         cloud_descr_fpfh_object, cloud_world_aligned, SACIA_number_samples,
         SACIA_randomness, SACIA_min_sample_distance,
         SACIA_max_correspondence_distance, SACIA_max_iterations);
+
+    /// note that the output is transformation matrix
+    /// transform it after this
     trans_align = trans_align_temp.inverse();
     std::cout << "matrix: \n" << trans_align << std::endl;
     pcl::transformPointCloud(*cloud_object_filter, *cloud_object_aligned, trans_align);
@@ -307,6 +352,10 @@ bool ObjReco::reSACIAFPFH(bool is_do)
     return false;
 }
 
+//===================================================
+//  reSACIASHOT352
+//  name means do SACIA with SHOT feature
+//===================================================
 bool ObjReco::reSACIASHOT352(bool is_do)
 {
   if (!is_do)
@@ -330,6 +379,9 @@ bool ObjReco::reSACIASHOT352(bool is_do)
     return false;
 }
 
+//===================================================
+//  reRANSACFPFH
+//===================================================
 bool ObjReco::reRANSACFPFH(bool is_do)
 {
   if (!is_do)
@@ -353,6 +405,9 @@ bool ObjReco::reRANSACFPFH(bool is_do)
     return false;
 }
 
+//===================================================
+//  reRANSACSHOT352
+//===================================================
 bool ObjReco::reRANSACSHOT352(bool is_do)
 {
   if (!is_do)
@@ -376,6 +431,10 @@ bool ObjReco::reRANSACSHOT352(bool is_do)
     return false;
 }
 
+//===================================================
+//  reNDT
+//  be careful about the source and target
+//===================================================
 bool ObjReco::reNDT(bool is_do)
 {
   if (!is_do)
@@ -396,6 +455,10 @@ bool ObjReco::reNDT(bool is_do)
     return false;
 }
 
+//===================================================
+//  reICP
+//  be careful about the source and target
+//===================================================
 bool ObjReco::reICP(bool is_do)
 {
   if (!is_do)
@@ -415,6 +478,9 @@ bool ObjReco::reICP(bool is_do)
     return false;
 }
 
+//===================================================
+//  pcdReadWorld
+//===================================================
 bool ObjReco::pcdReadWorld(std::string path, bool is_mask)
 {
   bool isit = pcdRead(path, cloud_world);
@@ -428,6 +494,9 @@ bool ObjReco::pcdReadWorld(std::string path, bool is_mask)
   return isit;
 }
 
+//===================================================
+//  pcdCapWorld
+//===================================================
 bool ObjReco::pcdCapWorld(PointCloud::Ptr cloud, bool is_mask)
 {
    pcl::copyPointCloud(*cloud, *cloud_world);
@@ -439,6 +508,9 @@ bool ObjReco::pcdCapWorld(PointCloud::Ptr cloud, bool is_mask)
   return true;
 }
 
+//===================================================
+//  pcdReadModel
+//===================================================
 bool ObjReco::pcdReadModel(std::string path)
 {
   bool isit = pcdRead(path, cloud_object);
@@ -448,6 +520,10 @@ bool ObjReco::pcdReadModel(std::string path)
   return isit;
 }
 
+//===================================================
+//  reloadPointCloud
+//  if you change source cloud, so do origin filter
+//===================================================
 void ObjReco::reloadPointCloud(bool world, bool object)
 {
   if (world)

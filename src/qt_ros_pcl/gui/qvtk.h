@@ -41,6 +41,10 @@ public:
 
   /// an example for show QVTKWidget works with pcl and qt.
   void addPointCloudExample();
+
+  //
+  // manipulate pointcloud in vtk widget]
+  //
   void addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_sho352, std::string name);
   void addPlotterExample(pcl::PointCloud<pcl::FPFHSignature33>::Ptr descri_fpfh, std::string name);
 
@@ -97,9 +101,7 @@ public:
 protected:
   pcl::visualization::PCLVisualizer::Ptr viewer;
   PointCloudT::Ptr cloud;
-signals:
 
-public slots:
 };
 
 #endif // QVTK_H

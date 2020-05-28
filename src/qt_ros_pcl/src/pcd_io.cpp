@@ -24,6 +24,9 @@ bool pcd_io::pcdRead(std::string pcd_path, PointCloud::Ptr cloud)
   return true;
 }
 
+//===================================================
+//  pcdSave
+//===================================================
 bool pcd_io::pcdSave(std::string pcd_path, PointCloud::Ptr cloud)
 {
   if (cloud->size() == 0)
@@ -36,11 +39,18 @@ bool pcd_io::pcdSave(std::string pcd_path, PointCloud::Ptr cloud)
   return true;
 }
 
+//===================================================
+//  maskImplement
+//  crop the organized cloud based mask
+//===================================================
 bool pcd_io::maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
                            std::tuple<uchar, uchar, uchar> mask_rgb)
 {
+  /// if not organized cloud, you can't indese it by cloud[][]
   if (input_cloud->height > 1)
   {
+
+    /// if mask img match cloud
     if ((mask_img.rows == input_cloud->height) &&
         (mask_img.cols == input_cloud->width))
     {
@@ -63,6 +73,8 @@ bool pcd_io::maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
 
   cv::Mat img = mask_img.clone();
   PointCloud::Ptr output_cloud = PointCloud::Ptr(new PointCloud());
+
+  /// mask_rgb is mask color, if match ,then take the point in same position
   uchar b = std::get<2>(mask_rgb);
   uchar g = std::get<1>(mask_rgb);
   uchar r = std::get<0>(mask_rgb);
@@ -82,6 +94,10 @@ bool pcd_io::maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
   return true;
 }
 
+//===================================================
+//  maskExample
+//  create an example mask img
+//===================================================
 cv::Mat pcd_io::maskExample(int row, int col, uchar intensity)
 {
   cv::Mat img(row, col, CV_8UC3);
@@ -105,6 +121,10 @@ cv::Mat pcd_io::maskExample(int row, int col, uchar intensity)
   return img;
 }
 
+//===================================================
+//  realsenseInit
+//  create a pipeline for frame read from kinetic
+//===================================================
 bool pcd_io::realsenseInit()
 {
   try
@@ -127,6 +147,8 @@ bool pcd_io::realsenseInit()
     int frame_width = 640;
     int frame_height = 480;
     int frame_rate = 10;
+
+    /// config sensor
     cfg.enable_stream(RS2_STREAM_COLOR, frame_width, frame_height,
                       RS2_FORMAT_BGR8, frame_rate);
     cfg.enable_stream(RS2_STREAM_INFRARED, frame_width, frame_height,
@@ -140,6 +162,8 @@ bool pcd_io::realsenseInit()
     auto frames =
         pipe_point->wait_for_frames(); // Drop several frames for auto-exposure
   }
+  /// if there error, catch and don't crash the exe
+  /// like no kinetic connected yet or not detach well
   catch (std::exception& e)
   {
     std::cout << "open realsense error occurs : " << e.what() << std::endl;
@@ -149,6 +173,10 @@ bool pcd_io::realsenseInit()
   return true;
 }
 
+//===================================================
+//  readFrameRS
+//  form kinetic, note that get cloud and RGB img
+//===================================================
 bool pcd_io::readFrameRS(PointCloud::Ptr cloud, cv::Mat& img)
 {
   auto frames = pipe_point->wait_for_frames();
@@ -173,6 +201,10 @@ bool pcd_io::readFrameRS(PointCloud::Ptr cloud, cv::Mat& img)
   return true;
 }
 
+//===================================================
+//  releasePipe
+//  release sensor if no use.
+//===================================================
 void pcd_io::releasePipe()
 {
   pipe_point->stop();
@@ -273,6 +305,10 @@ pcd_io::RGB_Texture(rs2::video_frame texture,
   return std::tuple<int, int, int>(NT1, NT2, NT3);
 }
 
+//===================================================
+//  copyPointRGBNormalToPointRGB
+//  special fun for extract cloud from this type
+//===================================================
 bool pcd_io::copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in,
                                           PointCloud::Ptr cloud_out)
 {

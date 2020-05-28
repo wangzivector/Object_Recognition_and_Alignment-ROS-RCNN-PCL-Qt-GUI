@@ -4,6 +4,7 @@
  *  Created on: May 13, 2020
  *      Author: wangzivector
  * object-based implement of qros. ros stuff
+ * but this is for GUI
  */
 #include "qros.h"
 

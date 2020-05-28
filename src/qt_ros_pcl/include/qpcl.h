@@ -44,15 +44,15 @@
 #include <pcl/registration/ndt.h>
 #include <pcl/registration/sample_consensus_prerejective.h>
 
-typedef pcl::PointXYZRGB PointType;                ///接收点云的格式
-typedef pcl::Normal NormalType;                    ///点云法向量格式
-typedef pcl::PointXYZRGBNormal PointRGBNormalType; /// resonstruction
-typedef pcl::PointCloud<PointType> PointCloud; ///接收点云的”存储“格式
-typedef pcl::PointCloud<NormalType> NormalCloud; ///接收点云法向量存储格式
+typedef pcl::PointXYZRGB PointType;
+typedef pcl::Normal NormalType;
+typedef pcl::PointXYZRGBNormal PointRGBNormalType; /// for resonstruction
+typedef pcl::PointCloud<PointType> PointCloud;
+typedef pcl::PointCloud<NormalType> NormalCloud;
 typedef pcl::PointCloud<PointRGBNormalType> PointRGBNormalCloud;
 
-typedef pcl::SHOT352 SHOT352;   /// shot32特征格式
-typedef pcl::SHOT1344 SHOT1344; /// shot1344特征格式（color）
+typedef pcl::SHOT352 SHOT352;   /// shot32
+typedef pcl::SHOT1344 SHOT1344; /// shot1344 -- shot with color
 typedef pcl::FPFHSignature33 FPFH;
 
 typedef pcl::PointCloud<SHOT352> DescriptorCloudShot352;

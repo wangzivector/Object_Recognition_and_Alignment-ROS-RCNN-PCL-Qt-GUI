@@ -73,6 +73,10 @@ qvtk::~qvtk()
   viewer->close();
 }
 
+//===================================================
+//  vtkRemovePointCloud
+//  remove all pointclouds
+//===================================================
 bool qvtk::vtkRemovePointCloud(QString cloud_name, bool all)
 {
   if(!all)
@@ -115,6 +119,10 @@ bool qvtk::showPointNormal(pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud,
 }
 
 
+//===================================================
+//  addPlotterExample
+//  shot352 feature visualization in histogram
+//===================================================
 void qvtk::addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_shot352, std::string name)
 {
   pcl::visualization::PCLPlotter plotter;
@@ -128,6 +136,11 @@ void qvtk::addPlotterExample(pcl::PointCloud<pcl::SHOT352>::Ptr descri_shot352, 
 }
 
 
+//===================================================
+//  addPlotterExample
+//  fpfh feature visualization in histogram
+//  in flash form
+//===================================================
 void qvtk::addPlotterExample(pcl::PointCloud<pcl::FPFHSignature33>::Ptr descri_fpfh, std::string name)
 {
   pcl::visualization::PCLPlotter plotter;

@@ -439,7 +439,7 @@ qpcl::RANSACRegistration(PointCloud::Ptr source_cloud_keypoint,
       randomness); /// Number of nearest features to use
   SACPJ.setSimilarityThreshold(
       similar_thre); /// Polygonal edge length similarity threshold
-  SACPJ.setMaxCorrespondenceDistance(max_corr_distance); // Inlier threshold
+  SACPJ.setMaxCorrespondenceDistance(max_corr_distance); /// Inlier threshold
   SACPJ.setInlierFraction(min_sample_distance); /// Required inlier fraction for
                                                 /// accepting a pose hypothesis
   SACPJ.align(*cloud_aligned);
@@ -537,9 +537,9 @@ qpcl::SACIARegistration(PointCloud::Ptr source_cloud,
   SACIA.setTargetFeatures(target_descriptor_fpfh);
 
   SACIA.setNumberOfSamples(number_samples);
-  ///设置每次迭代计算中使用的样本数量（可省）,可节省时间
+  /// computing time related
   SACIA.setCorrespondenceRandomness(randomness);
-  ///设置计算协方差时选择多少近邻点，该值越大，协防差越精确，但是计算效率越低.(可省)
+  /// computing time related
   SACIA.setMinSampleDistance(min_sample_distance);
   /// we’ve decided to truncate the error with an upper limit of 0.01 squared.
   SACIA.setMaxCorrespondenceDistance(max_correspondence_distance);
@@ -587,9 +587,9 @@ qpcl::SACIARegistration(PointCloud::Ptr source_cloud,
   SACIA.setTargetFeatures(target_descriptor_shot352);
 
   SACIA.setNumberOfSamples(number_samples);
-  ///设置每次迭代计算中使用的样本数量（可省）,可节省时间
+  ///computing time related
   SACIA.setCorrespondenceRandomness(randomness);
-  ///设置计算协方差时选择多少近邻点，该值越大，协防差越精确，但是计算效率越低.(可省)
+  ///computing time related
   SACIA.setMinSampleDistance(min_sample_distance);
   /// we’ve decided to truncate the error with an upper limit of 0.01 squared.
   SACIA.setMaxCorrespondenceDistance(max_correspondence_distance);
@@ -683,12 +683,12 @@ Eigen::Matrix4f qpcl::ICPRegistration(PointCloud::Ptr source_cloud,
   /// Set the max correspondence distance to 4cm
   /// (e.g.,correspondences with higher distances will be ignored)
   ICP.setMaximumIterations(max_iter_icp);
-  /// 最大迭代次数
+  /// max iteration times
   ICP.setTransformationEpsilon(transformation); /// converg condiction
-  /// 两次变化矩阵之间的差值//setTransformationEpsilon，
-  /// 前一个变换矩阵和当前变换矩阵的差异小于阈值时，就认为已经收敛了，是一条收敛条件
+  /// difference between two iteration to thougt converge
+  /// a standard condition to stop
   ICP.setEuclideanFitnessEpsilon(euclidean_Fitness); /// converg condiction
-  ///收敛条件是均方误差和小于阈值， 停止迭代。
+  /// a standard condition to stop
   ICP.align(*cloud_icped);
   Eigen::Matrix4f matrix2 = ICP.getFinalTransformation();
   double icp_fitness_score = ICP.getFitnessScore();

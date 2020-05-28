@@ -12,18 +12,26 @@
 * Recog     class
 
 2. Dialog
-* point cloud display window <left up big>
-* detailed display window <left down small>
-* param window <right up rect>
+* point cloud display window 	  <left up big>
+* detailed display window 	  <left down small>
+* param window 			  <right up rect>
 * information text display window <right down long>
 
 3. Timeline
 * setup ros_qt basic env  		<done>
 * basic implement of PCL and RealSense	<done>
 * Vision of point cloud			<done> 
--- based : QVTKwidget(PLC_qt_visualizer_tutorial)    librviz(testRVIZ)	//openGL
+
+```
+  -- remain : 
+  QVTKwidget(PLC_qt_visualizer_tutorial)  librviz(testRVIZ)  //openGL
   thing about it, is it have to use ROS, also the rviz topic manage.
   what's the step of QVTKwidget. this should be more convenient.
+  -- seems :
+  there is a simple way to use vtkQwidget if you have install VTK5.x
+  just need to include the related headfile and Qwidget inhert QVTKWidget
+  detach it to a layout then you can make it.
+```
 
 * Class setup of pointcloud class       <done>
 * Param class				<done>
@@ -69,10 +77,18 @@
 
 * system<wait>
    ├─ pointcloud interface<done>
-   ├─ poincloud realsense -- *continuning_play *multi_processing 
+   ├─ poincloud realsense<done> -- *continuning_play *multi_processing 
    ├─ param editting<done>
    ├─ Pointcloud mask<done>
-   ├─ error catching
+   ├─ error catching 
+   ├─ documental work
+
+* gezabo
+   ├─ UR5 physical implement
+   ├─ UR5 control API
+   ├─ kinetic sensor implement
+   ├─ environment&object body setup
+
 
 
 
