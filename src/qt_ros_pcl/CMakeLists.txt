@@ -58,6 +58,7 @@ set(SOURCES
   src/qros.cpp
   src/pcd_io.cpp
   src/objreco.cpp
+  src/qsocket.cpp
 )
 file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
 file(GLOB QT_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} resources/*.qrc)
