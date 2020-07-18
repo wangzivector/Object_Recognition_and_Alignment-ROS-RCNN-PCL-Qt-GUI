@@ -1060,6 +1060,7 @@ void MainWindow::on_actionmask_generate_triggered()
 //===================================================
 void MainWindow::on_actionmask_pointcloud_triggered()
 {
+  /// create a masked img in instance.
   ObjectRecognition->maskExample();
   addTextBrowser("Mask", "mask img generated.");
   QString arg1 = ui->comboBox_wo->currentText();

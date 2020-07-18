@@ -81,7 +81,7 @@
    ├─ param editting<done>
    ├─ Pointcloud mask<done>
    ├─ error catching 
-   ├─ documental work
+   ├─ documental work<done>
 
 * gezabo
    ├─ UR5 physical implement
