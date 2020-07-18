@@ -27,8 +27,7 @@ project(qt_ros_pcl)
 # )
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  rospy
-  std_msgs
+  sensor_msgs
   message_generation
 )
 # 找到qt5中的widgets组件的关键步骤，使程序编译时能够找到qt5-widgets相关头文件和库函数。
@@ -71,7 +70,9 @@ set(FORMS
 add_message_files(FILES	info.msg)
 generate_messages(DEPENDENCIES	std_msgs)
 
-catkin_package()
+catkin_package(
+CATKIN_DEPENDS message_runtime
+)
 
 include_directories( include  ${catkin_INCLUDE_DIRS} )
 # 这是生成可执行文件，此时用到了SOURCES和FORMS所指明的cpp和ui文件。
