@@ -29,6 +29,8 @@ MainWindow::MainWindow(QWidget* parent)
   m_timer = new QTimer;
   connect(m_timer, SIGNAL(timeout()), this, SLOT(TimerTimeout_cap()));
 
+  socketObj = new qsocket();
+
   /// laod local params file into pcl calss instance before do everything
   ObjectRecognition->loadIni();
 
@@ -1131,18 +1133,30 @@ void MainWindow::on_pushButton_kinetic_clicked()
 void MainWindow::TimerTimeout_cap()
 {
   PointCloud::Ptr cloud_cap = PointCloud::Ptr(new PointCloud());
-  ObjectRecognition->readFrameRS(cloud_cap, ObjectRecognition->mask);
+  ObjectRecognition->readFrameRS(cloud_cap, ObjectRecognition->image_origin);
 
+  set_pixmapofimage(ObjectRecognition->image_origin);
+  ObjectRecognition->mask = socketObj->socket_process(ObjectRecognition->image_origin);
+
+  ObjectRecognition->pcdCapWorld(cloud_cap, true);
+  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_world");
+  addTextBrowser("Time", "readFrameRS added.");
+}
+
+
+//===================================================
+//  set_pixmapofimage
+//  make it up
+//===================================================
+void MainWindow::set_pixmapofimage(cv::Mat img_show)
+{
   QPixmap pix_mask = QPixmap::fromImage(QImage(
-      ObjectRecognition->mask.data, ObjectRecognition->mask.cols,
-      ObjectRecognition->mask.rows,
-      static_cast<int>(ObjectRecognition->mask.step), QImage::Format_RGB888));
+      img_show.data, img_show.cols,
+      img_show.rows,
+      static_cast<int>(img_show.step), QImage::Format_RGB888));
   ui->label_image->setPixmap(pix_mask);
   ui->label_image->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
   ui->label_image->setScaledContents(true);
-  ObjectRecognition->pcdCapWorld(cloud_cap);
-  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_world");
-  addTextBrowser("Time", "readFrameRS added.");
 }
 
 //===================================================
@@ -1152,4 +1166,38 @@ void MainWindow::TimerTimeout_cap()
 void MainWindow::on_pushButton_image_clicked()
 {
   on_pushButton_kinetic_clicked();
+}
+
+void MainWindow::on_pushButton_socket_clicked()
+{
+  /// else you click to open while being closed
+  if (ui->pushButton_socket->text() == QString("socket_link"))
+  {
+    /// if successfully
+    if (socketObj->socket_connect())
+    {
+      /// open and connect the socket, default local
+      ui->pushButton_socket->setText("socket_on");
+      addTextBrowser("Sock", "ssuccessfully connect socket on.");
+    }
+    else
+      addTextBrowser("Sock", "failed connect socket.");
+  }
+
+  /// if you click to closed while is open
+  else if (ui->pushButton_socket->text() == QString("socket_on"))
+  {
+    /// release socket
+    if(socketObj->socket_close())
+      addTextBrowser("Sock", "closed connect socket.");
+
+    ui->pushButton_socket->setText("socket_link");
+  }
+}
+
+void MainWindow::on_pushButton_soim_clicked()
+{
+//    socketObj->socket_process(ObjectRecognition->mask);
+    set_pixmapofimage(socketObj->socket_process(ObjectRecognition->image_origin));
+    addTextBrowser("Sock", "socket image task done.");
 }

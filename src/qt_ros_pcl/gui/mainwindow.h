@@ -11,6 +11,7 @@
 #include "objreco.h"
 #include "qros.h"
 #include "qvtk.h"
+#include "qsocket.h"
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QTableView>
@@ -40,6 +41,8 @@ public:
   /// basic static info about clouds
   void tableDisplay();
 
+  void set_pixmapofimage(cv::Mat img_show);
+
   /// ros pointer for publish msg
   qros* qrosObj;
   /// all pcl&cloud implement finished in it.
@@ -47,7 +50,17 @@ public:
 
   /// info visualize related.
   QStandardItemModel* table;
+
+  /// socket to mrcnn intance.
+  qsocket* socketObj;
+
   QTime current_time;
+
+private slots:
+  void on_pushButton_soim_clicked();
+
+private slots:
+  void on_pushButton_socket_clicked();
 
 private slots:
 

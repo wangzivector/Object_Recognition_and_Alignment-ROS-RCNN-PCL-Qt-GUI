@@ -10,6 +10,7 @@
 pcd_io::pcd_io()
 {
   mask = cv::Mat(640, 480, CV_8UC3);
+  image_origin = cv::Mat(640, 480, CV_8UC3);
   mask_color = std::tuple<uchar, uchar, uchar>(255, 255, 255);
 }
 
@@ -46,6 +47,7 @@ bool pcd_io::pcdSave(std::string pcd_path, PointCloud::Ptr cloud)
 bool pcd_io::maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
                            std::tuple<uchar, uchar, uchar> mask_rgb)
 {
+  RGB_Texture_mask(mask_img, Texture);
   /// if not organized cloud, you can't indese it by cloud[][]
   if (input_cloud->height > 1)
   {
@@ -71,7 +73,7 @@ bool pcd_io::maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
     return false;
   }
 
-  cv::Mat img = mask_img.clone();
+  cv::Mat img = mask.clone();
   PointCloud::Ptr output_cloud = PointCloud::Ptr(new PointCloud());
 
   /// mask_rgb is mask color, if match ,then take the point in same position
@@ -115,7 +117,7 @@ cv::Mat pcd_io::maskExample(int row, int col, uchar intensity)
         img.at<cv::Vec3b>(i, j)[1] = 255;
         img.at<cv::Vec3b>(i, j)[2] = 255;
       }
-  cv::imwrite("/home/wang/catkin_qtws/img.jpg", img);
+//  cv::imwrite("/home/wang/catkin_qtws/img.jpg", img);
   mask = img.clone();
   mask_color = std::tuple<uchar, uchar, uchar>(intensity, intensity, intensity);
   return img;
@@ -241,6 +243,7 @@ PointCloud::Ptr pcd_io::PCL_Conversion(const rs2::points& points,
   cloud->points.resize(points.size());
 
   auto Texture_Coord = points.get_texture_coordinates();
+  Texture = Texture_Coord;
   auto Vertex = points.get_vertices();
 
   /// Iterating through all points and setting XYZ coordinates
@@ -303,6 +306,36 @@ pcd_io::RGB_Texture(rs2::video_frame texture,
   int NT3 = New_Texture[Text_Index + 2];
 
   return std::tuple<int, int, int>(NT1, NT2, NT3);
+}
+
+//======================================================
+// RGB Texture_mask
+// modify for color
+//======================================================
+cv::Mat
+pcd_io::RGB_Texture_mask(cv::Mat origin,
+                    const rs2::texture_coordinate* Texture)
+{
+  /// Get Width and Height coordinates of texture
+  int width = origin.cols;   // Frame width in pixels
+  int height = origin.rows; // Frame height in pixels
+  cv::Mat mask_img = cv::Mat(width, height, CV_8UC3);
+  for (int Text_Index = 0; Text_Index <(width*height); ++Text_Index) {
+    rs2::texture_coordinate Texture_XY = Texture[Text_Index];
+    int i = Text_Index/height;
+    int j =Text_Index/width;
+    mask_img.at<cv::Vec3b>(i, j)[0] = mask_img.at<cv::Vec3b>(Texture_XY.v, Texture_XY.u)[0];
+    mask_img.at<cv::Vec3b>(i, j)[1] = mask_img.at<cv::Vec3b>(Texture_XY.v, Texture_XY.u)[1];
+    mask_img.at<cv::Vec3b>(i, j)[2] = mask_img.at<cv::Vec3b>(Texture_XY.v, Texture_XY.u)[2];
+  }
+  /// Normals to Texture Coordinates conversion
+//  int x_value = min(max(int(Texture_XY.u * width + .5f), 0), width - 1);
+//  int y_value = min(max(int(Texture_XY.v * height + .5f), 0), height - 1);
+
+//  const auto New_Texture = reinterpret_cast<const uint8_t*>(origin.get_data());
+  mask = mask_img.clone();
+
+  return mask_img;
 }
 
 //===================================================

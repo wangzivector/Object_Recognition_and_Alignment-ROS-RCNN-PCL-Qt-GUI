@@ -3,10 +3,25 @@
 qsocket::qsocket()
 {
   //build a socket for the client
-  int client_c = socket(AF_INET, SOCK_STREAM, 0);
-  //build a socket for the server
-  int server_s = socket(AF_INET, SOCK_STREAM, 0);
+  client_c = socket(AF_INET, SOCK_STREAM, 0);
+//  //build a socket for the server
+  server_s = socket(AF_INET, SOCK_STREAM, 0);
 
+}
+
+
+qsocket::~qsocket()
+{
+  close(client_c);
+//  close(server_s);
+}
+
+bool qsocket::socket_close()
+{
+  close(client_c);
+//  close(server_s);
+  client_c = socket(AF_INET, SOCK_STREAM, 0);
+  return true;
 }
 
 bool qsocket::socket_connect()
@@ -18,11 +33,14 @@ bool qsocket::socket_connect()
   adr_s.sin_addr.s_addr = inet_addr("127.0.0.1");
   adr_s.sin_port =htons(6666);
   std::printf("start to send data ...\n");
-  bind(server_s, (struct sockaddr *)&adr_s, sizeof(adr_s));
+//  bind(server_s, (struct sockaddr *)&adr_s, sizeof(adr_s));
 
   //connect to the socket of the server.
   if(connect(client_c, (struct sockaddr*)&adr_s, sizeof(adr_s))<0)
+  {
     std::perror("connect");
+    return false;
+  }
   return true;
 }
 
@@ -49,7 +67,10 @@ cv::Mat qsocket::socket_process(cv::Mat img)
   for(int i = 0; i<rgbsize; i+=nbytes)
   {
       if((nbytes = recv(client_c, rgbData+i, rgbsize-i, 0))==-1)
+      {
           std::perror("recv");
+          return rgb;
+      }
   }
 
   int ptr = 0;
@@ -62,7 +83,7 @@ cv::Mat qsocket::socket_process(cv::Mat img)
           rgb.at<cv::Vec3b>(m,n)[2] = rgbData[ptr+2];
           ptr+=3;
       }
-  std::printf("have rece image %zu\n", rgb.total());
+  printf("have rece image %zu\n", rgb.total());
   return rgb;
 
 }

@@ -99,7 +99,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="tab">
          <property name="toolTip">
@@ -2209,6 +2209,32 @@ border-bottom-color: rgb(0, 0, 0);</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_socket">
+          <property name="geometry">
+           <rect>
+            <x>60</x>
+            <y>340</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>socket_link</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_soim">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>340</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>socket_image</string>
           </property>
          </widget>
         </widget>

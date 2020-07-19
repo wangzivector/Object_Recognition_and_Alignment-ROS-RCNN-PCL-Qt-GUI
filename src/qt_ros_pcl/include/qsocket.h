@@ -13,9 +13,7 @@
 
 // OpenCV
 #include <opencv2/core.hpp>
-// #include <opencv2/highgui/highgui.hpp>
-// #include <opencv2/calib3d/calib3d.hpp>
-// #include <opencv2/nonfree/nonfree.hpp>
+
 
 typedef unsigned char uchar;
 
@@ -24,7 +22,9 @@ class qsocket
 {
 public:
   qsocket();
+  ~qsocket();
   bool socket_connect();
+  bool socket_close();
   cv::Mat socket_process(cv::Mat img);
 
   int client_c;

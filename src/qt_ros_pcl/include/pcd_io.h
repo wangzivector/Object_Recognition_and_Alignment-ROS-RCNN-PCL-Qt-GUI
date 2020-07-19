@@ -53,8 +53,11 @@ public:
   bool copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in,
                                     PointCloud::Ptr cloud_out);
 
-  cv::Mat maskExample(int row = 480, int col = 640, uchar intensity = 120);
+  cv::Mat maskExample(int row = 480, int col = 640, uchar intensity = 255);
+  cv::Mat RGB_Texture_mask(cv::Mat texture,
+                      const rs2::texture_coordinate *Texture);
   cv::Mat mask;
+  cv::Mat image_origin;
   std::tuple<uchar, uchar, uchar> mask_color;
 
 private:
@@ -63,7 +66,7 @@ private:
                               const rs2::video_frame& color);
 
   std::tuple<int, int, int> RGB_Texture(rs2::video_frame texture,
-                                        rs2::texture_coordinate Texture_XY);
+                                        const rs2::texture_coordinate Texture_XY);
   /// Declare pointcloud object, for calculating pointclouds and texture
   /// mappings
   rs2::pointcloud* pc_pointer;
@@ -71,6 +74,7 @@ private:
   /// cloud when a frame drops
   rs2::points* points_pointer;
   rs2::pipeline* pipe_point;
+  const rs2::texture_coordinate* Texture;
 };
 
 #endif // PCD_IO_H
