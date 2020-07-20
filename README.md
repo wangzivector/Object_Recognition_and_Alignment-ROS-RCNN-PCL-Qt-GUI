@@ -11,13 +11,21 @@ This project includes the following detailed processing methods but not all of i
 * **feature-based method**
 
   ├─ pointcloud preprocess
+  
   ├─ keypoint extract
+  
   ├─ segmentation
+  
   ├─ normal estimation
+  
   ├─ feature compute
+  
   ├─ surface reconstruct -- *MLS
+  
   ├─ alignment -- *RANSAC *SACIA
+  
   ├─ registration -- *NDT *ICP
+  
   ├─ diff feature same reco -- *shot352 *fpfh
 
   ├─using Registration to get pose
