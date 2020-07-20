@@ -95,6 +95,11 @@ cd catkin_qtws
 catkin_make 
 source ./devel/setup.sh
 
+///start RCNN script in ./src/qt_ros_pcl/scripts/socket_tf_master.py 
+///this script can bind a socket at address: 127.0.0.1 in port 6666(check script for detailed info)
+
+python3 ./src/qt_ros_pcl/scripts/socket_tf_master.py
+
 roscore 
 rosrun qt_ros_pcl gui_node
 
@@ -106,6 +111,10 @@ rosrun qt_ros_pcl gui_node
 * I recommend that you open and modify this project by Qtcreator-ros.
 (the installation and configuration of qtcreator-ros are list in my other repository named **instructions_learning**.)
 
-### 4.Notes
+### 4.RCNN Related
+the pre trained model and weight are list in the repo sahalaan/VidaVSMilk-using-Mask-RCNN (train rcnn using dataset <milk_box> and <tissue_package>) 
+detailed info please check this [repo](https://github.com/sahalaan/VidaVSMilk-using-Mask-RCNN) and the [python script](/src/qt_ros_pcl/scripts/socket_tf_master.py)
+
+### 5.Notes
 
 This repository is still under development. If there is any issue please inform it. 
