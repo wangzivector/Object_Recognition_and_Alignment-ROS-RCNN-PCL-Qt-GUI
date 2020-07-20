@@ -44,7 +44,8 @@ bool pcd_io::pcdSave(std::string pcd_path, PointCloud::Ptr cloud)
 //  maskImplement
 //  crop the organized cloud based mask
 //===================================================
-bool pcd_io::maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
+bool pcd_io::maskImplement(PointCloud::Ptr input_cloud,
+                           PointCloud::Ptr out_cloud, cv::Mat mask_img,
                            std::tuple<uchar, uchar, uchar> mask_rgb)
 {
   RGB_Texture_mask(mask_img, Texture);
@@ -87,11 +88,16 @@ bool pcd_io::maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
       if ((img.at<cv::Vec3b>(i, j)[0] == b) &&
           (img.at<cv::Vec3b>(i, j)[1] == g) &&
           (img.at<cv::Vec3b>(i, j)[2] == r))
+      {
         output_cloud->push_back(input_cloud->at(j, i));
+        output_cloud->points[output_cloud->size()-1].r = 255;
+        output_cloud->points[output_cloud->size()-1].g = 0;
+        output_cloud->points[output_cloud->size()-1].b = 0;
+        }
     }
   }
-  pcl::copyPointCloud(*output_cloud, *input_cloud);
-  std::cout << "cloud size :" << input_cloud->height << input_cloud->width
+  pcl::copyPointCloud(*output_cloud, *out_cloud);
+  std::cout << "cloud size :" << out_cloud->height << out_cloud->width
             << std::endl;
   return true;
 }
@@ -117,7 +123,7 @@ cv::Mat pcd_io::maskExample(int row, int col, uchar intensity)
         img.at<cv::Vec3b>(i, j)[1] = 255;
         img.at<cv::Vec3b>(i, j)[2] = 255;
       }
-//  cv::imwrite("/home/wang/catkin_qtws/img.jpg", img);
+  //  cv::imwrite("/home/wang/catkin_qtws/img.jpg", img);
   mask = img.clone();
   mask_color = std::tuple<uchar, uchar, uchar>(intensity, intensity, intensity);
   return img;
@@ -160,9 +166,10 @@ bool pcd_io::realsenseInit()
 
     pipe_point->start(cfg);
 
-  for (int i = 0; i < 10; i++)
-    auto frames =
-        pipe_point->wait_for_frames(); // Drop several frames for auto-exposure
+    for (int i = 0; i < 10; i++)
+      auto frames =
+          pipe_point
+              ->wait_for_frames(); // Drop several frames for auto-exposure
   }
   /// if there error, catch and don't crash the exe
   /// like no kinetic connected yet or not detach well
@@ -192,7 +199,8 @@ bool pcd_io::readFrameRS(PointCloud::Ptr cloud, cv::Mat& img)
 
   /// Generate the pointcloud and texture mappings
   *points_pointer = pc_pointer->calculate(depth);
-  PointCloud::Ptr cloud_get = PCL_Conversion(*points_pointer, color); /// get PCL pointcloud type
+  PointCloud::Ptr cloud_get =
+      PCL_Conversion(*points_pointer, color); /// get PCL pointcloud type
   pcl::copyPointCloud(*cloud_get, *cloud);
 
   //
@@ -207,10 +215,7 @@ bool pcd_io::readFrameRS(PointCloud::Ptr cloud, cv::Mat& img)
 //  releasePipe
 //  release sensor if no use.
 //===================================================
-void pcd_io::releasePipe()
-{
-  pipe_point->stop();
-}
+void pcd_io::releasePipe() { pipe_point->stop(); }
 
 using namespace std;
 
@@ -221,7 +226,7 @@ using namespace std;
 //  frame captured using the Realsense.
 //===================================================
 PointCloud::Ptr pcd_io::PCL_Conversion(const rs2::points& points,
-                            const rs2::video_frame& color)
+                                       const rs2::video_frame& color)
 {
   /// input param is points and RGB ,combine it to return
 
@@ -312,27 +317,33 @@ pcd_io::RGB_Texture(rs2::video_frame texture,
 // RGB Texture_mask
 // modify for color
 //======================================================
-cv::Mat
-pcd_io::RGB_Texture_mask(cv::Mat origin,
-                    const rs2::texture_coordinate* Texture)
+cv::Mat pcd_io::RGB_Texture_mask(cv::Mat origin,
+                                 const rs2::texture_coordinate* Texture)
 {
   /// Get Width and Height coordinates of texture
-  int width = origin.cols;   // Frame width in pixels
-  int height = origin.rows; // Frame height in pixels
-  cv::Mat mask_img = cv::Mat(width, height, CV_8UC3);
-  for (int Text_Index = 0; Text_Index <(width*height); ++Text_Index) {
+  int width = origin.cols;                            // Frame width in pixels
+  int height = origin.rows;                           // Frame height in pixels
+  cv::Mat mask_img = cv::Mat(height, width, CV_8UC3); //(480 640)
+  for (int Text_Index = 0; Text_Index < (width * height); ++Text_Index)
+  {
     rs2::texture_coordinate Texture_XY = Texture[Text_Index];
-    int i = Text_Index/height;
-    int j =Text_Index/width;
-    mask_img.at<cv::Vec3b>(i, j)[0] = mask_img.at<cv::Vec3b>(Texture_XY.v, Texture_XY.u)[0];
-    mask_img.at<cv::Vec3b>(i, j)[1] = mask_img.at<cv::Vec3b>(Texture_XY.v, Texture_XY.u)[1];
-    mask_img.at<cv::Vec3b>(i, j)[2] = mask_img.at<cv::Vec3b>(Texture_XY.v, Texture_XY.u)[2];
+    int x_value = min(max(int(Texture_XY.u * width + .5f), 0), width - 1);
+    int y_value = min(max(int(Texture_XY.v * height + .5f), 0), height - 1);
+
+    int i = Text_Index % width; // /640
+    int j = Text_Index / width;
+    mask_img.at<cv::Vec3b>(j, i)[0] = origin.at<cv::Vec3b>(y_value, x_value)[2];
+    mask_img.at<cv::Vec3b>(j, i)[1] = origin.at<cv::Vec3b>(y_value, x_value)[1];
+    mask_img.at<cv::Vec3b>(j, i)[2] = origin.at<cv::Vec3b>(y_value, x_value)[0];
+    //    if(i==j*2) printf("#debug#:Text_Index(%d) (%d,%d): x_value/y_value:%d
+    //    / %d \n",Text_Index ,j ,i ,y_value,x_value);
   }
   /// Normals to Texture Coordinates conversion
-//  int x_value = min(max(int(Texture_XY.u * width + .5f), 0), width - 1);
-//  int y_value = min(max(int(Texture_XY.v * height + .5f), 0), height - 1);
+  //  int x_value = min(max(int(Texture_XY.u * width + .5f), 0), width - 1);
+  //  int y_value = min(max(int(Texture_XY.v * height + .5f), 0), height - 1);
 
-//  const auto New_Texture = reinterpret_cast<const uint8_t*>(origin.get_data());
+  //  const auto New_Texture = reinterpret_cast<const
+  //  uint8_t*>(origin.get_data());
   mask = mask_img.clone();
 
   return mask_img;

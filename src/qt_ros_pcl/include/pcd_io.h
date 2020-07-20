@@ -47,7 +47,7 @@ public:
   //
   // MASK implement
   //
-  bool maskImplement(PointCloud::Ptr input_cloud, cv::Mat mask_img,
+  bool maskImplement(PointCloud::Ptr input_cloud, PointCloud::Ptr out_cloud, cv::Mat mask_img,
                              std::tuple<uchar, uchar, uchar> mask_rgb);
 
   bool copyPointRGBNormalToPointRGB(PointRGBNormalCloud::Ptr cloud_in,

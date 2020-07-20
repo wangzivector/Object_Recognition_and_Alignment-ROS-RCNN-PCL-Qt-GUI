@@ -1135,11 +1135,13 @@ void MainWindow::TimerTimeout_cap()
   PointCloud::Ptr cloud_cap = PointCloud::Ptr(new PointCloud());
   ObjectRecognition->readFrameRS(cloud_cap, ObjectRecognition->image_origin);
 
-  set_pixmapofimage(ObjectRecognition->image_origin);
+//  set_pixmapofimage(ObjectRecognition->image_origin);
   ObjectRecognition->mask = socketObj->socket_process(ObjectRecognition->image_origin);
 
   ObjectRecognition->pcdCapWorld(cloud_cap, true);
-  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_world");
+  set_pixmapofimage(ObjectRecognition->mask);
+  refreshPloudCloudVTK();
+//  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_world");
   addTextBrowser("Time", "readFrameRS added.");
 }
 

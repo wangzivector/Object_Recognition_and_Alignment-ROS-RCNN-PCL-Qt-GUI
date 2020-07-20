@@ -1,6 +1,7 @@
-# object_detection-Qt-PCL-ROS-GUI
+# object_detection-RCNN-Qt-PCL-ROS-GUI(under development)
 ## features
 This catkin workspace have many features including ROSnode, PCL process, Qt GUI, pointcloud widget.
+Besides, it contains RCNN implement(TF in Python) with socket communication.
 It can be used in pointcloud recognition and model processing tasks.
 
 * main dependencies:
@@ -10,6 +11,9 @@ PCL-1.71
 Qt5
 VTK6.2
 CMake5<optional>
+
+tensorflow-1.15.0
+(requirements.txt)
 ```
 
 ### basic step
