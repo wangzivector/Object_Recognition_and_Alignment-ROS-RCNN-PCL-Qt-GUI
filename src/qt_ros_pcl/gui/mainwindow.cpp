@@ -876,7 +876,7 @@ void MainWindow::refreshPloudCloudVTK()
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world,
                                   "cloud_world");
   if (ui->checkBox_wk->isChecked())
-    qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world_filter,
+    qvtkWidgetObj->showPointCloud(qvtkWidgetObj->colorizePointCloud(ObjectRecognition->cloud_world_filter, 'r'),
                                   "cloud_world_filter");
   if (ui->checkBox_wr->isChecked())
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world_keypoint,
@@ -1011,11 +1011,13 @@ void MainWindow::on_actionobject_save_triggered()
   QString filename;
   QWidget* qwidget = new QWidget();
   filename = QFileDialog::getSaveFileName(
-      qwidget, "Open File", "./src/qt_ros_pcl/pcd/", "PCD File(*.pcd)");
+      qwidget, "get file path", "./model/", ".pcd");
+
   if (filename == "")
   {
     return;
   }
+  filename = filename + ".pcd";
   if (ObjectRecognition->pcdSave(filename.toStdString().c_str(),
                                  ObjectRecognition->cloud_world_filter))
     addTextBrowser("Save", "filter successfully saved on :" + filename);
@@ -1133,18 +1135,57 @@ void MainWindow::on_pushButton_kinetic_clicked()
 void MainWindow::TimerTimeout_cap()
 {
   PointCloud::Ptr cloud_cap = PointCloud::Ptr(new PointCloud());
-  ObjectRecognition->readFrameRS(cloud_cap, ObjectRecognition->image_origin);
+  if (!ObjectRecognition->readFrameRS(cloud_cap,
+                                      ObjectRecognition->image_origin))
+  {
+    on_pushButton_kinetic_clicked();
+    return;
+  }
+  if (ui->pushButton_socket->text() == QString("socket_on"))
+  {
+    //  set_pixmapofimage(ObjectRecognition->image_origin);
+    ObjectRecognition->mask =
+        socketObj->socket_process(ObjectRecognition->image_origin);
 
-//  set_pixmapofimage(ObjectRecognition->image_origin);
-  ObjectRecognition->mask = socketObj->socket_process(ObjectRecognition->image_origin);
-
-  ObjectRecognition->pcdCapWorld(cloud_cap, true);
-  set_pixmapofimage(ObjectRecognition->mask);
+    ObjectRecognition->pcdCapWorld(cloud_cap, true);
+    set_pixmapofimage(ObjectRecognition->mask);
+  }
+  else
+  {
+    set_pixmapofimage(ObjectRecognition->image_origin);
+    ObjectRecognition->pcdCapWorld(cloud_cap, false);
+  }
   refreshPloudCloudVTK();
-//  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world, "cloud_world");
+  //  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world,
+  //  "cloud_world");
   addTextBrowser("Time", "readFrameRS added.");
-}
 
+  QMessageBox::StandardButton ask;
+  ask = QMessageBox::question(
+      this, "Next",
+      "please choose the next step to handle the masked-pointcloud?",
+      QMessageBox::Save | QMessageBox::Close | QMessageBox::Ok);
+  switch (ask)
+  {
+  case QMessageBox::Ok:
+    /// discard this frame and regain one
+    addTextBrowser("Mask", "discard this frame and regain one.");
+    break;
+  case QMessageBox::Close:
+    /// stop read and release the camera
+    addTextBrowser("Mask", "stop read and release the camera.");
+    on_pushButton_kinetic_clicked();
+    break;
+  case QMessageBox::Save:
+    /// restore this frame and continue to cap another frame
+    on_actionobject_save_triggered();
+    addTextBrowser("Mask", "restore this frame and to cap another frame.");
+    break;
+  default:
+    addTextBrowser("Warn", "command of sub windows not recgnized");
+    break;
+  }
+}
 
 //===================================================
 //  set_pixmapofimage
@@ -1152,10 +1193,9 @@ void MainWindow::TimerTimeout_cap()
 //===================================================
 void MainWindow::set_pixmapofimage(cv::Mat img_show)
 {
-  QPixmap pix_mask = QPixmap::fromImage(QImage(
-      img_show.data, img_show.cols,
-      img_show.rows,
-      static_cast<int>(img_show.step), QImage::Format_RGB888));
+  QPixmap pix_mask = QPixmap::fromImage(
+      QImage(img_show.data, img_show.cols, img_show.rows,
+             static_cast<int>(img_show.step), QImage::Format_RGB888));
   ui->label_image->setPixmap(pix_mask);
   ui->label_image->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
   ui->label_image->setScaledContents(true);
@@ -1190,7 +1230,7 @@ void MainWindow::on_pushButton_socket_clicked()
   else if (ui->pushButton_socket->text() == QString("socket_on"))
   {
     /// release socket
-    if(socketObj->socket_close())
+    if (socketObj->socket_close())
       addTextBrowser("Sock", "closed connect socket.");
 
     ui->pushButton_socket->setText("socket_link");
@@ -1199,7 +1239,7 @@ void MainWindow::on_pushButton_socket_clicked()
 
 void MainWindow::on_pushButton_soim_clicked()
 {
-//    socketObj->socket_process(ObjectRecognition->mask);
-    set_pixmapofimage(socketObj->socket_process(ObjectRecognition->image_origin));
-    addTextBrowser("Sock", "socket image task done.");
+  //    socketObj->socket_process(ObjectRecognition->mask);
+  set_pixmapofimage(socketObj->socket_process(ObjectRecognition->image_origin));
+  addTextBrowser("Sock", "socket image task done.");
 }

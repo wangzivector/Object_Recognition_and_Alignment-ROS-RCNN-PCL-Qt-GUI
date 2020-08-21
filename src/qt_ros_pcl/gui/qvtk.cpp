@@ -152,3 +152,28 @@ void qvtk::addPlotterExample(pcl::PointCloud<pcl::FPFHSignature33>::Ptr descri_f
     plotter.spinOnce(100);
   }
 }
+
+PointCloudT::Ptr qvtk::colorizePointCloud(PointCloudT::Ptr cloud_org, char colorx)
+{
+  PointCloudT::Ptr cloud = PointCloudT::Ptr(new PointCloudT());
+  pcl::copyPointCloud(*cloud_org, *cloud);
+
+  switch (colorx)
+  {
+  case 'r':
+    for (int i = cloud->size(); i > 0; i--)
+      cloud->points[i - 1].r = 255;
+    break;
+  case 'g':
+    for (int i = cloud->size(); i > 0; i--)
+      cloud->points[i - 1].g = 255;
+    break;
+  case 'b':
+    for (int i = cloud->size(); i > 0; i--)
+      cloud->points[i - 1].b = 255;
+    break;
+  }
+  std::cout<< "finished colorizePointCloud"<< std::endl;
+  return cloud;
+}
+

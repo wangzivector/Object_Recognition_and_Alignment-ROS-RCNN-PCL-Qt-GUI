@@ -502,6 +502,8 @@ bool ObjReco::pcdCapWorld(PointCloud::Ptr cloud, bool is_mask)
    pcl::copyPointCloud(*cloud, *cloud_world);
   if(is_mask)
     maskImplement(cloud_world, cloud_world_filter, mask, mask_color);
+  else
+    pcl::copyPointCloud(*cloud, *cloud_world_filter);
   deal_fpfh = false;
   deal_shot352 = false;
   return true;

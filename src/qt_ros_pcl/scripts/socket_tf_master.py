@@ -121,7 +121,7 @@ def socket_process():
         #decimg=cv2.imdecode(data,cv2.IMREAD_COLOR)#将数组解码成图像
         data=data.reshape((480,640,-1))
         #print(data)
-        skimage.io.imshow(data)
+        #skimage.io.imshow(data)
         images.append(data)
         #cv2.imwrite("./test.jpg",decimg)
         #print(decimg)

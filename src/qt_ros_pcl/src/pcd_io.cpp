@@ -90,10 +90,10 @@ bool pcd_io::maskImplement(PointCloud::Ptr input_cloud,
           (img.at<cv::Vec3b>(i, j)[2] == r))
       {
         output_cloud->push_back(input_cloud->at(j, i));
-        output_cloud->points[output_cloud->size()-1].r = 255;
-        output_cloud->points[output_cloud->size()-1].g = 0;
-        output_cloud->points[output_cloud->size()-1].b = 0;
-        }
+//        output_cloud->points[output_cloud->size() - 1].r = 255;
+//        output_cloud->points[output_cloud->size() - 1].g = 0;
+//        output_cloud->points[output_cloud->size() - 1].b = 0;
+      }
     }
   }
   pcl::copyPointCloud(*output_cloud, *out_cloud);
@@ -128,6 +128,7 @@ cv::Mat pcd_io::maskExample(int row, int col, uchar intensity)
   mask_color = std::tuple<uchar, uchar, uchar>(intensity, intensity, intensity);
   return img;
 }
+
 
 //===================================================
 //  realsenseInit
@@ -188,26 +189,38 @@ bool pcd_io::realsenseInit()
 //===================================================
 bool pcd_io::readFrameRS(PointCloud::Ptr cloud, cv::Mat& img)
 {
-  auto frames = pipe_point->wait_for_frames();
-  auto color = frames.get_color_frame();
-  if (!color)
-    color = frames.get_infrared_frame();
+  try
+  {
+    auto frames = pipe_point->wait_for_frames();
+    auto color = frames.get_color_frame();
+    if (!color)
+      color = frames.get_infrared_frame();
 
-  /// Tell pointcloud object to map to this color frame
-  pc_pointer->map_to(color);
-  auto depth = frames.get_depth_frame();
+    /// Tell pointcloud object to map to this color frame
+    pc_pointer->map_to(color);
+    auto depth = frames.get_depth_frame();
 
-  /// Generate the pointcloud and texture mappings
-  *points_pointer = pc_pointer->calculate(depth);
-  PointCloud::Ptr cloud_get =
-      PCL_Conversion(*points_pointer, color); /// get PCL pointcloud type
-  pcl::copyPointCloud(*cloud_get, *cloud);
+    /// Generate the pointcloud and texture mappings
+    *points_pointer = pc_pointer->calculate(depth);
+    PointCloud::Ptr cloud_get =
+        PCL_Conversion(*points_pointer, color); /// get PCL pointcloud type
+    pcl::copyPointCloud(*cloud_get, *cloud);
 
-  //
-  // get img frame
-  //
-  img = cv::Mat(cloud->height, cloud->width, CV_8UC3, (void*)color.get_data());
-  cv::cvtColor(img, img, CV_RGB2BGR);
+    //
+    // get img frame
+    //
+    img =
+        cv::Mat(cloud->height, cloud->width, CV_8UC3, (void*)color.get_data());
+    cv::cvtColor(img, img, CV_RGB2BGR);
+  }
+  /// if there error, catch and don't crash the exe
+  /// like no kinetic connected yet or not detach well
+  catch (std::exception& e)
+  {
+    std::cout << "open realsense error occurs : " << e.what() << std::endl;
+    return false;
+  }
+  std::cout << "have wait for frame settle. got sensor.\n";
   return true;
 }
 

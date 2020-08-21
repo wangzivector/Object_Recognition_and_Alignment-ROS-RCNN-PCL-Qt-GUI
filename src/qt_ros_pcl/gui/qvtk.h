@@ -56,6 +56,10 @@ public:
 
   bool vtkRemovePointCloud(QString cloud_name, bool all = false);
 
+
+  PointCloudT::Ptr colorizePointCloud(PointCloudT::Ptr cloud, char colorx);
+
+
   /// basic pointcloud process in Qvtk widget
   template <typename CloudType>
   inline bool vtkAddPointCloud(const CloudType new_pointcloud,
