@@ -57,6 +57,12 @@ public:
   QTime current_time;
 
 private slots:
+  void on_pushButton_load_todo_clicked();
+
+private slots:
+  void on_pushButton_load_org_clicked();
+
+private slots:
   void on_pushButton_soim_clicked();
 
 private slots:

@@ -93,8 +93,8 @@ public:
     setPointCloudProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3,
                             cloud_name);
     if(cloud_name.contains("object", Qt::CaseSensitive)){
-      setPointCloudProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 3,
-                              cloud_name);
+//      setPointCloudProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 3,
+//                              cloud_name);
       setPointCloudProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2,
                               cloud_name);
     }

@@ -146,7 +146,7 @@ def socket_process():
         r = results[0]
         print('size1:',len(r['masks']),'size2:',len(r['masks'][0]),'size3:',len(r['masks'][0][0]))# this is (480.640.object_num)
         print( r['class_ids'])
-        masked = visualize.display_instances(images[0], r['rois'], r['masks'], r['class_ids'], class_names, r['scores'])
+        #masked = visualize.display_instances(images[0], r['rois'], r['masks'], r['class_ids'], class_names, r['scores'])
         
         img_panel = np.zeros((480,640,3),np.int8)
         if(len(r['class_ids'])>0):

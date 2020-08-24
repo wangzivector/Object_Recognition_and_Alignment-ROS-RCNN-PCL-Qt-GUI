@@ -876,7 +876,7 @@ void MainWindow::refreshPloudCloudVTK()
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world,
                                   "cloud_world");
   if (ui->checkBox_wk->isChecked())
-    qvtkWidgetObj->showPointCloud(qvtkWidgetObj->colorizePointCloud(ObjectRecognition->cloud_world_filter, 'r'),
+    qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world_filter,
                                   "cloud_world_filter");
   if (ui->checkBox_wr->isChecked())
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world_keypoint,
@@ -888,14 +888,18 @@ void MainWindow::refreshPloudCloudVTK()
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object,
                                   "cloud_object");
   if (ui->checkBox_ok->isChecked())
-    qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object_filter,
-                                  "cloud_object_filter");
+    qvtkWidgetObj->showPointCloud(
+        qvtkWidgetObj->colorizePointCloud(
+            ObjectRecognition->cloud_object_filter, 'r'),
+        "cloud_object_filter");
   if (ui->checkBox_or->isChecked())
     qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object_keypoint,
                                   "cloud_object_keypoint");
   if (ui->checkBox_oa->isChecked())
-    qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_object_aligned,
-                                  "cloud_object_alianed");
+    qvtkWidgetObj->showPointCloud(
+        qvtkWidgetObj->colorizePointCloud(
+            ObjectRecognition->cloud_object_aligned, 'r'),
+        "cloud_object_alianed");
 
   addTextBrowser("Qvtk", "refresh the pointcloud display done.");
 }
@@ -1010,8 +1014,8 @@ void MainWindow::on_actionobject_save_triggered()
 {
   QString filename;
   QWidget* qwidget = new QWidget();
-  filename = QFileDialog::getSaveFileName(
-      qwidget, "get file path", "./model/", ".pcd");
+  filename = QFileDialog::getSaveFileName(qwidget, "get file path", "./model/",
+                                          ".pcd");
 
   if (filename == "")
   {
@@ -1242,4 +1246,39 @@ void MainWindow::on_pushButton_soim_clicked()
   //    socketObj->socket_process(ObjectRecognition->mask);
   set_pixmapofimage(socketObj->socket_process(ObjectRecognition->image_origin));
   addTextBrowser("Sock", "socket image task done.");
+}
+
+void MainWindow::on_pushButton_load_org_clicked()
+{
+  QString path = "/home/wang/catkin_qtws/devel/lib/qt_ros_pcl/model/" +
+                 ui->comboBox_selenum->currentText() + ".pcd";
+  if (ObjectRecognition->pcdReadWorld(path.toStdString().c_str()))
+  {
+    pcl::copyPointCloud(*ObjectRecognition->cloud_world_filter,
+                        *ObjectRecognition->cloud_world_keypoint);
+    addTextBrowser("Pcds", "finished load pcd " + path);
+  }
+  else
+    addTextBrowser("Pcds", "failed load pcd " + path);
+  refreshPloudCloudVTK();
+  //  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world,
+  //  "cloud_world");
+}
+
+void MainWindow::on_pushButton_load_todo_clicked()
+{
+  QString path = "/home/wang/catkin_qtws/devel/lib/qt_ros_pcl/model/" +
+                 ui->comboBox_selenum->currentText() + ".pcd";
+  if (ObjectRecognition->pcdReadModel(path.toStdString().c_str()))
+  {
+    addTextBrowser("Pcds", "finished load pcd " + path);
+    pcl::copyPointCloud(*ObjectRecognition->cloud_object_filter,
+                        *ObjectRecognition->cloud_object_aligned);
+  }
+  else
+    addTextBrowser("Pcds", "failed load pcd " + path);
+  refreshPloudCloudVTK();
+  //  qvtkWidgetObj->showPointCloud(qvtkWidgetObj->colorizePointCloud(ObjectRecognition->cloud_object,
+  //  'r'),
+  //                                "cloud_object");
 }

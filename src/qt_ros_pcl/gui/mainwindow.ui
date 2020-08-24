@@ -99,7 +99,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>4</number>
         </property>
         <widget class="QWidget" name="tab">
          <property name="toolTip">
@@ -546,7 +546,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>Axis filter</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
           <widget class="QCheckBox" name="Gridfilter">
@@ -584,7 +584,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>Plane filter</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
           <widget class="QCheckBox" name="Outlierfilter">
@@ -622,7 +622,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>Mls recon</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
           <widget class="QCheckBox" name="Keypoint">
@@ -641,7 +641,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>Key point</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </widget>
@@ -692,7 +692,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>ICP</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
           <widget class="QCheckBox" name="feature">
@@ -711,7 +711,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>feature</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="tristate">
             <bool>false</bool>
@@ -733,7 +733,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>align</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
           <widget class="QComboBox" name="feature_choose">
@@ -1098,6 +1098,19 @@ border-bottom-color: rgb(0, 0, 0);</string>
            <string>process</string>
           </property>
          </widget>
+         <widget class="QLabel" name="label_18">
+          <property name="geometry">
+           <rect>
+            <x>150</x>
+            <y>310</y>
+            <width>121</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>cloud -&gt; Filter/Keypoint</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
@@ -1420,6 +1433,19 @@ border-bottom-color: rgb(0, 0, 0);</string>
           </property>
           <property name="text">
            <string>show feat</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_19">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>320</y>
+            <width>131</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>filter/Keypoint -&gt; feature</string>
           </property>
          </widget>
         </widget>
@@ -1848,6 +1874,19 @@ border-bottom-color: rgb(0, 0, 0);</string>
            </widget>
           </widget>
          </widget>
+         <widget class="QLabel" name="label_20">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>280</y>
+            <width>151</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>filter/keypoint/feat -&gt; aligned</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="tab_5">
          <attribute name="title">
@@ -2161,6 +2200,32 @@ border-bottom-color: rgb(0, 0, 0);</string>
            <double>0.010000000000000</double>
           </property>
          </widget>
+         <widget class="QLabel" name="label_21">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>320</y>
+            <width>171</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>aligned-&gt;aligned&lt;NDT keypoint&gt;</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_22">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>340</y>
+            <width>171</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>aligned-&gt;aligned&lt;ICP Filter&gt;</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="tab_8">
          <attribute name="title">
@@ -2235,6 +2300,129 @@ border-bottom-color: rgb(0, 0, 0);</string>
           </property>
           <property name="text">
            <string>socket_image</string>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_9">
+         <attribute name="title">
+          <string>Align</string>
+         </attribute>
+         <widget class="QComboBox" name="comboBox_selenum">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>20</y>
+            <width>86</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="maxCount">
+           <number>10</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>01</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QPushButton" name="pushButton_load_org">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>60</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Origin pcd</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_load_todo">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>90</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string> Todo pcd</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_align_todo">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>20</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>align_todo</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_merge">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>50</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>merge</string>
           </property>
          </widget>
         </widget>

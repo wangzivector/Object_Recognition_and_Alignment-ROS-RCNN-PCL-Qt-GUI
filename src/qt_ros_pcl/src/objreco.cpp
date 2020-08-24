@@ -329,7 +329,10 @@ bool ObjReco::reFPFH(bool is_do)
 bool ObjReco::reSACIAFPFH(bool is_do)
 {
   if (!is_do)
+  {
+    pcl::copyPointCloud(*cloud_object_filter, *cloud_object_aligned);
     return false;
+  }
   if (deal_fpfh)
   {
     std::cout << "start calculating SACIAFPFH ..." << std::endl;
@@ -359,7 +362,10 @@ bool ObjReco::reSACIAFPFH(bool is_do)
 bool ObjReco::reSACIASHOT352(bool is_do)
 {
   if (!is_do)
+  {
+    pcl::copyPointCloud(*cloud_object_filter, *cloud_object_aligned);
     return false;
+  }
   if (deal_shot352)
   {
     std::cout << "start calculating SACIASHOT352 ..." << std::endl;
@@ -385,7 +391,10 @@ bool ObjReco::reSACIASHOT352(bool is_do)
 bool ObjReco::reRANSACFPFH(bool is_do)
 {
   if (!is_do)
+  {
+    pcl::copyPointCloud(*cloud_object_filter, *cloud_object_aligned);
     return false;
+  }
   if (deal_fpfh)
   {
     std::cout << "start calculating RANSACFPFH ..." << std::endl;
@@ -411,8 +420,11 @@ bool ObjReco::reRANSACFPFH(bool is_do)
 bool ObjReco::reRANSACSHOT352(bool is_do)
 {
   if (!is_do)
+  {
+    pcl::copyPointCloud(*cloud_object_filter, *cloud_object_aligned);
     return false;
-  if (deal_shot352)
+  }
+    if (deal_shot352)
   {
     std::cout << "start calculating RANSACSHOT352 ..." << std::endl;
     Eigen::Matrix4f trans_align_temp = RANSACRegistration(
