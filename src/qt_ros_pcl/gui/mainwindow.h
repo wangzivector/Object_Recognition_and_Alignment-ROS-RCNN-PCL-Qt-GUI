@@ -12,6 +12,7 @@
 #include "qros.h"
 #include "qvtk.h"
 #include "qsocket.h"
+#include "qalign.h"
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QTableView>
@@ -55,6 +56,9 @@ public:
   qsocket* socketObj;
 
   QTime current_time;
+
+private slots:
+  void on_pushButton_dete_clicked();
 
 private slots:
   void on_pushButton_load_todo_clicked();

@@ -99,7 +99,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>6</number>
         </property>
         <widget class="QWidget" name="tab">
          <property name="toolTip">
@@ -2423,6 +2423,19 @@ border-bottom-color: rgb(0, 0, 0);</string>
           </property>
           <property name="text">
            <string>merge</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_dete">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>90</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>detect2d</string>
           </property>
          </widget>
         </widget>

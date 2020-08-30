@@ -1282,3 +1282,9 @@ void MainWindow::on_pushButton_load_todo_clicked()
   //  'r'),
   //                                "cloud_object");
 }
+
+void MainWindow::on_pushButton_dete_clicked()
+{
+  qalign Detector2D;
+  Detector2D.qalignTest();
+}

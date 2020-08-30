@@ -48,6 +48,7 @@ bool pcd_io::maskImplement(PointCloud::Ptr input_cloud,
                            PointCloud::Ptr out_cloud, cv::Mat mask_img,
                            std::tuple<uchar, uchar, uchar> mask_rgb)
 {
+  /// operate this could make the mask avalible
   RGB_Texture_mask(mask_img, Texture);
   /// if not organized cloud, you can't indese it by cloud[][]
   if (input_cloud->height > 1)
@@ -75,6 +76,7 @@ bool pcd_io::maskImplement(PointCloud::Ptr input_cloud,
   }
 
   cv::Mat img = mask.clone();
+  /// mask is the transformed maskimg
   PointCloud::Ptr output_cloud = PointCloud::Ptr(new PointCloud());
 
   /// mask_rgb is mask color, if match ,then take the point in same position
@@ -334,18 +336,18 @@ cv::Mat pcd_io::RGB_Texture_mask(cv::Mat origin,
                                  const rs2::texture_coordinate* Texture)
 {
   /// Get Width and Height coordinates of texture
-  int width = origin.cols;                            // Frame width in pixels
-  int height = origin.rows;                           // Frame height in pixels
+  int width = origin.cols;//640                            // Frame width in pixels
+  int height = origin.rows;//480                           // Frame height in pixels
   cv::Mat mask_img = cv::Mat(height, width, CV_8UC3); //(480 640)
-  for (int Text_Index = 0; Text_Index < (width * height); ++Text_Index)
+  for (int Text_Index = 0; Text_Index < (width * height); ++Text_Index)// 0 ~ 480*640
   {
-    rs2::texture_coordinate Texture_XY = Texture[Text_Index];
+    rs2::texture_coordinate Texture_XY = Texture[Text_Index];// index 0 ~ 480*640
     int x_value = min(max(int(Texture_XY.u * width + .5f), 0), width - 1);
     int y_value = min(max(int(Texture_XY.v * height + .5f), 0), height - 1);
 
     int i = Text_Index % width; // /640
     int j = Text_Index / width;
-    mask_img.at<cv::Vec3b>(j, i)[0] = origin.at<cv::Vec3b>(y_value, x_value)[2];
+    mask_img.at<cv::Vec3b>(j, i)[0] = origin.at<cv::Vec3b>(y_value, x_value)[2];// NEW(Text_Index_xy) = OLD(xy_value)
     mask_img.at<cv::Vec3b>(j, i)[1] = origin.at<cv::Vec3b>(y_value, x_value)[1];
     mask_img.at<cv::Vec3b>(j, i)[2] = origin.at<cv::Vec3b>(y_value, x_value)[0];
     //    if(i==j*2) printf("#debug#:Text_Index(%d) (%d,%d): x_value/y_value:%d
