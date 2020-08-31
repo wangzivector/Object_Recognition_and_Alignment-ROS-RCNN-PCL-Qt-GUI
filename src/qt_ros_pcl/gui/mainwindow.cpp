@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget* parent)
   connect(m_timer, SIGNAL(timeout()), this, SLOT(TimerTimeout_cap()));
 
   socketObj = new qsocket();
+  Detect2D = new qalign();
 
   /// laod local params file into pcl calss instance before do everything
   ObjectRecognition->loadIni();
@@ -1150,6 +1151,7 @@ void MainWindow::TimerTimeout_cap()
     //  set_pixmapofimage(ObjectRecognition->image_origin);
     ObjectRecognition->mask =
         socketObj->socket_process(ObjectRecognition->image_origin);
+    ObjectRecognition->mask_flag = true;
 
     ObjectRecognition->pcdCapWorld(cloud_cap, true);
     set_pixmapofimage(ObjectRecognition->mask);
@@ -1158,6 +1160,7 @@ void MainWindow::TimerTimeout_cap()
   {
     set_pixmapofimage(ObjectRecognition->image_origin);
     ObjectRecognition->pcdCapWorld(cloud_cap, false);
+    ObjectRecognition->mask_flag = false;
   }
   refreshPloudCloudVTK();
   //  qvtkWidgetObj->showPointCloud(ObjectRecognition->cloud_world,
@@ -1285,6 +1288,17 @@ void MainWindow::on_pushButton_load_todo_clicked()
 
 void MainWindow::on_pushButton_dete_clicked()
 {
-  qalign Detector2D;
-  Detector2D.qalignTest();
+
+  //  Detect2D->qalignTest();ObjectRecognition->mask
+  Detect2D->setSingCloudImage(ObjectRecognition->cloud_world,
+                              ObjectRecognition->image_origin, ObjectRecognition->mask,
+                              ObjectRecognition->Texture);
+  Detect2D->compute(ObjectRecognition->mask_flag);
+  Detect2D->indexImplement();
+  Detect2D->computeSVD();
+}
+
+void MainWindow::on_pushButton_dete2_clicked()
+{
+    on_pushButton_dete_clicked();
 }

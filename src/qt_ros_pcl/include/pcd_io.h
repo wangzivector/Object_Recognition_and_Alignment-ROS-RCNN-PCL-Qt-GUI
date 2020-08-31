@@ -58,7 +58,9 @@ public:
                       const rs2::texture_coordinate *Texture);
   cv::Mat mask;
   cv::Mat image_origin;
+  bool mask_flag;
   std::tuple<uchar, uchar, uchar> mask_color;
+  const rs2::texture_coordinate* Texture;
 
 private:
   /// fun for realsense format transformation
@@ -74,7 +76,6 @@ private:
   /// cloud when a frame drops
   rs2::points* points_pointer;
   rs2::pipeline* pipe_point;
-  const rs2::texture_coordinate* Texture;
 };
 
 #endif // PCD_IO_H

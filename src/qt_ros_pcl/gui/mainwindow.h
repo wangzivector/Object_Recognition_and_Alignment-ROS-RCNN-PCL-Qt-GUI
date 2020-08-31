@@ -55,7 +55,13 @@ public:
   /// socket to mrcnn intance.
   qsocket* socketObj;
 
+  /// Detect2D intance.
+  qalign* Detect2D;
+
   QTime current_time;
+
+private slots:
+  void on_pushButton_dete2_clicked();
 
 private slots:
   void on_pushButton_dete_clicked();
