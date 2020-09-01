@@ -45,26 +45,26 @@ bool pcd_io::pcdSave(std::string pcd_path, PointCloud::Ptr cloud)
 //  crop the organized cloud based mask
 //===================================================
 bool pcd_io::maskImplement(PointCloud::Ptr input_cloud,
-                           PointCloud::Ptr out_cloud, cv::Mat mask_img,
+                           PointCloud::Ptr out_cloud, cv::Mat mask_origin,
                            std::tuple<uchar, uchar, uchar> mask_rgb)
 {
   /// operate this could make the mask avalible
-  RGB_Texture_mask(mask_img, Texture);
+  RGB_Texture_mask(mask_origin, Texture);
   /// if not organized cloud, you can't indese it by cloud[][]
   if (input_cloud->height > 1)
   {
 
     /// if mask img match cloud
-    if ((mask_img.rows == input_cloud->height) &&
-        (mask_img.cols == input_cloud->width))
+    if ((mask_origin.rows == input_cloud->height) &&
+        (mask_origin.cols == input_cloud->width))
     {
-      std::cout << "image size is : " << mask_img.rows << "/" << mask_img.cols
+      std::cout << "image size is : " << mask_origin.rows << "/" << mask_origin.cols
                 << std::endl;
     }
     else
     {
-      std::cout << "rows =/= height or cols =/= width: " << mask_img.rows
-                << input_cloud->height << "  " << mask_img.cols
+      std::cout << "rows =/= height or cols =/= width: " << mask_origin.rows
+                << input_cloud->height << "  " << mask_origin.cols
                 << input_cloud->width << std::endl;
       return false;
     }

@@ -57,6 +57,7 @@ public:
   cv::Mat RGB_Texture_mask(cv::Mat texture,
                       const rs2::texture_coordinate *Texture);
   cv::Mat mask;
+  cv::Mat mask_origin;
   cv::Mat image_origin;
   bool mask_flag;
   std::tuple<uchar, uchar, uchar> mask_color;

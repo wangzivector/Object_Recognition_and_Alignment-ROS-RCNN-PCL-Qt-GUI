@@ -30,8 +30,8 @@ bool qsocket::socket_connect()
   //the struct for the address of the server
   struct sockaddr_in adr_s;
   adr_s.sin_family = AF_INET;
-  adr_s.sin_addr.s_addr = inet_addr("127.0.0.1");
-  adr_s.sin_port =htons(6666);
+  adr_s.sin_addr.s_addr = inet_addr("192.168.1.209");
+  adr_s.sin_port =htons(8886);
   std::printf("start to send data ...\n");
 //  bind(server_s, (struct sockaddr *)&adr_s, sizeof(adr_s));
 

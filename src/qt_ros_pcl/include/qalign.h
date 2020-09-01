@@ -17,17 +17,21 @@ public:
   bool searchMatchedInMasked(cv::Mat mask_img1, cv::Mat mask_img2);
   bool mapToPointCloudIndex();
   void qalignTest();
-  bool setSingCloudImage(PointCloud::Ptr cloud_input, cv::Mat Image,
+  bool setSingCloudImage(PointCloud::Ptr cloud_input, PointCloud::Ptr cloud_input_seg, cv::Mat Image,
                          cv::Mat Mask_img,
                          const rs2::texture_coordinate* Texture);
   bool compute(bool mask_apply);
   void createMaskSample();
 
   bool indexImplement();
-  bool computeSVD();
+  Eigen::Matrix4f computeSVD();
 
   std::vector<cv::Point2i> match_points1;
   std::vector<cv::Point2i> match_points2;
+  PointCloud::Ptr input_cloud1;
+  PointCloud::Ptr input_cloud2;
+  PointCloud::Ptr input_cloud1_seg;
+  PointCloud::Ptr input_cloud2_seg;
 
 private:
   cv::Mat img_1;
@@ -36,8 +40,8 @@ private:
   cv::Mat img_2_mask;
   PointCloud::Ptr cloud_out1;
   PointCloud::Ptr cloud_out2;
-  PointCloud::Ptr input_cloud1;
-  PointCloud::Ptr input_cloud2;
+//  PointCloud::Ptr input_cloud1;
+//  PointCloud::Ptr input_cloud2;
   const rs2::texture_coordinate* Texture1;
   const rs2::texture_coordinate* Texture2;
 

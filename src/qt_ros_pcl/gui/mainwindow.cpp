@@ -1149,7 +1149,7 @@ void MainWindow::TimerTimeout_cap()
   if (ui->pushButton_socket->text() == QString("socket_on"))
   {
     //  set_pixmapofimage(ObjectRecognition->image_origin);
-    ObjectRecognition->mask =
+    ObjectRecognition->mask_origin =
         socketObj->socket_process(ObjectRecognition->image_origin);
     ObjectRecognition->mask_flag = true;
 
@@ -1290,12 +1290,15 @@ void MainWindow::on_pushButton_dete_clicked()
 {
 
   //  Detect2D->qalignTest();ObjectRecognition->mask
-  Detect2D->setSingCloudImage(ObjectRecognition->cloud_world,
-                              ObjectRecognition->image_origin, ObjectRecognition->mask,
+  Detect2D->setSingCloudImage(ObjectRecognition->cloud_world, ObjectRecognition->cloud_world_filter,
+                              ObjectRecognition->image_origin, ObjectRecognition->mask_origin,
                               ObjectRecognition->Texture);
   Detect2D->compute(ObjectRecognition->mask_flag);
   Detect2D->indexImplement();
-  Detect2D->computeSVD();
+  Eigen::Matrix4f transformed2d = Detect2D->computeSVD();
+  pcl::copyPointCloud(*Detect2D->input_cloud1_seg, *ObjectRecognition->cloud_world_filter);
+  pcl::transformPointCloud(*Detect2D->input_cloud2_seg, *ObjectRecognition->cloud_object_filter, transformed2d.inverse());
+
 }
 
 void MainWindow::on_pushButton_dete2_clicked()

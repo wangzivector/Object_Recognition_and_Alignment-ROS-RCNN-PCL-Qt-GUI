@@ -130,7 +130,7 @@ bool qalign::detectMatchpoints()
   std::printf("-- Max dist : %f \n", max_dista);
   std::printf("-- Min dist : %f \n", min_dista);
 
-  double threadhold = min_dista + (max_dista - min_dista) / 3;
+  double threadhold = min_dista + (max_dista - min_dista) / 1.5;
   std::printf("-- threadhold dist : %f \n", threadhold);
 
   //当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限.
@@ -166,6 +166,8 @@ bool qalign::detectMatchpoints()
 //===================================================
 bool qalign::searchMatchedInMasked(cv::Mat mask_img1, cv::Mat mask_img2)
 {
+  cv::imwrite("./mask_img1.png",mask_img1);
+  cv::imwrite("./mask_img2.png",mask_img2);
   if ((mask_img1.size == 0) || (mask_img2.size == 0))
   {
     std::printf("failed searchMatchedInMasked BECAUSE mask size == 0.\n");
@@ -176,19 +178,17 @@ bool qalign::searchMatchedInMasked(cv::Mat mask_img1, cv::Mat mask_img2)
   std::printf("before masked select size : %zu \n\n", good_matches.size());
 
   std::vector<cv::DMatch> good_matches_temp;
-  std::printf("searchMatchedInMasked...1\n");
   for (int num_matched = 0; num_matched < good_matches.size(); num_matched++)
   {
     if ((mask_img1.at<cv::Vec3b>(
-             kpts_01[good_matches[num_matched].queryIdx].pt.x,
-             kpts_01[good_matches[num_matched].queryIdx].pt.y)[0] == 255) &&
+             kpts_01[good_matches[num_matched].queryIdx].pt.y,
+             kpts_01[good_matches[num_matched].queryIdx].pt.x)[0] == 255) &&
         (mask_img2.at<cv::Vec3b>(
-             kpts_02[good_matches[num_matched].trainIdx].pt.x,
-             kpts_02[good_matches[num_matched].trainIdx].pt.y)[0] == 255))
+             kpts_02[good_matches[num_matched].trainIdx].pt.y,
+             kpts_02[good_matches[num_matched].trainIdx].pt.x)[0] == 255))
       good_matches_temp.push_back(good_matches[num_matched]);
-    //    std::printf("indexing %d\n", num_matched);
+//        std::printf("indexing %d\n", num_matched);
   }
-  std::printf("searchMatchedInMasked...2\n");
   good_matches.clear();
   good_matches.insert(good_matches.end(), good_matches_temp.begin(),
                       good_matches_temp.end());
@@ -220,14 +220,14 @@ bool qalign::mapToPointCloudIndex()
 {
 
   /// print the macted pairs before transform
-  for (int num_matched = 0; num_matched < good_matches.size(); num_matched++)
-  {
-    std::printf("#before trans point %d  : [%d,%d]-->[%d,%d]\n", num_matched,
-                int(kpts_01[good_matches[num_matched].queryIdx].pt.x),
-                int(kpts_01[good_matches[num_matched].queryIdx].pt.y),
-                int(kpts_02[good_matches[num_matched].trainIdx].pt.x),
-                int(kpts_02[good_matches[num_matched].trainIdx].pt.y));
-  }
+//  for (int num_matched = 0; num_matched < good_matches.size(); num_matched++)
+//  {
+//    std::printf("#before trans point %d  : [%d,%d]-->[%d,%d]\n", num_matched,
+//                int(kpts_01[good_matches[num_matched].queryIdx].pt.x),
+//                int(kpts_01[good_matches[num_matched].queryIdx].pt.y),
+//                int(kpts_02[good_matches[num_matched].trainIdx].pt.x),
+//                int(kpts_02[good_matches[num_matched].trainIdx].pt.y));
+//  }
   /// end of print
 
   int width = 640;
@@ -284,14 +284,14 @@ bool qalign::mapToPointCloudIndex()
   }
 
   /// print the after trans.
-  for (int num_matched = 0; num_matched < match_points1_temp.size();
-       num_matched++)
-  {
-    std::printf(
-        "   ##match_points1_temp %d  : [%d,%d]-->[%d,%d]\n", num_matched,
-        match_points1_temp[num_matched].x, match_points1_temp[num_matched].y,
-        match_points2_temp[num_matched].x, match_points2_temp[num_matched].y);
-  }
+//  for (int num_matched = 0; num_matched < match_points1_temp.size();
+//       num_matched++)
+//  {
+//    std::printf(
+//        "   ##match_points1_temp %d  : [%d,%d]-->[%d,%d]\n", num_matched,
+//        match_points1_temp[num_matched].x, match_points1_temp[num_matched].y,
+//        match_points2_temp[num_matched].x, match_points2_temp[num_matched].y);
+//  }
   /// end of print
 
   for (int num_matched = 0; num_matched < good_matches.size(); num_matched++)
@@ -304,13 +304,13 @@ bool qalign::mapToPointCloudIndex()
   }
 
   /// print the after trans.
-  for (int num_matched = 0; num_matched < match_points1.size(); num_matched++)
-  {
-    std::printf("        ###after match_points2 %d  : [%d,%d]-->[%d,%d]\n",
-                num_matched, match_points1[num_matched].x,
-                match_points1[num_matched].y, match_points2[num_matched].x,
-                match_points2[num_matched].y);
-  }
+//  for (int num_matched = 0; num_matched < match_points1.size(); num_matched++)
+//  {
+//    std::printf("        ###after match_points2 %d  : [%d,%d]-->[%d,%d]\n",
+//                num_matched, match_points1[num_matched].x,
+//                match_points1[num_matched].y, match_points2[num_matched].x,
+//                match_points2[num_matched].y);
+//  }
   /// end of print
 
   std::printf("final matched and transformed point pairs num: %zu , %zu\n",
@@ -318,7 +318,7 @@ bool qalign::mapToPointCloudIndex()
   return true;
 }
 
-bool qalign::setSingCloudImage(PointCloud::Ptr cloud_input, cv::Mat Image,
+bool qalign::setSingCloudImage(PointCloud::Ptr cloud_input, PointCloud::Ptr cloud_input_seg, cv::Mat Image,
                                cv::Mat Mask_img,
                                const rs2::texture_coordinate* Texture_input)
 {
@@ -334,6 +334,7 @@ bool qalign::setSingCloudImage(PointCloud::Ptr cloud_input, cv::Mat Image,
   {
     position = true;
     pcl::copyPointCloud(*cloud_input, *input_cloud1);
+    pcl::copyPointCloud(*cloud_input_seg, *input_cloud1_seg);
     img_1 = Image.clone();
     img_1_mask = Mask_img.clone();
     Texture1 = Texture_input;
@@ -342,12 +343,14 @@ bool qalign::setSingCloudImage(PointCloud::Ptr cloud_input, cv::Mat Image,
   else
   {
     pcl::copyPointCloud(*input_cloud2, *input_cloud1);
+    pcl::copyPointCloud(*input_cloud2_seg, *input_cloud1_seg);
     img_1 = img_2.clone();
     img_1_mask = img_2_mask.clone();
     Texture1 = Texture2;
     std::printf("added second data in decet 2d.\n");
   }
   pcl::copyPointCloud(*cloud_input, *input_cloud2);
+  pcl::copyPointCloud(*cloud_input_seg, *input_cloud2_seg);
   img_2 = Image.clone();
   img_2_mask = Mask_img.clone();
   Texture2 = Texture_input;
@@ -408,7 +411,7 @@ bool qalign::indexImplement()
             << std::endl;
   for (int indice = 0; indice < match_points1.size(); indice++)
   {
-    std::cout<< "indice:"<< match_points1[indice].x << " " << match_points1[indice].y<< std::endl;
+//    std::cout<< "indice:"<< match_points1[indice].x << " " << match_points1[indice].y<< std::endl;
     cloud_out1->push_back(
         input_cloud1->at(match_points1[indice].x, match_points1[indice].y));
     cloud_out2->push_back(
@@ -422,12 +425,13 @@ bool qalign::indexImplement()
   return true;
 }
 
-bool qalign::computeSVD()
+Eigen::Matrix4f qalign::computeSVD()
 {
   if (cloud_out1->size() < 4)
   {
     std::cout << "cloud_out1->size() < 4" << std::endl;
-    return false;
+    Eigen::Matrix4f transformation4f;
+    return transformation4f;
   }
   pcl::Correspondence* corr;
   pcl::CorrespondencesPtr model_scene_corrs(new pcl::Correspondences());
@@ -438,6 +442,7 @@ bool qalign::computeSVD()
   }
   pcl::registration::TransformationEstimationSVD<PointType, PointType>
       SVDEstimation;
+//  Eigen::Matrix4f transformation4f;
   pcl::registration::TransformationEstimationSVD<PointType, PointType>::Matrix4
       transformation;
   std::cout << "start estimateRigidTransformation\n";
@@ -445,5 +450,5 @@ bool qalign::computeSVD()
                                             *model_scene_corrs, transformation);
   std::cout << "here is the transformation of two matched point" << std::endl;
   std::cout << transformation;
-  return true;
+  return transformation;
 }
