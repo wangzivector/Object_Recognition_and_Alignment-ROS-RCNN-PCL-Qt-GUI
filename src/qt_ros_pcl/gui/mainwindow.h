@@ -61,6 +61,15 @@ public:
   QTime current_time;
 
 private slots:
+  void on_pushButton_mergeit_clicked();
+
+private slots:
+  void on_pushButton_icpal_clicked();
+
+private slots:
+  void on_pushButton_rmoutlier_clicked();
+
+private slots:
   void on_pushButton_dete2_clicked();
 
 private slots:

@@ -445,7 +445,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>filter</string>
            </property>
            <property name="checked">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
           </widget>
           <widget class="QCheckBox" name="checkBox_oc">
@@ -495,7 +495,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
             <string>align</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
           <widget class="QCheckBox" name="checkBox_wa">
@@ -2264,7 +2264,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>100</y>
+            <y>80</y>
             <width>280</width>
             <height>210</height>
            </rect>
@@ -2313,6 +2313,45 @@ border-bottom-color: rgb(0, 0, 0);</string>
           </property>
           <property name="text">
            <string>detect2d</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_rmoutlier">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>310</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>RMoutlier</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_icpal">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>310</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>ICP</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_mergeit">
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>310</y>
+            <width>89</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>merge</string>
           </property>
          </widget>
         </widget>

@@ -677,7 +677,7 @@ Eigen::Matrix4f qpcl::ICPRegistration(PointCloud::Ptr source_cloud,
   //
   pcl::IterativeClosestPoint<PointType, PointType> ICP;
   ICP.setInputSource(source_cloud);
-  /// how abaot icpwithnolinear and gerneral icp
+  /// how aboat icpwithnolinear and gerneral icp
   ICP.setInputTarget(target_cloud);
   ICP.setMaxCorrespondenceDistance(max_corr_distance);
   /// Set the max correspondence distance to 4cm
@@ -699,4 +699,5 @@ Eigen::Matrix4f qpcl::ICPRegistration(PointCloud::Ptr source_cloud,
          matrix2(1, 1), matrix2(1, 2));
   printf("    | %6.3f %6.3f %6.3f | \n", matrix2(2, 0), matrix2(2, 1),
          matrix2(2, 2));
+  return matrix2;
 }

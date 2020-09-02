@@ -1247,8 +1247,11 @@ void MainWindow::on_pushButton_socket_clicked()
 void MainWindow::on_pushButton_soim_clicked()
 {
   //    socketObj->socket_process(ObjectRecognition->mask);
-  set_pixmapofimage(socketObj->socket_process(ObjectRecognition->image_origin));
-  addTextBrowser("Sock", "socket image task done.");
+//  set_pixmapofimage(socketObj->socket_process(ObjectRecognition->image_origin));
+//  addTextBrowser("Sock", "socket image task done.");
+  ObjectRecognition->reGridFilter(true);
+  addTextBrowser("Mode", "reGridFilter done");
+
 }
 
 void MainWindow::on_pushButton_load_org_clicked()
@@ -1290,18 +1293,63 @@ void MainWindow::on_pushButton_dete_clicked()
 {
 
   //  Detect2D->qalignTest();ObjectRecognition->mask
-  Detect2D->setSingCloudImage(ObjectRecognition->cloud_world, ObjectRecognition->cloud_world_filter,
-                              ObjectRecognition->image_origin, ObjectRecognition->mask_origin,
-                              ObjectRecognition->Texture);
+  Detect2D->setSingCloudImage(
+      ObjectRecognition->cloud_world, ObjectRecognition->cloud_world_filter,
+      ObjectRecognition->cloud_object_filter, ObjectRecognition->image_origin,
+      ObjectRecognition->mask_origin, ObjectRecognition->Texture);
   Detect2D->compute(ObjectRecognition->mask_flag);
   Detect2D->indexImplement();
   Eigen::Matrix4f transformed2d = Detect2D->computeSVD();
-  pcl::copyPointCloud(*Detect2D->input_cloud1_seg, *ObjectRecognition->cloud_world_filter);
-  pcl::transformPointCloud(*Detect2D->input_cloud2_seg, *ObjectRecognition->cloud_object_filter, transformed2d.inverse());
+  pcl::copyPointCloud(*Detect2D->input_cloud2_seg,
+                      *ObjectRecognition->cloud_object_filter);
+  pcl::transformPointCloud(*Detect2D->input_cloud1_seg,
+                           *ObjectRecognition->cloud_world_filter,
+                           transformed2d);
+  Detect2D->is_merged = false;
+  refreshPloudCloudVTK();
+  addTextBrowser("Mode", "Detect2D done");
 
 }
 
-void MainWindow::on_pushButton_dete2_clicked()
+void MainWindow::on_pushButton_dete2_clicked() { on_pushButton_dete_clicked(); }
+
+void MainWindow::on_pushButton_rmoutlier_clicked()
 {
-    on_pushButton_dete_clicked();
+  ObjectRecognition->outlierFilter(
+      ObjectRecognition->cloud_world_filter,
+      ObjectRecognition->cloud_world_filter,
+      ObjectRecognition->outlierFilter_outlier_meanK,
+      ObjectRecognition->outlierFilter_outlier_Thresh);
+  ObjectRecognition->outlierFilter(
+      ObjectRecognition->cloud_object_filter,
+      ObjectRecognition->cloud_object_filter,
+      ObjectRecognition->outlierFilter_outlier_meanK,
+      ObjectRecognition->outlierFilter_outlier_Thresh);
+  refreshPloudCloudVTK();
+  addTextBrowser("Mode", "rmoutlier done");
+
+}
+
+void MainWindow::on_pushButton_icpal_clicked()
+{
+  ObjectRecognition->ICPRegistration(ObjectRecognition->cloud_world_filter,
+                                     ObjectRecognition->cloud_object_filter,
+                                     ObjectRecognition->cloud_world_filter,
+                                     ObjectRecognition->ICP_max_corr_distance,
+                                     ObjectRecognition->ICP_max_iter_icp,
+                                     ObjectRecognition->ICP_transformation,
+                                     ObjectRecognition->ICP_euclidean_Fitness);
+  refreshPloudCloudVTK();
+  addTextBrowser("Mode", "icp done");
+
+}
+
+void MainWindow::on_pushButton_mergeit_clicked()
+{
+  *ObjectRecognition->cloud_object_filter =
+      *ObjectRecognition->cloud_object_filter +
+      *ObjectRecognition->cloud_world_filter;
+  Detect2D->is_merged = true;
+  refreshPloudCloudVTK();
+  addTextBrowser("Mode", "merged done");
 }
