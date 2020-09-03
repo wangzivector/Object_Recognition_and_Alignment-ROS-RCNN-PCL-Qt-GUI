@@ -99,7 +99,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>4</number>
         </property>
         <widget class="QWidget" name="tab">
          <property name="toolTip">
@@ -873,7 +873,7 @@ border-bottom-color: rgb(0, 0, 0);</string>
            <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
           </property>
           <property name="decimals">
-           <number>3</number>
+           <number>5</number>
           </property>
           <property name="maximum">
            <double>100.000000000000000</double>

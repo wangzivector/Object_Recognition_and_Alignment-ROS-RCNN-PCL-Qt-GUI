@@ -23,7 +23,7 @@ qvtk::qvtk(QWidget* parent) : QVTKWidget(parent)
   this->SetRenderWindow(this->viewer->getRenderWindow());
   this->viewer->setupInteractor(this->GetInteractor(), this->GetRenderWindow());
   this->viewer->setBackgroundColor(224, 224, 224);
-  this->viewer->addCoordinateSystem();
+//  this->viewer->addCoordinateSystem();
   //  this->viewer->setCameraPosition(-0.825088, 0.568006, -0.633452, 0.322216,
   //                                  -0.780572, -0.535616);
   std::string camera_filename =
