@@ -2,11 +2,11 @@
 
 ### 1.Features
 
-This catkin workspace have many features including **ROSnode, PCL process, Qt GUI, vtk widget**.
-Besides, it contains **RCNN** implement(TF in Python) with socket communication.
-It can be used in pointcloud recognition and model processing tasks.
+This catkin workspace has many features including **ROSnode, PCL process, Qt GUI, vtk widget**.
+Besides, it contains **RCNN** implemented(TF in Python) with socket communication.
+It can be used in pointcloud recognition and model processing task.
 
-This project includes the following detailed processing methods but not all of it:
+This project includes the following detailed processing methods:
 
 * **feature-based method**
 
@@ -46,31 +46,31 @@ This project includes the following detailed processing methods but not all of i
 
 ### 2.Functions
 
-Performance of two methods to get a object pose or instance segmentation are shown below.
+Performance of two methods to get the object pose or instance segmentation is shown below.
 
 * **Feature-based method <hand craft descriptor>**
 
 <div align="center"> <img src="./assets/pics/c.png" height="220" /><img src="./assets/pics/b.png" height="220" /></div>
 
-Red pointclouds are **models** pre-processed using [CloudCompare](http://cloudcompare.org/) software. each of **The models** you want to get pose just need to get a model file in advance. You are **free from making a large dataset.** Once you get the model file, you can use it to **align the object** in the scene to **get** **its pose**.
+Red pointclouds are **models** pre-processed using [CloudCompare](http://cloudcompare.org/) software. each of **The models** you want to get pose just need to get a model file in advance--You are **free from making a large dataset.** Once you get the model file, you can use it to **align the object** in the scene to **get** **its pose**.
 
-However, this way needs great efforts to pre process the scene to get the partial pointcloud belonging to the model object(from left to right). So I rather use RCNN to do the recognition and segmentation works. Also this method is not the robust one.
+However, this way needs great efforts to pre-process the scene to get the partial pointcloud belonging to the model object(from left to right). So I rather use Mask-RCNN to do the recognition and segmentation works. Also this method is not the robust one.
 
-* **DNN-based method<RCNN>**
+* **DNN-based method<Mask-RCNN>**
 
 <div align="center"> <img src="./assets/pics/d.png" height="220" /><img src="./assets/pics/i.png" height="220" /></div>
 
-Once I get the pointcloud(left) and image(right), I can implement RCNN in image and get the **2D segmentation** of known object. (this can be done easily by famous image dataset. In other word, You still **free from making 3D pointcloud dataset.**) **More significant, you can make your own 3D pointcloud dataset using known 2D image dataset!** As long as you can tolerate the 2D image segmentation error.
+Once I got the pointcloud(left) and image(right), I can implement RCNN in image and get the **2D segmentation** of known objects. (this can be done easily by famous image dataset. In other words, You are still **free from making 3D pointcloud dataset.**) **More significantly, you can make your own 3D pointcloud dataset using 2D image dataset** as long as you can tolerate the 2D image segmentation error.
 
-The performance of RCNN-based dataset are pictured below.
+The performance of Mask-RCNN-based dataset are pictured below.
 
 <div align="center"> <img src="./assets/pics/h.png" height="220" /><img src="./assets/pics/j.png" height="220" /></div>
 
- Some outlier points are still been seen in left image, but it can be removed easily using traditional pointcloud cluster method.
+ Some outlier points are still been seen in left image, but it can be removed easily using traditional pointcloud cluster methods.
 
-* **More over...**
+* **More over**
 
-This project is just for higher robotic task till now. It has **ROS and Socket** Interface to interact with **DL framework and Robotics Simulation.**
+This project is for high robotic task. It has **ROS and Socket** Interface to interact with **DL framework and Robotics Simulation.**
 
 ### 3.Basic Steps
 
@@ -112,9 +112,9 @@ rosrun qt_ros_pcl gui_node
 (the installation and configuration of qtcreator-ros are list in my other repository named **instructions_learning**.)
 
 ### 4.RCNN Related
-the pre trained model and weight are list in the repo sahalaan/VidaVSMilk-using-Mask-RCNN (train rcnn using dataset <milk_box> and <tissue_package>) 
-detailed info please check this [repo](https://github.com/sahalaan/VidaVSMilk-using-Mask-RCNN) and the [python script](/src/qt_ros_pcl/scripts/socket_tf_master.py)
+the pretrained model and weight are listed in the repo sahalaan/VidaVSMilk-using-Mask-RCNN (train rcnn using dataset <milk_box> and <tissue_package>) 
+detailed info please check this [repository](https://github.com/sahalaan/VidaVSMilk-using-Mask-RCNN) and [python script](/src/qt_ros_pcl/scripts/socket_tf_master.py)
 
 ### 5.Notes
 
-This repository is still under development. If there is any issue please inform it. 
+This repository is out of development. If there is any issue please inform it. 
