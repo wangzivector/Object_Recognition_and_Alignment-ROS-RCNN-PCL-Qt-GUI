@@ -1,4 +1,4 @@
-# object_detection-RCNN-Qt-PCL-ROS-GUI(under development)
+# Object_Recognition_and_Alignment-ROS-RCNN-PCL-Qt-GUI
 
 ### 1.Features
 
@@ -32,7 +32,7 @@ This project includes the following detailed processing methods but not all of i
 
   
 
-* **DNN-based method**
+* **RCNN-based method**
 
   ├─RCNN for segmentation
 
